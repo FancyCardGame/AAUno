@@ -22,7 +22,7 @@ public class MainActivity extends Activity implements View.OnClickListener{
         setMenuTypeface();
 
 
-
+        // prepare game stuff here
 
 
         findViewById(R.id.startGameMP).setOnClickListener(this);
