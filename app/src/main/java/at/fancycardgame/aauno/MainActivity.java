@@ -10,7 +10,8 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-    // Test
+    // Testing Commit
+    int test = 0;
     }
 
 }
