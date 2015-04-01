@@ -3,6 +3,9 @@ package at.fancycardgame.aauno;
 import android.app.Activity;
 import android.os.Bundle;
 
+/**
+ * The main activity
+ * */
 public class MainActivity extends Activity {
 
     @Override
