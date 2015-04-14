@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/blue">
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/container">
+
+            <RelativeLayout
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_gravity="center">
+
+                <FrameLayout
+                    android:layout_width="100sp"
+                    android:layout_height="130sp"
+                    android:id="@+id/playCardsPosition"
+                    android:background="@color/black"
+                    android:layout_gravity="center"
+                    android:layout_marginLeft="202dp"
+                    android:layout_marginStart="202dp"
+                    android:layout_centerVertical="true"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"></FrameLayout>
+
+                <FrameLayout
+                    android:layout_width="100sp"
+                    android:layout_height="130sp"
+                    android:id="@+id/cardDeckPosition"
+                    android:background="@color/background_material_light"
+                    android:layout_gravity="center"
+                    android:layout_alignTop="@+id/playCardsPosition"
+                    android:layout_toRightOf="@+id/playCardsPosition"
+                    android:layout_toEndOf="@+id/playCardsPosition" />
+            </RelativeLayout>
+
+        </FrameLayout>
+
+    </RelativeLayout>
+</FrameLayout>
