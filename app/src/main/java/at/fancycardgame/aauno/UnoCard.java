@@ -19,34 +19,54 @@ public class UnoCard {
     private String description;
     private String value;
     private String color;
-    private ImageView cardImg;
-    private ImageView backside;
+    private ImageView currentSide;
+    private Drawable cardFront;
     private int x,y;
     private int width,height;
     private Context context;
     private FrameLayout container;
 
-    public UnoCard(final Context context, FrameLayout container, Point location, Drawable cardImg, String name, String description, String value, String color) {
+    public UnoCard(final Context context, FrameLayout container, Point location, Drawable cardFront, Drawable cardBack, String name, String description, String value, String color) {
         this.context = context;
         this.container = container;
         this.name = name;
         this.description = description;
         this.value = value;
         this.color = color;
-        this.height = cardImg.getIntrinsicHeight();
-        this.width = cardImg.getIntrinsicWidth();
+        this.height = cardBack.getIntrinsicHeight();
+        this.width = cardBack.getIntrinsicWidth();
 
         this.x=location.x;
         this.y=location.y;
 
-        this.cardImg = new ImageView(container.getContext());
-        this.cardImg.setImageDrawable(cardImg);
+        // init card current side
+        this.currentSide = new ImageView(container.getContext());
+        this.currentSide.setImageDrawable(cardBack);
+        //
+        this.cardFront = cardFront;
 
-        // TODO
-        // init backside of card
-        // !!!!
+        // init card back
+        //this.cardBack = new ImageView(container.getContext());
+        //this.cardBack.setImageDrawable(cardBack);
 
-        this.cardImg.setOnTouchListener(new View.OnTouchListener() {
+
+        //init card front touch listener
+        /*this.cardFront.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if(event.getAction()==MotionEvent.ACTION_DOWN) {
+                    ClipData data = ClipData.newPlainText("","");
+                    View.DragShadowBuilder shadowBuilder = new View.DragShadowBuilder(v);
+                    v.startDrag(data, shadowBuilder, v, 0);
+                    v.setVisibility(View.INVISIBLE);
+                    return true;
+                } else
+                    return false;
+            }
+        });*/
+
+        // init card back touch listener
+        this.currentSide.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 if(event.getAction()==MotionEvent.ACTION_DOWN) {
@@ -60,16 +80,17 @@ public class UnoCard {
             }
         });
 
-        container.addView(this.cardImg);
 
-        FrameLayout.LayoutParams params = (FrameLayout.LayoutParams)this.cardImg.getLayoutParams();
+        container.addView(this.currentSide);
+
+        FrameLayout.LayoutParams params = (FrameLayout.LayoutParams)this.currentSide.getLayoutParams();
         params.width = MainActivity.scale(this.width)/2;
         params.height = MainActivity.scale(this.height)/2;
 
         params.leftMargin = this.x;
         params.topMargin = this.y;
         params.gravity = Gravity.LEFT + Gravity.TOP;
-        this.cardImg.setLayoutParams(params);
+        this.currentSide.setLayoutParams(params);
     }
 
     public String getName(String name) {
@@ -89,19 +110,39 @@ public class UnoCard {
     }
 
     public View getImageView() {
-        return (View)this.cardImg;
+        return (View)this.currentSide;
     }
 
     public void setLocation(int x, int y) {
         this.x = x;
         this.y = y;
-        this.cardImg.invalidate();
+        this.currentSide.invalidate();
     }
 
     public void setContainer(FrameLayout deckPos) {
-        this.container.removeView(this.cardImg);
+        this.container.removeView(this.currentSide);
         this.container = deckPos;
-        this.container.addView(this.cardImg);
+        this.container.addView(this.currentSide);
+    }
 
+    public void viewFront() {
+        this.container.removeView(this.currentSide);
+
+        // init card current side
+        //this.currentSide = new ImageView(container.getContext());
+        this.currentSide.setImageDrawable(this.cardFront);
+
+        if(this.currentSide.getLayoutParams()!=null) {
+            FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) this.currentSide.getLayoutParams();
+            params.width = MainActivity.scale(this.width) / 2;
+            params.height = MainActivity.scale(this.height) / 2;
+
+            params.leftMargin = this.x;
+            params.topMargin = this.y;
+            params.gravity = Gravity.LEFT + Gravity.TOP;
+            this.currentSide.setLayoutParams(params);
+
+            this.container.addView(this.currentSide);
+        }
     }
 }

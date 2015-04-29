@@ -105,91 +105,93 @@ public class UnoCardDeck {
         Drawable yellow_plus2 = this.appContext.getResources().getDrawable(R.drawable.yellow_plus2);
         Drawable yellow_turn = this.appContext.getResources().getDrawable(R.drawable.yellow_turn);
 
-        // create drawables for  special cards
+        // create drawables for  special cards & backside
         Drawable color_change = this.appContext.getResources().getDrawable(R.drawable.color_change);
         Drawable color_change_plus4 = this.appContext.getResources().getDrawable(R.drawable.color_change_plus4);
+        Drawable card_back = this.appContext.getResources().getDrawable(R.drawable.card_back);
+
 
         // blue
         // 0 only once
-        this.cards.add(new UnoCard(this.appContext, deckPos, new Point(20, 20), blue_0, "Blue 0", "", "0", "Blue"));
+        this.cards.add(new UnoCard(this.appContext, deckPos, new Point(20, 20), blue_0, card_back, "Blue 0", "", "0", "Blue"));
         for (int twice = 0; twice < 2; twice++) {
-            this.cards.add(new UnoCard(this.appContext, deckPos, new Point(20, 20), blue_1, "Blue 1", "", "1", "Blue"));
-            this.cards.add(new UnoCard(this.appContext, deckPos, new Point(20, 20), blue_2, "Blue 2", "", "2", "Blue"));
-            this.cards.add(new UnoCard(this.appContext, deckPos, new Point(20, 20), blue_3, "Blue 3", "", "3", "Blue"));
-            this.cards.add(new UnoCard(this.appContext, deckPos, new Point(20, 20), blue_4, "Blue 4", "", "4", "Blue"));
-            this.cards.add(new UnoCard(this.appContext, deckPos, new Point(20, 20), blue_5, "Blue 5", "", "5", "Blue"));
-            this.cards.add(new UnoCard(this.appContext, deckPos, new Point(20, 20), blue_6, "Blue 6", "", "6", "Blue"));
-            this.cards.add(new UnoCard(this.appContext, deckPos, new Point(20, 20), blue_7, "Blue 7", "", "7", "Blue"));
-            this.cards.add(new UnoCard(this.appContext, deckPos, new Point(20, 20), blue_8, "Blue 8", "", "8", "Blue"));
-            this.cards.add(new UnoCard(this.appContext, deckPos, new Point(20, 20), blue_9, "Blue 9", "", "9", "Blue"));
-            this.cards.add(new UnoCard(this.appContext, deckPos, new Point(20, 20), blue_skip, "Blue Skip", "", "SKIP", "Blue"));
-            this.cards.add(new UnoCard(this.appContext, deckPos, new Point(20, 20), blue_turn, "Blue Turn", "", "TURN", "Blue"));
-            this.cards.add(new UnoCard(this.appContext, deckPos, new Point(20, 20), blue_plus2, "Blue Plus 2", "", "PLUS 2", "Blue"));
+            this.cards.add(new UnoCard(this.appContext, deckPos, new Point(20, 20), blue_1, card_back, "Blue 1", "", "1", "Blue"));
+            this.cards.add(new UnoCard(this.appContext, deckPos, new Point(20, 20), blue_2, card_back, "Blue 2", "", "2", "Blue"));
+            this.cards.add(new UnoCard(this.appContext, deckPos, new Point(20, 20), blue_3, card_back, "Blue 3", "", "3", "Blue"));
+            this.cards.add(new UnoCard(this.appContext, deckPos, new Point(20, 20), blue_4, card_back, "Blue 4", "", "4", "Blue"));
+            this.cards.add(new UnoCard(this.appContext, deckPos, new Point(20, 20), blue_5, card_back, "Blue 5", "", "5", "Blue"));
+            this.cards.add(new UnoCard(this.appContext, deckPos, new Point(20, 20), blue_6, card_back, "Blue 6", "", "6", "Blue"));
+            this.cards.add(new UnoCard(this.appContext, deckPos, new Point(20, 20), blue_7, card_back, "Blue 7", "", "7", "Blue"));
+            this.cards.add(new UnoCard(this.appContext, deckPos, new Point(20, 20), blue_8, card_back, "Blue 8", "", "8", "Blue"));
+            this.cards.add(new UnoCard(this.appContext, deckPos, new Point(20, 20), blue_9, card_back, "Blue 9", "", "9", "Blue"));
+            this.cards.add(new UnoCard(this.appContext, deckPos, new Point(20, 20), blue_skip, card_back, "Blue Skip", "", "SKIP", "Blue"));
+            this.cards.add(new UnoCard(this.appContext, deckPos, new Point(20, 20), blue_turn, card_back, "Blue Turn", "", "TURN", "Blue"));
+            this.cards.add(new UnoCard(this.appContext, deckPos, new Point(20, 20), blue_plus2, card_back, "Blue Plus 2", "", "PLUS 2", "Blue"));
         }
 
         // red
         // 0 only once
-        this.cards.add(new UnoCard(this.appContext, deckPos, new Point(20, 20), red_0, "red 0", "", "0", "red"));
+        this.cards.add(new UnoCard(this.appContext, deckPos, new Point(20, 20), red_0, card_back, "red 0", "", "0", "red"));
         for (int twice = 0; twice < 2; twice++) {
-            this.cards.add(new UnoCard(this.appContext, deckPos, new Point(20, 20), red_1, "Red 1", "", "1", "Red"));
-            this.cards.add(new UnoCard(this.appContext, deckPos, new Point(20, 20), red_2, "Red 2", "", "2", "Red"));
-            this.cards.add(new UnoCard(this.appContext, deckPos, new Point(20, 20), red_3, "Red 3", "", "3", "Red"));
-            this.cards.add(new UnoCard(this.appContext, deckPos, new Point(20, 20), red_4, "Red 4", "", "4", "Red"));
-            this.cards.add(new UnoCard(this.appContext, deckPos, new Point(20, 20), red_5, "Red 5", "", "5", "Red"));
-            this.cards.add(new UnoCard(this.appContext, deckPos, new Point(20, 20), red_6, "Red 6", "", "6", "Red"));
-            this.cards.add(new UnoCard(this.appContext, deckPos, new Point(20, 20), red_7, "Red 7", "", "7", "Red"));
-            this.cards.add(new UnoCard(this.appContext, deckPos, new Point(20, 20), red_8, "Red 8", "", "8", "Red"));
-            this.cards.add(new UnoCard(this.appContext, deckPos, new Point(20, 20), red_9, "Red 9", "", "9", "Red"));
-            this.cards.add(new UnoCard(this.appContext, deckPos, new Point(20, 20), red_skip, "Red Skip", "", "SKIP", "Red"));
-            this.cards.add(new UnoCard(this.appContext, deckPos, new Point(20, 20), red_turn, "Red Turn", "", "TURN", "Red"));
-            this.cards.add(new UnoCard(this.appContext, deckPos, new Point(20, 20), red_plus2, "Red Plus 2", "", "PLUS 2", "Red"));
+            this.cards.add(new UnoCard(this.appContext, deckPos, new Point(20, 20), red_1, card_back, "Red 1", "", "1", "Red"));
+            this.cards.add(new UnoCard(this.appContext, deckPos, new Point(20, 20), red_2, card_back, "Red 2", "", "2", "Red"));
+            this.cards.add(new UnoCard(this.appContext, deckPos, new Point(20, 20), red_3, card_back, "Red 3", "", "3", "Red"));
+            this.cards.add(new UnoCard(this.appContext, deckPos, new Point(20, 20), red_4, card_back, "Red 4", "", "4", "Red"));
+            this.cards.add(new UnoCard(this.appContext, deckPos, new Point(20, 20), red_5, card_back, "Red 5", "", "5", "Red"));
+            this.cards.add(new UnoCard(this.appContext, deckPos, new Point(20, 20), red_6, card_back, "Red 6", "", "6", "Red"));
+            this.cards.add(new UnoCard(this.appContext, deckPos, new Point(20, 20), red_7, card_back, "Red 7", "", "7", "Red"));
+            this.cards.add(new UnoCard(this.appContext, deckPos, new Point(20, 20), red_8, card_back, "Red 8", "", "8", "Red"));
+            this.cards.add(new UnoCard(this.appContext, deckPos, new Point(20, 20), red_9, card_back, "Red 9", "", "9", "Red"));
+            this.cards.add(new UnoCard(this.appContext, deckPos, new Point(20, 20), red_skip, card_back, "Red Skip", "", "SKIP", "Red"));
+            this.cards.add(new UnoCard(this.appContext, deckPos, new Point(20, 20), red_turn, card_back, "Red Turn", "", "TURN", "Red"));
+            this.cards.add(new UnoCard(this.appContext, deckPos, new Point(20, 20), red_plus2, card_back, "Red Plus 2", "", "PLUS 2", "Red"));
         }
 
         // green
         // 0 only once
-        this.cards.add(new UnoCard(this.appContext, deckPos, new Point(20, 20), green_0, "Green 0", "", "0", "Green"));
+        this.cards.add(new UnoCard(this.appContext, deckPos, new Point(20, 20), green_0, card_back, "Green 0", "", "0", "Green"));
         for (int twice = 0; twice < 2; twice++) {
-            this.cards.add(new UnoCard(this.appContext, deckPos, new Point(20, 20), green_1, "Green 1", "", "1", "Green"));
-            this.cards.add(new UnoCard(this.appContext, deckPos, new Point(20, 20), green_2, "Green 2", "", "2", "Green"));
-            this.cards.add(new UnoCard(this.appContext, deckPos, new Point(20, 20), green_3, "Green 3", "", "3", "Green"));
-            this.cards.add(new UnoCard(this.appContext, deckPos, new Point(20, 20), green_4, "Green 4", "", "4", "Green"));
-            this.cards.add(new UnoCard(this.appContext, deckPos, new Point(20, 20), green_5, "Green 5", "", "5", "Green"));
-            this.cards.add(new UnoCard(this.appContext, deckPos, new Point(20, 20), green_6, "Green 6", "", "6", "Green"));
-            this.cards.add(new UnoCard(this.appContext, deckPos, new Point(20, 20), green_7, "Green 7", "", "7", "Green"));
-            this.cards.add(new UnoCard(this.appContext, deckPos, new Point(20, 20), green_8, "Green 8", "", "8", "Green"));
-            this.cards.add(new UnoCard(this.appContext, deckPos, new Point(20, 20), green_9, "Green 9", "", "9", "Green"));
-            this.cards.add(new UnoCard(this.appContext, deckPos, new Point(20, 20), green_skip, "Green Skip", "", "SKIP", "Green"));
-            this.cards.add(new UnoCard(this.appContext, deckPos, new Point(20, 20), green_turn, "Green Turn", "", "TURN", "Green"));
-            this.cards.add(new UnoCard(this.appContext, deckPos, new Point(20, 20), green_plus2, "Green Plus 2", "", "PLUS 2", "Green"));
+            this.cards.add(new UnoCard(this.appContext, deckPos, new Point(20, 20), green_1, card_back, "Green 1", "", "1", "Green"));
+            this.cards.add(new UnoCard(this.appContext, deckPos, new Point(20, 20), green_2, card_back, "Green 2", "", "2", "Green"));
+            this.cards.add(new UnoCard(this.appContext, deckPos, new Point(20, 20), green_3, card_back, "Green 3", "", "3", "Green"));
+            this.cards.add(new UnoCard(this.appContext, deckPos, new Point(20, 20), green_4, card_back, "Green 4", "", "4", "Green"));
+            this.cards.add(new UnoCard(this.appContext, deckPos, new Point(20, 20), green_5, card_back, "Green 5", "", "5", "Green"));
+            this.cards.add(new UnoCard(this.appContext, deckPos, new Point(20, 20), green_6, card_back, "Green 6", "", "6", "Green"));
+            this.cards.add(new UnoCard(this.appContext, deckPos, new Point(20, 20), green_7, card_back, "Green 7", "", "7", "Green"));
+            this.cards.add(new UnoCard(this.appContext, deckPos, new Point(20, 20), green_8, card_back, "Green 8", "", "8", "Green"));
+            this.cards.add(new UnoCard(this.appContext, deckPos, new Point(20, 20), green_9, card_back, "Green 9", "", "9", "Green"));
+            this.cards.add(new UnoCard(this.appContext, deckPos, new Point(20, 20), green_skip, card_back, "Green Skip", "", "SKIP", "Green"));
+            this.cards.add(new UnoCard(this.appContext, deckPos, new Point(20, 20), green_turn, card_back, "Green Turn", "", "TURN", "Green"));
+            this.cards.add(new UnoCard(this.appContext, deckPos, new Point(20, 20), green_plus2, card_back, "Green Plus 2", "", "PLUS 2", "Green"));
         }
 
         // yellow
         // 0 only once
-        this.cards.add(new UnoCard(this.appContext, deckPos, new Point(20, 20), yellow_0, "Yellow 0", "", "0", "Yellow"));
+        this.cards.add(new UnoCard(this.appContext, deckPos, new Point(20, 20), yellow_0, card_back, "Yellow 0", "", "0", "Yellow"));
         for (int twice = 0; twice < 2; twice++) {
-            this.cards.add(new UnoCard(this.appContext, deckPos, new Point(20, 20), yellow_1, "Yellow 1", "", "1", "Yellow"));
-            this.cards.add(new UnoCard(this.appContext, deckPos, new Point(20, 20), yellow_2, "Yellow 2", "", "2", "Yellow"));
-            this.cards.add(new UnoCard(this.appContext, deckPos, new Point(20, 20), yellow_3, "Yellow 3", "", "3", "Yellow"));
-            this.cards.add(new UnoCard(this.appContext, deckPos, new Point(20, 20), yellow_4, "Yellow 4", "", "4", "Yellow"));
-            this.cards.add(new UnoCard(this.appContext, deckPos, new Point(20, 20), yellow_5, "Yellow 5", "", "5", "Yellow"));
-            this.cards.add(new UnoCard(this.appContext, deckPos, new Point(20, 20), yellow_6, "Yellow 6", "", "6", "Yellow"));
-            this.cards.add(new UnoCard(this.appContext, deckPos, new Point(20, 20), yellow_7, "Yellow 7", "", "7", "Yellow"));
-            this.cards.add(new UnoCard(this.appContext, deckPos, new Point(20, 20), yellow_8, "Yellow 8", "", "8", "Yellow"));
-            this.cards.add(new UnoCard(this.appContext, deckPos, new Point(20, 20), yellow_9, "Yellow 9", "", "9", "Yellow"));
-            this.cards.add(new UnoCard(this.appContext, deckPos, new Point(20, 20), yellow_skip, "Yellow Skip", "", "SKIP", "Yellow"));
-            this.cards.add(new UnoCard(this.appContext, deckPos, new Point(20, 20), yellow_turn, "Yellow Turn", "", "TURN", "Yellow"));
-            this.cards.add(new UnoCard(this.appContext, deckPos, new Point(20, 20), yellow_plus2, "Yellow Plus 2", "", "PLUS 2", "Yellow"));
+            this.cards.add(new UnoCard(this.appContext, deckPos, new Point(20, 20), yellow_1, card_back, "Yellow 1", "", "1", "Yellow"));
+            this.cards.add(new UnoCard(this.appContext, deckPos, new Point(20, 20), yellow_2, card_back, "Yellow 2", "", "2", "Yellow"));
+            this.cards.add(new UnoCard(this.appContext, deckPos, new Point(20, 20), yellow_3, card_back, "Yellow 3", "", "3", "Yellow"));
+            this.cards.add(new UnoCard(this.appContext, deckPos, new Point(20, 20), yellow_4, card_back, "Yellow 4", "", "4", "Yellow"));
+            this.cards.add(new UnoCard(this.appContext, deckPos, new Point(20, 20), yellow_5, card_back, "Yellow 5", "", "5", "Yellow"));
+            this.cards.add(new UnoCard(this.appContext, deckPos, new Point(20, 20), yellow_6, card_back, "Yellow 6", "", "6", "Yellow"));
+            this.cards.add(new UnoCard(this.appContext, deckPos, new Point(20, 20), yellow_7, card_back, "Yellow 7", "", "7", "Yellow"));
+            this.cards.add(new UnoCard(this.appContext, deckPos, new Point(20, 20), yellow_8, card_back, "Yellow 8", "", "8", "Yellow"));
+            this.cards.add(new UnoCard(this.appContext, deckPos, new Point(20, 20), yellow_9, card_back, "Yellow 9", "", "9", "Yellow"));
+            this.cards.add(new UnoCard(this.appContext, deckPos, new Point(20, 20), yellow_skip, card_back, "Yellow Skip", "", "SKIP", "Yellow"));
+            this.cards.add(new UnoCard(this.appContext, deckPos, new Point(20, 20), yellow_turn, card_back, "Yellow Turn", "", "TURN", "Yellow"));
+            this.cards.add(new UnoCard(this.appContext, deckPos, new Point(20, 20), yellow_plus2, card_back, "Yellow Plus 2", "", "PLUS 2", "Yellow"));
         }
 
-        this.cards.add(new UnoCard(this.appContext, deckPos, new Point(20, 20), color_change, "Color Change", "", "COLOR CHANGE", "COLOR CHANGE"));
-        this.cards.add(new UnoCard(this.appContext, deckPos, new Point(20, 20), color_change, "Color Change", "", "COLOR CHANGE", "COLOR CHANGE"));
-        this.cards.add(new UnoCard(this.appContext, deckPos, new Point(20, 20), color_change, "Color Change", "", "COLOR CHANGE", "COLOR CHANGE"));
-        this.cards.add(new UnoCard(this.appContext, deckPos, new Point(20, 20), color_change, "Color Change", "", "COLOR CHANGE", "COLOR CHANGE"));
+        this.cards.add(new UnoCard(this.appContext, deckPos, new Point(20, 20), color_change, card_back, "Color Change", "", "COLOR CHANGE", "COLOR CHANGE"));
+        this.cards.add(new UnoCard(this.appContext, deckPos, new Point(20, 20), color_change, card_back, "Color Change", "", "COLOR CHANGE", "COLOR CHANGE"));
+        this.cards.add(new UnoCard(this.appContext, deckPos, new Point(20, 20), color_change, card_back, "Color Change", "", "COLOR CHANGE", "COLOR CHANGE"));
+        this.cards.add(new UnoCard(this.appContext, deckPos, new Point(20, 20), color_change, card_back, "Color Change", "", "COLOR CHANGE", "COLOR CHANGE"));
 
-        this.cards.add(new UnoCard(this.appContext, deckPos, new Point(20, 20), color_change_plus4, "Color Change Plus 4", "", "COLOR CHANGE PLUS 4", "COLOR CHANGE PLUS 4"));
-        this.cards.add(new UnoCard(this.appContext, deckPos, new Point(20, 20), color_change_plus4, "Color Change Plus 4", "", "COLOR CHANGE PLUS 4", "COLOR CHANGE PLUS 4"));
-        this.cards.add(new UnoCard(this.appContext, deckPos, new Point(20, 20), color_change_plus4, "Color Change Plus 4", "", "COLOR CHANGE PLUS 4", "COLOR CHANGE PLUS 4"));
-        this.cards.add(new UnoCard(this.appContext, deckPos, new Point(20, 20), color_change_plus4, "Color Change Plus 4", "", "COLOR CHANGE PLUS 4", "COLOR CHANGE PLUS 4"));
+        this.cards.add(new UnoCard(this.appContext, deckPos, new Point(20, 20), color_change_plus4, card_back, "Color Change Plus 4", "", "COLOR CHANGE PLUS 4", "COLOR CHANGE PLUS 4"));
+        this.cards.add(new UnoCard(this.appContext, deckPos, new Point(20, 20), color_change_plus4, card_back, "Color Change Plus 4", "", "COLOR CHANGE PLUS 4", "COLOR CHANGE PLUS 4"));
+        this.cards.add(new UnoCard(this.appContext, deckPos, new Point(20, 20), color_change_plus4, card_back, "Color Change Plus 4", "", "COLOR CHANGE PLUS 4", "COLOR CHANGE PLUS 4"));
+        this.cards.add(new UnoCard(this.appContext, deckPos, new Point(20, 20), color_change_plus4, card_back, "Color Change Plus 4", "", "COLOR CHANGE PLUS 4", "COLOR CHANGE PLUS 4"));
 
         // LOGGING ONLY
         Toast.makeText(this.appContext, "CardDeck created. Size=" + this.cards.size(), Toast.LENGTH_LONG).show();
