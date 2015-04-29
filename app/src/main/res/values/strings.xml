@@ -4,8 +4,10 @@
     <string name="app_name">AAUno</string>
     <string name="action_settings">Settings</string>
     <string name="startGameMP">Start Game</string>
+    <string name="findPlayersMP">Find Players</string>
     <string name="optionsMP">Options</string>
     <string name="helpMP">Help</string>
     <string name="quitMP">Quit</string>
+    <string name="showPlayersMP">Show Online Players</string>
 
 </resources>

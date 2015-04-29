@@ -1,7 +1,12 @@
 package at.fancycardgame.aauno;
 
 import android.app.Activity;
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Point;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
@@ -13,9 +18,14 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.ArrayAdapter;
 import android.widget.FrameLayout;
+import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import java.util.ArrayList;
+import java.util.Set;
 
 
 public class MainActivity extends Activity implements View.OnClickListener{
@@ -26,8 +36,13 @@ public class MainActivity extends Activity implements View.OnClickListener{
     private ViewGroup screen_container;
     // the whole container where the game takes place
     private ViewGroup gameBoard;
+    // the whole container where the game takes place
+    private ViewGroup showPlayers;
     // the card deck
     private UnoCardDeck cardDeck;
+    //attributes for the Bluetooth connections
+    private BluetoothAdapter bluetoothAdapter;
+    private Set<BluetoothDevice> pairedDevices;
 
     // the logical density of the display
     private static float density;
@@ -48,9 +63,12 @@ public class MainActivity extends Activity implements View.OnClickListener{
         this.screen_container = (ViewGroup)findViewById(R.id.screens);
         // get current display
         this.display = ((WindowManager)getBaseContext().getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
+        // create Bluetooth adapter
+        bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
         // set onclick listener to make navigation in menue possible
         findViewById(R.id.startGameMP).setOnClickListener(this);
+        findViewById(R.id.findPlayersMP).setOnClickListener(this);
         findViewById(R.id.optionsMP).setOnClickListener(this);
         findViewById(R.id.helpMP).setOnClickListener(this);
         findViewById(R.id.quitMP).setOnClickListener(this);
@@ -60,6 +78,7 @@ public class MainActivity extends Activity implements View.OnClickListener{
     private void setMenuTypeface() {
         Typeface menu = Typeface.createFromAsset(getAssets(), menu_font);
         ((TextView)findViewById(R.id.startGameMP)).setTypeface(menu);
+        ((TextView)findViewById(R.id.findPlayersMP)).setTypeface(menu);
         ((TextView)findViewById(R.id.optionsMP)).setTypeface(menu);
         ((TextView)findViewById(R.id.helpMP)).setTypeface(menu);
         ((TextView)findViewById(R.id.quitMP)).setTypeface(menu);
@@ -85,6 +104,22 @@ public class MainActivity extends Activity implements View.OnClickListener{
                     screen_container.addView(gameBoard);
 
                     startGame();
+                }
+            } );
+            clickedView.startAnimation(a);
+
+        } else if(clickedID==R.id.findPlayersMP) {
+            a.setAnimationListener(new AbstractAnimationListener() {
+                @Override
+                public void onAnimationEnd(Animation animation) {
+                    // remove everything that is in screen_container
+                    screen_container.removeAllViews();
+                    // create List of Players in View find_players
+                    showPlayers = (ViewGroup)getLayoutInflater().inflate(R.layout.find_players, null);
+                    // ... and add it to the screen_container
+
+                    //showPlayers();
+                    screen_container.addView(showPlayers);
                 }
             } );
             clickedView.startAnimation(a);
@@ -223,4 +258,45 @@ public class MainActivity extends Activity implements View.OnClickListener{
     public static int scale(int v) {
         return (int)MainActivity.density * v;
     }
+
+    //List available Bluetooth devices
+    /*public void showPlayers() {
+
+        Set<BluetoothDevice> pairedDevices = bluetoothAdapter.getBondedDevices();
+        final ArrayList<String> list = new ArrayList<String>();
+        final ListView playersList = (ListView) findViewById(R.id.listPlayers);
+
+
+        If there are paired devices
+        if (pairedDevices.size() > 0) {
+            // Loop through paired devices
+            for (BluetoothDevice device : pairedDevices) {
+                // Add the name and address to an array adapter to show in a ListView
+                adapter.add(device.getName() + "\n" + device.getAddress());
+                playersList.setAdapter(adapter);
+            }
+        }
+
+        bluetoothAdapter.startDiscovery();
+
+        // Create a BroadcastReceiver for ACTION_FOUND
+        BroadcastReceiver mReceiver = new BroadcastReceiver() {
+            public void onReceive(Context context, Intent intent) {
+                String action = intent.getAction();
+                // When discovery finds a device
+                if (BluetoothDevice.ACTION_FOUND.equals(action)) {
+                    // Get the BluetoothDevice object from the Intent
+                    BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+                    // Add the name and address to an array adapter to show in a ListView
+                    list.add(device.getName() + "\n" + device.getAddress());
+                    ArrayAdapter adapter = new ArrayAdapter(getApplication(), android.R.layout.simple_list_item_1, list);
+                    playersList.setAdapter(adapter);
+                }
+            }
+        };
+        // Register the BroadcastReceiver
+        IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
+        registerReceiver(mReceiver, filter); // Don't forget to unregister during onDestroy
+
+    }*/
 }

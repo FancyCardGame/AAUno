@@ -39,6 +39,20 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:text="@string/findPlayersMP"
+                    android:id="@+id/findPlayersMP"
+                    android:layout_gravity="center_horizontal"
+                    android:paddingBottom="10dp"
+                    android:paddingLeft="5dp"
+                    android:textColor="@color/white"
+                    android:shadowColor="@color/menuefont_shadow"
+                    android:shadowRadius="20"
+                    android:shadowDx="10"
+                    android:shadowDy="-10"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:text="@string/optionsMP"
                     android:id="@+id/optionsMP"
                     android:layout_gravity="center_horizontal"
