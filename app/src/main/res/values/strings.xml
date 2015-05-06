@@ -9,5 +9,15 @@
     <string name="helpMP">Help</string>
     <string name="quitMP">Quit</string>
     <string name="showPlayersMP">Show Online Players</string>
+    <string name="userMgmt">User Management</string>
+    <string name="musicOnOff">Music On/Off</string>
+    <string name="soundeffectsOnOffMP">Soundeffects On/Off</string>
+    <string name="username">Username</string>
+    <string name="password">Password</string>
+    <string name="email">E-Mail</string>
+    <string name="saveUser">Save</string>
+    <string name="createUser">Create User</string>
+    <string name="createBtnStr">Create</string>
+    <string name="changePwd">Change Password</string>
 
 </resources>
