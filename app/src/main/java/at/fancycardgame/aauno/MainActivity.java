@@ -5,6 +5,7 @@ import android.content.Context;
 import android.graphics.Point;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Display;
 import android.view.DragEvent;
 import android.view.View;
@@ -326,11 +327,32 @@ public class MainActivity extends Activity implements View.OnClickListener{
            test3.viewFront();
            test4.viewFront();
 
-            ArrayList<UnoCard> cardList = new ArrayList<>();
+            UnoCard testcard = cardDeck.getCard();
+
+            int count = 0;
+            for (UnoCard card : cardDeck.getCards()){
+                Log.d("Card from cardDeck", "" + card.getValue());
+                count++;
+            }
+
+            Log.d("Num of Cards", "" + count);
+            Log.d("MainActivity", "" + testcard.getValue());
+
+            ArrayList<UnoCard> playerCards = new ArrayList<>();
 
             for (int i=0;i<8;i++){
-
+                playerCards.add(i, cardDeck.getCard());
+                playerCards.get(i).setLocation(100, 100);
+                playerCards.get(i).viewFront();
             }
+
+//            playerCards.get(0).setLocation(100, 100);
+//            playerCards.get(0).viewFront();
+//            playerCards.get(1).setLocation(200, 200);
+//            playerCards.get(1).viewFront();
+
+        Log.d("playerCards Size", "" + playerCards.size());
+
 
         // TEST STUFF ******************************************************
         // *****************************************************************

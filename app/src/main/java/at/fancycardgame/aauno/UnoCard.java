@@ -101,7 +101,7 @@ public class UnoCard {
         return this.description;
     }
 
-    public String getValue(String value) {
+    public String getValue() {
         return this.value;
     }
 

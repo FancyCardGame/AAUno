@@ -222,4 +222,15 @@ public class UnoCardDeck {
             c.setContainer(this.deckPos);
         }
     }
+
+    public ArrayList<UnoCard> getCards() {
+        return cards;
+    }
+
+    public UnoCard getCard(){
+        Random rnd = new Random();
+        int rnd_number = rnd.nextInt((106-0) + 1) + 0;
+        return this.cards.get(rnd_number);
+
+    }
 }
