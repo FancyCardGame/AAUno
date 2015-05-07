@@ -21,6 +21,7 @@ import com.shephertz.app42.paas.sdk.android.App42CallBack;
 import com.shephertz.app42.paas.sdk.android.user.User;
 import com.shephertz.app42.paas.sdk.android.user.UserService;
 
+import java.util.ArrayList;
 import java.util.Set;
 
 
@@ -324,6 +325,13 @@ public class MainActivity extends Activity implements View.OnClickListener{
            test2.viewFront();
            test3.viewFront();
            test4.viewFront();
+
+            ArrayList<UnoCard> cardList = new ArrayList<>();
+
+            for (int i=0;i<8;i++){
+
+            }
+
         // TEST STUFF ******************************************************
         // *****************************************************************
     }
