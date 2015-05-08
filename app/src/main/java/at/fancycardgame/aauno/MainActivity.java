@@ -317,41 +317,27 @@ public class MainActivity extends Activity implements View.OnClickListener{
             Display display = getWindowManager().getDefaultDisplay();
             Point res = new Point();
             display.getSize(res);
+            Log.d("display.getSize(res)", "" + res);
+            Log.d("display.getSize(res)", "" + (res.x/2));
+            Log.d("display.getSize(res)", "" + (res.y-130));
 
-
+            /*
             UnoCard test2 = new UnoCard(getApplicationContext(), (FrameLayout)((ViewGroup)findViewById(R.id.container)), new Point(res.x/2-50, res.y-130), getResources().getDrawable(R.drawable.blue_2), getResources().getDrawable(R.drawable.card_back), "Blue 2", "", "2", "Blue");
             UnoCard test3 = new UnoCard(getApplicationContext(), (FrameLayout)((ViewGroup)findViewById(R.id.container)), new Point(res.x/2-100, res.y-130), getResources().getDrawable(R.drawable.red_6), getResources().getDrawable(R.drawable.card_back),"Red 6", "", "6", "Red");
             UnoCard test4 = new UnoCard(getApplicationContext(), (FrameLayout)((ViewGroup)findViewById(R.id.container)), new Point(res.x/2-150, res.y-130), getResources().getDrawable(R.drawable.green_9), getResources().getDrawable(R.drawable.card_back),"Green 9", "", "9", "Green");
 
            test2.viewFront();
            test3.viewFront();
-           test4.viewFront();
-
-            UnoCard testcard = cardDeck.getCard();
-
-            int count = 0;
-            for (UnoCard card : cardDeck.getCards()){
-                Log.d("Card from cardDeck", "" + card.getValue());
-                count++;
-            }
-
-            Log.d("Num of Cards", "" + count);
-            Log.d("MainActivity", "" + testcard.getValue());
+           test4.viewFront();*/
 
             ArrayList<UnoCard> playerCards = new ArrayList<>();
 
             for (int i=0;i<8;i++){
                 playerCards.add(i, cardDeck.getCard());
-                playerCards.get(i).setLocation(100, 100);
+                playerCards.get(i).setLocation(res.x/2 - (i*50), res.y-130);
                 playerCards.get(i).viewFront();
+                playerCards.get(i).setContainer((FrameLayout) findViewById(R.id.container));
             }
-
-//            playerCards.get(0).setLocation(100, 100);
-//            playerCards.get(0).viewFront();
-//            playerCards.get(1).setLocation(200, 200);
-//            playerCards.get(1).viewFront();
-
-        Log.d("playerCards Size", "" + playerCards.size());
 
 
         // TEST STUFF ******************************************************
