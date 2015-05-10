@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -51,6 +52,9 @@ public class MainActivity extends Activity implements View.OnClickListener{
     // the logical density of the display
     private static float density;
 
+    //test button
+    private Button testBtn;
+    private View playedCard;
 
     private Display display;
 
@@ -76,6 +80,8 @@ public class MainActivity extends Activity implements View.OnClickListener{
 
         // get current display
         this.display = ((WindowManager)getBaseContext().getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
+
+
 
         // ***** PREPARE WHOLE MENU *******
         // startpage
@@ -254,6 +260,12 @@ public class MainActivity extends Activity implements View.OnClickListener{
         // create card deck and set where to put it
         this.cardDeck = new UnoCardDeck(this.getApplicationContext(), (FrameLayout)deckPosition);
 
+        // test button
+        this.testBtn = (Button) findViewById(R.id.testBtn);
+
+        //Store played cards somewhere
+        final ArrayList<UnoCard> playedCards = new ArrayList<>();
+
         // add OnDragListener to playCardsPosition where player can drag&drop their cards
         findViewById(R.id.playCardsPosition).setOnDragListener(new View.OnDragListener() {
             //Drawable enterShape = getResources().getDrawable(entershape);
@@ -296,6 +308,8 @@ public class MainActivity extends Activity implements View.OnClickListener{
                         view.setVisibility(View.VISIBLE);
                         // delete touchlistener
                         view.setOnTouchListener(null);
+                        Log.d("ImgView dropped:", "" + view);
+                        playedCard = view;
                         break;
                     default:
                         // nothing
@@ -317,10 +331,6 @@ public class MainActivity extends Activity implements View.OnClickListener{
             Display display = getWindowManager().getDefaultDisplay();
             Point res = new Point();
             display.getSize(res);
-            Log.d("display.getSize(res)", "" + res);
-            Log.d("display.getSize(res)", "" + (res.x/2));
-            Log.d("display.getSize(res)", "" + (res.y-130));
-
             /*
             UnoCard test2 = new UnoCard(getApplicationContext(), (FrameLayout)((ViewGroup)findViewById(R.id.container)), new Point(res.x/2-50, res.y-130), getResources().getDrawable(R.drawable.blue_2), getResources().getDrawable(R.drawable.card_back), "Blue 2", "", "2", "Blue");
             UnoCard test3 = new UnoCard(getApplicationContext(), (FrameLayout)((ViewGroup)findViewById(R.id.container)), new Point(res.x/2-100, res.y-130), getResources().getDrawable(R.drawable.red_6), getResources().getDrawable(R.drawable.card_back),"Red 6", "", "6", "Red");
@@ -330,7 +340,7 @@ public class MainActivity extends Activity implements View.OnClickListener{
            test3.viewFront();
            test4.viewFront();*/
 
-            ArrayList<UnoCard> playerCards = new ArrayList<>();
+            final ArrayList<UnoCard> playerCards = new ArrayList<>();
 
             for (int i=0;i<8;i++){
                 playerCards.add(i, cardDeck.getCard());
@@ -338,6 +348,29 @@ public class MainActivity extends Activity implements View.OnClickListener{
                 playerCards.get(i).viewFront();
                 playerCards.get(i).setContainer((FrameLayout) findViewById(R.id.container));
             }
+
+            for (int i=0;i<playerCards.size();i++){
+                Log.d("Player Card:", "nr " + i + " with name " +playerCards.get(i).getName());
+                Log.d("Player Card ImgView", "" + playerCards.get(i).getImageView());
+            }
+
+            testBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    for (int i=0;i<playerCards.size();i++){
+                        if (playerCards.get(i).getImageView() == playedCard){
+                            Log.d("Played Card:", playerCards.get(i).getName());
+                            playedCards.add(playerCards.get(i));
+                            playerCards.remove(i);
+                        }
+                    }
+                    for (int i=0;i<playedCards.size();i++){
+                        Log.d("Played Cards:", playedCards.get(i).getName());
+                    }
+
+
+                }
+            });
 
 
         // TEST STUFF ******************************************************

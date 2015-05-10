@@ -4,6 +4,7 @@ import android.content.ClipData;
 import android.content.Context;
 import android.graphics.Point;
 import android.graphics.drawable.Drawable;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
@@ -93,7 +94,7 @@ public class UnoCard {
         this.currentSide.setLayoutParams(params);
     }
 
-    public String getName(String name) {
+    public String getName() {
         return this.name;
     }
 
