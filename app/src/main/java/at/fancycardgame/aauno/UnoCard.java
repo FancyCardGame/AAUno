@@ -26,6 +26,7 @@ public class UnoCard {
     private int width,height;
     private Context context;
     private FrameLayout container;
+    private Boolean touched;
 
     public UnoCard(final Context context, FrameLayout container, Point location, Drawable cardFront, Drawable cardBack, String name, String description, String value, String color) {
         this.context = context;
@@ -36,6 +37,8 @@ public class UnoCard {
         this.color = color;
         this.height = cardBack.getIntrinsicHeight();
         this.width = cardBack.getIntrinsicWidth();
+        this.touched = false;
+
 
         this.x=location.x;
         this.y=location.y;
@@ -76,8 +79,9 @@ public class UnoCard {
                     v.startDrag(data, shadowBuilder, v, 0);
                     v.setVisibility(View.INVISIBLE);
                     return true;
-                } else
+                } else {
                     return false;
+                }
             }
         });
 
@@ -98,15 +102,11 @@ public class UnoCard {
         return this.name;
     }
 
-    public String getDescription(String descr) {
-        return this.description;
-    }
-
     public String getValue() {
         return this.value;
     }
 
-    public String getColor(String color) {
+    public String getColor() {
         return this.color;
     }
 

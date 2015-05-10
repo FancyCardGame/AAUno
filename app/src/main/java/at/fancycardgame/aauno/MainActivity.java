@@ -266,7 +266,23 @@ public class MainActivity extends Activity implements View.OnClickListener{
         //Store played cards somewhere
         final ArrayList<UnoCard> playedCards = new ArrayList<>();
 
+        //Give the player 7 cards from the deck
+
+        Display display = getWindowManager().getDefaultDisplay();
+        Point res = new Point();
+        display.getSize(res);
+
+        final ArrayList<UnoCard> playerCards = new ArrayList<>();
+
+        for (int i=0;i<8;i++){
+            playerCards.add(i, cardDeck.getCard());
+            playerCards.get(i).setLocation(res.x/2 - (i*50), res.y-130);
+            playerCards.get(i).viewFront();
+            playerCards.get(i).setContainer((FrameLayout) findViewById(R.id.container));
+        }
+
         // add OnDragListener to playCardsPosition where player can drag&drop their cards
+        // TODO: Create method for checking if a play is valid and clean this mess up
         findViewById(R.id.playCardsPosition).setOnDragListener(new View.OnDragListener() {
             //Drawable enterShape = getResources().getDrawable(entershape);
             //Drawable normalShape = getResources().getDrawable(normalshape);
@@ -291,31 +307,56 @@ public class MainActivity extends Activity implements View.OnClickListener{
                         //view.setBackgroundDrawable(normalShape);
                         break;
                     case DragEvent.ACTION_DRAG_ENTERED:
+
                         // show user where to put the card
                         //v.setBackgroundDrawable(enterShape);
                         break;
                     case DragEvent.ACTION_DROP:
-                        // remove from current owner
-                        ViewGroup owner = (ViewGroup) view.getParent();
-                        owner.removeView(view);
-                        // get current X and Y coordinates from drop event
-                        view.setX(event.getX() - (view.getWidth() / 2));
-                        view.setY(event.getY()-(view.getHeight()/2));
+                        if (playedCards.size() > 0 && (playedCards.get(playedCards.size() - 1).getColor() != cardToBePlayed(view).getColor())){
 
-                        // add dropped view to new parent (playCardsPosition)
-                        ((ViewGroup)findViewById(R.id.playCardsPosition)).addView(view);
-                        // make original view visible again
-                        view.setVisibility(View.VISIBLE);
-                        // delete touchlistener
-                        view.setOnTouchListener(null);
-                        Log.d("ImgView dropped:", "" + view);
-                        playedCard = view;
-                        break;
+                        } else {
+                            // remove from current owner
+                            ViewGroup owner = (ViewGroup) view.getParent();
+                            owner.removeView(view);
+                            // get current X and Y coordinates from drop event
+                            view.setX(event.getX() - (view.getWidth() / 2));
+                            view.setY(event.getY() - (view.getHeight() / 2));
+
+                            // add dropped view to new parent (playCardsPosition)
+                            ((ViewGroup) findViewById(R.id.playCardsPosition)).addView(view);
+                            // make original view visible again
+                            view.setVisibility(View.VISIBLE);
+                            // delete touchlistener
+                            view.setOnTouchListener(null);
+                            Log.d("ImgView dropped:", "" + view);
+                            playCard(view);
+                            break;
+                        }
                     default:
                         // nothing
                         break;
                 }
                 return true;
+            }
+
+            private void playCard(View playedCard) {
+                for (int i=0;i<playerCards.size();i++){
+                    if (playerCards.get(i).getImageView() == playedCard){
+                        Log.d("Played Card:", playerCards.get(i).getName());
+                        playedCards.add(playerCards.get(i));
+                        playerCards.remove(i);
+                    }
+                }
+            }
+
+            private UnoCard cardToBePlayed(View selectedCard){
+                for (int i=0;i<playerCards.size();i++){
+                    if (playerCards.get(i).getImageView() == selectedCard){
+                        Log.d("toBePlayed", playerCards.get(i).getName());
+                        return playerCards.get(i);
+                    }
+                }
+                return null;
             }
         });
 
@@ -328,9 +369,7 @@ public class MainActivity extends Activity implements View.OnClickListener{
 
         // TEST STUFF ******************************************************
         // *****************************************************************
-            Display display = getWindowManager().getDefaultDisplay();
-            Point res = new Point();
-            display.getSize(res);
+
             /*
             UnoCard test2 = new UnoCard(getApplicationContext(), (FrameLayout)((ViewGroup)findViewById(R.id.container)), new Point(res.x/2-50, res.y-130), getResources().getDrawable(R.drawable.blue_2), getResources().getDrawable(R.drawable.card_back), "Blue 2", "", "2", "Blue");
             UnoCard test3 = new UnoCard(getApplicationContext(), (FrameLayout)((ViewGroup)findViewById(R.id.container)), new Point(res.x/2-100, res.y-130), getResources().getDrawable(R.drawable.red_6), getResources().getDrawable(R.drawable.card_back),"Red 6", "", "6", "Red");
@@ -340,14 +379,7 @@ public class MainActivity extends Activity implements View.OnClickListener{
            test3.viewFront();
            test4.viewFront();*/
 
-            final ArrayList<UnoCard> playerCards = new ArrayList<>();
 
-            for (int i=0;i<8;i++){
-                playerCards.add(i, cardDeck.getCard());
-                playerCards.get(i).setLocation(res.x/2 - (i*50), res.y-130);
-                playerCards.get(i).viewFront();
-                playerCards.get(i).setContainer((FrameLayout) findViewById(R.id.container));
-            }
 
             for (int i=0;i<playerCards.size();i++){
                 Log.d("Player Card:", "nr " + i + " with name " +playerCards.get(i).getName());
@@ -372,10 +404,12 @@ public class MainActivity extends Activity implements View.OnClickListener{
                 }
             });
 
-
+        // TEST STUFF ******************************************************
         // TEST STUFF ******************************************************
         // *****************************************************************
     }
+
+
 
     // method that sets a view invisible which is specified with a parameter
     protected void hideView(int view) {

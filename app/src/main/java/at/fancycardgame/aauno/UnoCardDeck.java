@@ -227,6 +227,7 @@ public class UnoCardDeck {
         return cards;
     }
 
+    // Return a random card from the card deck
     public UnoCard getCard(){
         Random rnd = new Random();
         int rnd_number = rnd.nextInt((106-0) + 1) + 0;
