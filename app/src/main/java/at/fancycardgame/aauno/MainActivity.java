@@ -1,10 +1,13 @@
 package at.fancycardgame.aauno;
 
 import android.app.Activity;
+import android.app.FragmentManager;
 import android.content.Context;
 import android.graphics.Point;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.FragmentActivity;
 import android.view.Display;
 import android.view.DragEvent;
 import android.view.View;
@@ -24,7 +27,7 @@ import com.shephertz.app42.paas.sdk.android.user.UserService;
 import java.util.Set;
 
 
-public class MainActivity extends Activity implements View.OnClickListener{
+public class MainActivity extends FragmentActivity implements View.OnClickListener{
 
     // App42 API key / Secret key
     private static final String API_KEY = "7a265fad48e6892e8ddd7ca1090ab63bc9c210dbcdadce06de22f0a13bab60bd";
@@ -50,6 +53,8 @@ public class MainActivity extends Activity implements View.OnClickListener{
     // the logical density of the display
     private static float density;
 
+    // Loginstatus
+    private boolean isUserLoggedIn = false;
 
     private Display display;
 
@@ -119,12 +124,20 @@ public class MainActivity extends Activity implements View.OnClickListener{
                 public void onAnimationEnd(Animation animation) {
                     // remove everything that is in screen_container
                     screen_container.removeAllViews();
-                    // create gameboard from layout ...
 
-                    // ... and add it to the screen_container
-                    screen_container.addView(gameBoard);
+                    if(isUserLoggedIn == false) {
+                        DialogFragment loginDialog = new LoginDialogFragment();
+                        loginDialog.show(getSupportFragmentManager(), "login");
+                    }
+                    else
+                    {
+                        // create gameboard from layout ...
+                        // ... and add it to the screen_container
+                        screen_container.addView(gameBoard);
 
-                    startGame();
+                        startGame();
+                    }
+
                 }
             } );
             clickedView.startAnimation(a);

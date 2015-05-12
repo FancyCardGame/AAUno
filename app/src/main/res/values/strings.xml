@@ -22,5 +22,7 @@
     <string name="changePwdBtnStr">Change</string>
     <string name="oldPwd">Old Password</string>
     <string name="newPwd">New Password</string>
+    <string name="login">Login</string>
+    <string name="cancel">Cancel</string>
 
 </resources>
