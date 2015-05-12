@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/background_menu"
+    android:id="@+id/menu"
+    >
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/menu_opaque">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:paddingTop="35dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/changePwd"
+                android:id="@+id/changePwdHeadline"
+                android:layout_gravity="center"
+                android:paddingBottom="10dp"
+                android:paddingLeft="5dp"
+                android:textColor="@color/white"
+                android:shadowColor="@color/menuefont_shadow"
+                android:shadowRadius="20"
+                android:shadowDx="10"
+                android:shadowDy="-10"
+                />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="300dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/oldPwd"
+                    android:id="@+id/oldPwdStr"
+                    android:layout_gravity="center_horizontal"
+                    android:paddingBottom="10dp"
+                    android:paddingLeft="5dp"
+                    android:textColor="@color/white"
+                    android:shadowColor="@color/menuefont_shadow"
+                    android:shadowRadius="20"
+                    android:shadowDx="10"
+                    android:shadowDy="-10" />
+
+                <EditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/txtBoxOldPwd"
+                    android:layout_gravity="right" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:orientation="horizontal"
+                android:weightSum="1">
+
+                <TextView
+                    android:layout_width="300dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/newPwd"
+                    android:id="@+id/newPwdStr"
+                    android:layout_gravity="center_horizontal"
+                    android:paddingBottom="10dp"
+                    android:paddingLeft="5dp"
+                    android:textColor="@color/white"
+                    android:shadowColor="@color/menuefont_shadow"
+                    android:shadowRadius="20"
+                    android:shadowDx="10"
+                    android:shadowDy="-10"/>
+
+                <EditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/txtBoxNewPwd"
+                    android:layout_gravity="right" />
+            </LinearLayout>
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:id="@+id/btnChangePWD"
+                android:text="@string/changePwdBtnStr"/>
+        </LinearLayout>
+    </ScrollView>
+</FrameLayout>
+
