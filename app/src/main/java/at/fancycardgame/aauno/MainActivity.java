@@ -36,10 +36,11 @@ public class MainActivity extends Activity implements View.OnClickListener{
     private ViewGroup screen_container;
     // the whole container where the game takes place
     private ViewGroup gameBoard;
-    // the options menue viewgroup
+    // the viewgroups for the different options
     private ViewGroup optionsMenu;
     private ViewGroup userMgmtMenu;
     private ViewGroup createUserMenu;
+    private ViewGroup changePwdMenu;
 
     private View.OnClickListener mainOnClickListener = this;
 
@@ -71,6 +72,7 @@ public class MainActivity extends Activity implements View.OnClickListener{
         this.optionsMenu = (ViewGroup)getLayoutInflater().inflate(R.layout.menu_options_page, null);
         this.gameBoard = (ViewGroup)getLayoutInflater().inflate(R.layout.game_field, null);
         this.createUserMenu = (ViewGroup)getLayoutInflater().inflate(R.layout.menu_createuser_page, null);
+        this.changePwdMenu = (ViewGroup)getLayoutInflater().inflate(R.layout.menu_changepwd_page, null);
 
         // get current display
         this.display = ((WindowManager)getBaseContext().getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
@@ -181,16 +183,22 @@ public class MainActivity extends Activity implements View.OnClickListener{
         }
         // ************************ USER MANAGEMENT MENU ****************************
         else if (clickedID == R.id.userMgmtMP) {
-            // access user mgmt
-            screen_container.removeAllViews();
-            screen_container.addView(userMgmtMenu);
+            a.setAnimationListener(new AbstractAnimationListener() {
+                @Override
+                public void onAnimationEnd(Animation animation) {
+                    // access user mgmt
+                    screen_container.removeAllViews();
+                    screen_container.addView(userMgmtMenu);
 
-            setStringTypeface(R.id.createUserMP);
-            setStringTypeface(R.id.changePwdMP);
+                    setStringTypeface(R.id.createUserMP);
+                    setStringTypeface(R.id.changePwdMP);
 
 
-            findViewById(R.id.createUserMP).setOnClickListener(this.mainOnClickListener);
-            findViewById(R.id.changePwdMP).setOnClickListener(this.mainOnClickListener);
+                    findViewById(R.id.createUserMP).setOnClickListener(mainOnClickListener);
+                    findViewById(R.id.changePwdMP).setOnClickListener(mainOnClickListener);
+                }
+            });
+            clickedView.startAnimation(a);
 
         } else if (clickedID == R.id.musicOnOffMP) {
             //music on/off
@@ -199,36 +207,69 @@ public class MainActivity extends Activity implements View.OnClickListener{
         } // TODO: implement return arrow + add if(..) here
         // ************************ CREATE USER MENU *******************************
         else if(clickedID == R.id.createUserMP) {
-            // access user mgmt
-            screen_container.removeAllViews();
-            screen_container.addView(createUserMenu);
 
-            setStringTypeface(R.id.createUserHeadline);
-            setStringTypeface(R.id.createUserUsernameStr);
-            setStringTypeface(R.id.createUserPasswordStr);
-            setStringTypeface(R.id.createUserMailStr);
+            a.setAnimationListener(new AbstractAnimationListener() {
+                @Override
+                public void onAnimationEnd(Animation animation) {
+                    // access user mgmt
+                    screen_container.removeAllViews();
+                    screen_container.addView(createUserMenu);
 
-            findViewById(R.id.btnCreateUser).setOnClickListener(this.mainOnClickListener);
+                    setStringTypeface(R.id.createUserHeadline);
+                    setStringTypeface(R.id.createUserUsernameStr);
+                    setStringTypeface(R.id.createUserPasswordStr);
+                    setStringTypeface(R.id.createUserMailStr);
 
-            // assign buttonlistener
-            //findViewById(R.id.createUserMP).setOnClickListener(this.mainOnClickListener);
-            //findViewById(R.id.changePwdMP).setOnClickListener(this.mainOnClickListener);
+                    findViewById(R.id.btnCreateUser).setOnClickListener(mainOnClickListener);
+
+                    // assign buttonlistener
+                    //findViewById(R.id.createUserMP).setOnClickListener(this.mainOnClickListener);
+                    //findViewById(R.id.changePwdMP).setOnClickListener(this.mainOnClickListener);
+                }
+            });
+            clickedView.startAnimation(a);
         }
         // ************************ CHANGE PWD MENU *****************************
         else if(clickedID==R.id.changePwdMP) {
 
+            a.setAnimationListener(new AbstractAnimationListener() {
+                @Override
+                public void onAnimationEnd(Animation animation) {
+
+                    screen_container.removeAllViews();
+                    screen_container.addView(changePwdMenu);
+
+                    setStringTypeface(R.id.changePwdHeadline);
+                    setStringTypeface(R.id.oldPwdStr);
+                    setStringTypeface(R.id.newPwdStr);
+
+                    findViewById(R.id.btnChangePWD).setOnClickListener(mainOnClickListener);
+                }
+            });
+            clickedView.startAnimation(a);
         }
         // *********************** CREATE USER BTN CLICKED **********************
         else if(clickedID == R.id.btnCreateUser) {
+
             String username = ((TextView)findViewById(R.id.txtBoxUsername)).getText().toString();
             String password = ((TextView)findViewById(R.id.txtBoxPwd)).getText().toString();
             String email = ((TextView)findViewById(R.id.txtBoxMail)).getText().toString();
             this.createUser(username, password, email);
+
+        }
+        else if(clickedID == R.id.btnChangePWD) {
+
+            String oldPwd = ((TextView)findViewById(R.id.txtBoxOldPwd)).getText().toString();
+            String newPwd = ((TextView)findViewById(R.id.txtBoxNewPwd)).getText().toString();
+
+            //Session needed for logged in User
+            //this.changePassword(Username, oldPwd, newPwd);
         }
         // if the same OnClickListener is used continue here with else if(...)
     }
 
     private void createUser(String username, String password, String email) {
+
         initApp42SDK();
         UserService userService = App42API.buildUserService();
         userService.createUser(username, password, email, new App42CallBack() {
@@ -247,7 +288,28 @@ public class MainActivity extends Activity implements View.OnClickListener{
         });
     }
 
+    private void changePassword(String username, String oldPwd, String newPwd) {
+
+        initApp42SDK();
+        UserService userService = App42API.buildUserService();
+        userService.changeUserPassword(username, oldPwd, newPwd, new App42CallBack() {
+
+            @Override
+            public void onSuccess(Object o) {
+
+                //show User a message that password has changed successfully
+            }
+
+            @Override
+            public void onException(Exception e) {
+
+                //show User a message that password has not changed
+            }
+        });
+    }
+
     private void startGame() {
+
         ViewGroup deckPosition = ((ViewGroup)findViewById(R.id.cardDeckPosition));
         // create card deck and set where to put it
         this.cardDeck = new UnoCardDeck(this.getApplicationContext(), (FrameLayout)deckPosition);
