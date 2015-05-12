@@ -269,7 +269,7 @@ public class MainActivity extends Activity implements View.OnClickListener{
         //Give the player 7 cards from the deck
 
         Display display = getWindowManager().getDefaultDisplay();
-        Point res = new Point();
+        final Point res = new Point();
         display.getSize(res);
 
         final ArrayList<UnoCard> playerCards = new ArrayList<>();
@@ -312,9 +312,8 @@ public class MainActivity extends Activity implements View.OnClickListener{
                         //v.setBackgroundDrawable(enterShape);
                         break;
                     case DragEvent.ACTION_DROP:
-                        if (playedCards.size() > 0 && (playedCards.get(playedCards.size() - 1).getColor() != cardToBePlayed(view).getColor())){
-
-                        } else {
+                        //if (playedCards.size() > 0 && (playedCards.get(playedCards.size() - 1).getColor() != cardToBePlayed(view).getColor())){
+                        if ((playedCards.size() > 0 && validPlay(playedCards.get(playedCards.size() - 1), cardToBePlayed(view))) || playedCards.size() == 0){
                             // remove from current owner
                             ViewGroup owner = (ViewGroup) view.getParent();
                             owner.removeView(view);
@@ -331,6 +330,8 @@ public class MainActivity extends Activity implements View.OnClickListener{
                             Log.d("ImgView dropped:", "" + view);
                             playCard(view);
                             break;
+                        } else {
+                            //not a valid play
                         }
                     default:
                         // nothing
@@ -357,6 +358,22 @@ public class MainActivity extends Activity implements View.OnClickListener{
                     }
                 }
                 return null;
+            }
+
+            private boolean validPlay(UnoCard played, UnoCard toBePlayed){
+                //Rules of play go here
+                //What happens if Stop Card is played
+                if (played.getValue() == toBePlayed.getValue()){
+                    return true;
+                } else if (played.getColor() == toBePlayed.getColor()) {
+                    return true;
+                } else if (toBePlayed.getValue() == "COLOR CHANGE"){
+                    //This card can be played on top of every other card
+                    //Can it be played on top of +2 or +4?
+                    return true;
+                } else {
+                    return false;
+                }
             }
         });
 
@@ -389,17 +406,16 @@ public class MainActivity extends Activity implements View.OnClickListener{
             testBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    //Draw a card
+                    //Where should this card be positioned or update the position of the other cards?
                     for (int i=0;i<playerCards.size();i++){
-                        if (playerCards.get(i).getImageView() == playedCard){
-                            Log.d("Played Card:", playerCards.get(i).getName());
-                            playedCards.add(playerCards.get(i));
-                            playerCards.remove(i);
-                        }
+                        playerCards.get(i).setLocation(res.x/2 - (i*50), res.y-130);
+                        playerCards.get(i).viewFront();
                     }
-                    for (int i=0;i<playedCards.size();i++){
-                        Log.d("Played Cards:", playedCards.get(i).getName());
-                    }
-
+                    playerCards.add(cardDeck.getCard());
+                    playerCards.get(playerCards.size() - 1).setLocation(res.x/2 - (playerCards.size()*50), res.y-130);
+                    playerCards.get(playerCards.size() - 1).viewFront();
+                    playerCards.get(playerCards.size() - 1).setContainer((FrameLayout) findViewById(R.id.container));
 
                 }
             });
