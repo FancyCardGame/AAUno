@@ -16,15 +16,12 @@ import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.shephertz.app42.paas.sdk.android.App42API;
 import com.shephertz.app42.paas.sdk.android.App42CallBack;
-import com.shephertz.app42.paas.sdk.android.user.User;
 import com.shephertz.app42.paas.sdk.android.user.UserService;
 
 import java.util.ArrayList;
-import java.util.Set;
 
 
 public class MainActivity extends Activity implements View.OnClickListener{
@@ -274,11 +271,14 @@ public class MainActivity extends Activity implements View.OnClickListener{
 
         final ArrayList<UnoCard> playerCards = new ArrayList<>();
 
+
         for (int i=0;i<8;i++){
+            // Give cards to the player, remove given cards from draw stack
             playerCards.add(i, cardDeck.getCard());
-            playerCards.get(i).setLocation(res.x/2 - (i*50), res.y-130);
+            playerCards.get(i).setLocation(res.x/3 + (i * 50), res.y - 130);
             playerCards.get(i).viewFront();
             playerCards.get(i).setContainer((FrameLayout) findViewById(R.id.container));
+            cardDeck.removeCard(playerCards.get(i));
         }
 
         // add OnDragListener to playCardsPosition where player can drag&drop their cards
@@ -316,13 +316,16 @@ public class MainActivity extends Activity implements View.OnClickListener{
                         if ((playedCards.size() > 0 && validPlay(playedCards.get(playedCards.size() - 1), cardToBePlayed(view))) || playedCards.size() == 0){
                             // remove from current owner
                             ViewGroup owner = (ViewGroup) view.getParent();
-                            owner.removeView(view);
+                           // owner.removeView(view);
                             // get current X and Y coordinates from drop event
-                            view.setX(event.getX() - (view.getWidth() / 2));
-                            view.setY(event.getY() - (view.getHeight() / 2));
+                           // view.setX(event.getX() - (view.getWidth() / 2));
+                            //view.setY(event.getY() - (view.getHeight() / 2));
+                            cardToBePlayed(view).setLocation(res.x/2 - (view.getWidth() + 50), res.y/2 - view.getHeight()/2);
+                            cardToBePlayed(view).viewFront();
+
 
                             // add dropped view to new parent (playCardsPosition)
-                            ((ViewGroup) findViewById(R.id.playCardsPosition)).addView(view);
+                            //((ViewGroup) findViewById(R.id.playCardsPosition)).addView(view);
                             // make original view visible again
                             view.setVisibility(View.VISIBLE);
                             // delete touchlistener
@@ -360,16 +363,54 @@ public class MainActivity extends Activity implements View.OnClickListener{
                 return null;
             }
 
+            private void drawCards(int count){
+                // This should go somewhere else to be accessible
+                for (int i=0;i<count;i++){
+                    // Give cards to the player, remove given cards from draw stack
+                    playerCards.add(i, cardDeck.getCard());
+                    playerCards.get(i).setLocation(res.x / 3 + (playerCards.size() * 50), res.y - 130);
+                    playerCards.get(i).viewFront();
+                    playerCards.get(i).setContainer((FrameLayout) findViewById(R.id.container));
+                    cardDeck.removeCard(playerCards.get(i));
+                }
+            }
+
             private boolean validPlay(UnoCard played, UnoCard toBePlayed){
-                //Rules of play go here
-                //What happens if Stop Card is played
+                // Rules of play go here
+                // (Next) player has to skip his turn after a "Stop" card has been played
+                // (Next) Player has to X draw cards if a "draw X cards" card is played
+                // Player has to select a color if he/she plays a color change card
+                // Turn order has to be reversed if a player plays a turn card
+                // TODO: Color Change card gets played on top of a special card
                 if (played.getValue() == toBePlayed.getValue()){
+                    switch (played.getValue()){
+                        case "PLUS 2":
+                            drawCards(2);
+                            break;
+                        default:
+                            break;
+                    }
                     return true;
                 } else if (played.getColor() == toBePlayed.getColor()) {
+                    switch (played.getValue()){
+                        case "PLUS 2":
+                            drawCards(2);
+                            break;
+                        default:
+                            break;
+                    }
                     return true;
-                } else if (toBePlayed.getValue() == "COLOR CHANGE"){
-                    //This card can be played on top of every other card
-                    //Can it be played on top of +2 or +4?
+                } else if (toBePlayed.getValue() == "COLOR CHANGE") {
+                    // This card can be played on top of every other card
+                    // TODO: Let player choose a color
+                    return true;
+                } else if (played.getValue() == "COLOR CHANGE") {
+                    // TODO: Enforce chosen color
+                    return true;
+                } else if (toBePlayed.getValue() == "COLOR CHANGE PLUS 4") {
+                    return true;
+                } else if (played.getValue() == "COLOR CHANGE PLUS 4"){
+                    drawCards(4);
                     return true;
                 } else {
                     return false;
@@ -396,26 +437,27 @@ public class MainActivity extends Activity implements View.OnClickListener{
            test3.viewFront();
            test4.viewFront();*/
 
-
-
-            for (int i=0;i<playerCards.size();i++){
-                Log.d("Player Card:", "nr " + i + " with name " +playerCards.get(i).getName());
-                Log.d("Player Card ImgView", "" + playerCards.get(i).getImageView());
-            }
-
             testBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    //Draw a card
-                    //Where should this card be positioned or update the position of the other cards?
+                    // Draw a card
+                    // Refresh the position of the other cards
+                    // Add new card to the left of the other cards
+                    // Remove the drawn card from the draw stack
                     for (int i=0;i<playerCards.size();i++){
-                        playerCards.get(i).setLocation(res.x/2 - (i*50), res.y-130);
+                        playerCards.get(i).setLocation(res.x / 3 + (i * 50), res.y - 130);
                         playerCards.get(i).viewFront();
+                        playerCards.get(i).setContainer((FrameLayout) findViewById(R.id.container));
+
                     }
                     playerCards.add(cardDeck.getCard());
-                    playerCards.get(playerCards.size() - 1).setLocation(res.x/2 - (playerCards.size()*50), res.y-130);
+                    playerCards.get(playerCards.size() - 1).setLocation(res.x / 3 + (playerCards.size() * 50), res.y - 130);
                     playerCards.get(playerCards.size() - 1).viewFront();
                     playerCards.get(playerCards.size() - 1).setContainer((FrameLayout) findViewById(R.id.container));
+                    cardDeck.removeCard(playerCards.get(playerCards.size() - 1));
+                    Log.d("Size matters", "" + cardDeck.getSize());
+                    Log.d("Player SIze", "" + playerCards.size());
+                    Log.d("Drawn card", playerCards.get(playerCards.size() - 1).getName());
 
                 }
             });
