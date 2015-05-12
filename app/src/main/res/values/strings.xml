@@ -24,5 +24,7 @@
     <string name="newPwd">New Password</string>
     <string name="login">Login</string>
     <string name="cancel">Cancel</string>
+    <string name="PleaseLogin">Please login</string>
+    <string name="remember">Remember?</string>
 
 </resources>

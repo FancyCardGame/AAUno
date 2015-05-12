@@ -6,8 +6,11 @@ import android.content.Context;
 import android.graphics.Point;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
+import android.util.Log;
 import android.view.Display;
 import android.view.DragEvent;
 import android.view.View;
@@ -45,7 +48,16 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
     private ViewGroup createUserMenu;
     private ViewGroup changePwdMenu;
 
+
     private View.OnClickListener mainOnClickListener = this;
+
+    private static Context appContext;
+    private static Handler toastHandler = new Handler() {
+        @Override
+        public void handleMessage(android.os.Message msg) {
+            Toast.makeText(MainActivity.appContext, (String)msg.obj, Toast.LENGTH_SHORT).show();
+        }
+    };
 
     // the card deck
     private UnoCardDeck cardDeck;
@@ -54,7 +66,7 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
     private static float density;
 
     // Loginstatus
-    private boolean isUserLoggedIn = false;
+    private static boolean isUserLoggedIn = false;
 
     private Display display;
 
@@ -68,6 +80,8 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
 
         // set menu typeface
         this.setMenuTypeface();
+
+        MainActivity.appContext = this.getApplicationContext();
         // get density of display (to scale images later)
         MainActivity.density = getResources().getDisplayMetrics().density;
         // get container where game content is shown later
@@ -123,18 +137,16 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
                 @Override
                 public void onAnimationEnd(Animation animation) {
                     // remove everything that is in screen_container
-                    screen_container.removeAllViews();
-
                     if(isUserLoggedIn == false) {
                         DialogFragment loginDialog = new LoginDialogFragment();
                         loginDialog.show(getSupportFragmentManager(), "login");
                     }
-                    else
-                    {
+
+                    else if(isUserLoggedIn == true) {
+                        screen_container.removeAllViews();
                         // create gameboard from layout ...
                         // ... and add it to the screen_container
                         screen_container.addView(gameBoard);
-
                         startGame();
                     }
 
@@ -283,7 +295,6 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
 
     private void createUser(String username, String password, String email) {
 
-        initApp42SDK();
         UserService userService = App42API.buildUserService();
         userService.createUser(username, password, email, new App42CallBack() {
             @Override
@@ -303,7 +314,6 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
 
     private void changePassword(String username, String oldPwd, String newPwd) {
 
-        initApp42SDK();
         UserService userService = App42API.buildUserService();
         userService.changeUserPassword(username, oldPwd, newPwd, new App42CallBack() {
 
@@ -317,6 +327,28 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
             public void onException(Exception e) {
 
                 //show User a message that password has not changed
+            }
+        });
+    }
+
+    public static void login(String username, String password) {
+
+        UserService userService = App42API.buildUserService();
+        userService.authenticate(username, password, new App42CallBack() {
+            @Override
+            public void onSuccess(Object response) {
+                User user = (User)response;
+                isUserLoggedIn = true;
+
+                Message msg = new Message();
+                msg.obj = "User successfully logged in.";
+                toastHandler.sendMessage(msg);
+
+            }
+
+            @Override
+            public void onException(Exception ex) {
+                System.out.println("Exception Message : "+ ex.getMessage());
             }
         });
     }
