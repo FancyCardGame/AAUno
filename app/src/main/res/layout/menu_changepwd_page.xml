@@ -21,8 +21,8 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/createUser"
-                android:id="@+id/createUserHeadline"
+                android:text="@string/changePwd"
+                android:id="@+id/changePwdHeadline"
                 android:layout_gravity="center"
                 android:paddingBottom="10dp"
                 android:paddingLeft="5dp"
@@ -40,10 +40,10 @@
                 android:orientation="horizontal">
 
                 <TextView
-                    android:layout_width="220dp"
+                    android:layout_width="300dp"
                     android:layout_height="wrap_content"
-                    android:text="@string/username"
-                    android:id="@+id/createUserUsernameStr"
+                    android:text="@string/oldPwd"
+                    android:id="@+id/oldPwdStr"
                     android:layout_gravity="center_horizontal"
                     android:paddingBottom="10dp"
                     android:paddingLeft="5dp"
@@ -51,25 +51,27 @@
                     android:shadowColor="@color/menuefont_shadow"
                     android:shadowRadius="20"
                     android:shadowDx="10"
-                    android:shadowDy="-10"/>
+                    android:shadowDy="-10" />
 
                 <EditText
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:id="@+id/txtBoxUsername"
+                    android:id="@+id/txtBoxOldPwd"
                     android:layout_gravity="right" />
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:layout_gravity="center"
                 android:orientation="horizontal"
-                android:layout_gravity="center">
+                android:weightSum="1">
+
                 <TextView
-                    android:layout_width="220dp"
+                    android:layout_width="300dp"
                     android:layout_height="wrap_content"
-                    android:text="@string/password"
-                    android:id="@+id/createUserPasswordStr"
+                    android:text="@string/newPwd"
+                    android:id="@+id/newPwdStr"
                     android:layout_gravity="center_horizontal"
                     android:paddingBottom="10dp"
                     android:paddingLeft="5dp"
@@ -82,45 +84,16 @@
                 <EditText
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="textPassword"
-                    android:ems="10"
-                    android:id="@+id/txtBoxPwd"
-                    android:layout_gravity="center_horizontal" />
-            </LinearLayout>
-
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="horizontal"
-                android:layout_gravity="center">
-                <TextView
-                    android:layout_width="220dp"
-                    android:layout_height="wrap_content"
-                    android:text="@string/email"
-                    android:id="@+id/createUserMailStr"
-                    android:layout_gravity="center_horizontal"
-                    android:paddingBottom="10dp"
-                    android:paddingLeft="5dp"
-                    android:textColor="@color/white"
-                    android:shadowColor="@color/menuefont_shadow"
-                    android:shadowRadius="20"
-                    android:shadowDx="10"
-                    android:shadowDy="-10"/>
-
-                <EditText
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/txtBoxMail"
-                    android:layout_gravity="center_horizontal"/>
+                    android:id="@+id/txtBoxNewPwd"
+                    android:layout_gravity="right" />
             </LinearLayout>
 
             <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:id="@+id/btnCreateUser"
-                android:text="@string/createBtnStr"/>
+                android:id="@+id/btnChangePWD"
+                android:text="@string/changePwdBtnStr"/>
         </LinearLayout>
     </ScrollView>
 </FrameLayout>

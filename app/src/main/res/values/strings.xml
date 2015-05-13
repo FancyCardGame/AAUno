@@ -19,5 +19,12 @@
     <string name="createUser">Create User</string>
     <string name="createBtnStr">Create</string>
     <string name="changePwd">Change Password</string>
+    <string name="changePwdBtnStr">Change</string>
+    <string name="oldPwd">Old Password</string>
+    <string name="newPwd">New Password</string>
+    <string name="login">Login</string>
+    <string name="cancel">Cancel</string>
+    <string name="PleaseLogin">Please login</string>
+    <string name="remember">Remember?</string>
 
 </resources>

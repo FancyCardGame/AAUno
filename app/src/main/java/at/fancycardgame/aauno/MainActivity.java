@@ -5,6 +5,10 @@ import android.content.Context;
 import android.graphics.Point;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.Display;
 import android.view.DragEvent;
@@ -16,15 +20,17 @@ import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.shephertz.app42.paas.sdk.android.App42API;
 import com.shephertz.app42.paas.sdk.android.App42CallBack;
+import com.shephertz.app42.paas.sdk.android.user.User;
 import com.shephertz.app42.paas.sdk.android.user.UserService;
 
 import java.util.ArrayList;
 
 
-public class MainActivity extends Activity implements View.OnClickListener{
+public class MainActivity extends FragmentActivity implements View.OnClickListener{
 
     // App42 API key / Secret key
     private static final String API_KEY = "7a265fad48e6892e8ddd7ca1090ab63bc9c210dbcdadce06de22f0a13bab60bd";
@@ -36,12 +42,22 @@ public class MainActivity extends Activity implements View.OnClickListener{
     private ViewGroup screen_container;
     // the whole container where the game takes place
     private ViewGroup gameBoard;
-    // the options menue viewgroup
+    // the viewgroups for the different options
     private ViewGroup optionsMenu;
     private ViewGroup userMgmtMenu;
     private ViewGroup createUserMenu;
+    private ViewGroup changePwdMenu;
+
 
     private View.OnClickListener mainOnClickListener = this;
+
+    private static Context appContext;
+    private static Handler toastHandler = new Handler() {
+        @Override
+        public void handleMessage(android.os.Message msg) {
+            Toast.makeText(MainActivity.appContext, (String)msg.obj, Toast.LENGTH_SHORT).show();
+        }
+    };
 
     // the card deck
     private UnoCardDeck cardDeck;
@@ -49,6 +65,8 @@ public class MainActivity extends Activity implements View.OnClickListener{
     // the logical density of the display
     private static float density;
 
+    // Loginstatus
+    private static boolean isUserLoggedIn = false;
     //test button
     private Button testBtn;
     private View playedCard;
@@ -65,6 +83,8 @@ public class MainActivity extends Activity implements View.OnClickListener{
 
         // set menu typeface
         this.setMenuTypeface();
+
+        MainActivity.appContext = this.getApplicationContext();
         // get density of display (to scale images later)
         MainActivity.density = getResources().getDisplayMetrics().density;
         // get container where game content is shown later
@@ -74,6 +94,7 @@ public class MainActivity extends Activity implements View.OnClickListener{
         this.optionsMenu = (ViewGroup)getLayoutInflater().inflate(R.layout.menu_options_page, null);
         this.gameBoard = (ViewGroup)getLayoutInflater().inflate(R.layout.game_field, null);
         this.createUserMenu = (ViewGroup)getLayoutInflater().inflate(R.layout.menu_createuser_page, null);
+        this.changePwdMenu = (ViewGroup)getLayoutInflater().inflate(R.layout.menu_changepwd_page, null);
 
         // get current display
         this.display = ((WindowManager)getBaseContext().getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
@@ -121,11 +142,18 @@ public class MainActivity extends Activity implements View.OnClickListener{
                 @Override
                 public void onAnimationEnd(Animation animation) {
                     // remove everything that is in screen_container
-                    screen_container.removeAllViews();
-                    // create gameboard from layout ...
+                    if(isUserLoggedIn == false) {
+                        DialogFragment loginDialog = new LoginDialogFragment();
+                        loginDialog.show(getSupportFragmentManager(), "login");
+                    }
 
-                    // ... and add it to the screen_container
-                    screen_container.addView(gameBoard);
+                    else if(isUserLoggedIn == true) {
+                        screen_container.removeAllViews();
+                        // create gameboard from layout ...
+                        // ... and add it to the screen_container
+                        screen_container.addView(gameBoard);
+                        startGame();
+                    }
 
                     startGame();
                 }
@@ -186,16 +214,22 @@ public class MainActivity extends Activity implements View.OnClickListener{
         }
         // ************************ USER MANAGEMENT MENU ****************************
         else if (clickedID == R.id.userMgmtMP) {
-            // access user mgmt
-            screen_container.removeAllViews();
-            screen_container.addView(userMgmtMenu);
+            a.setAnimationListener(new AbstractAnimationListener() {
+                @Override
+                public void onAnimationEnd(Animation animation) {
+                    // access user mgmt
+                    screen_container.removeAllViews();
+                    screen_container.addView(userMgmtMenu);
 
-            setStringTypeface(R.id.createUserMP);
-            setStringTypeface(R.id.changePwdMP);
+                    setStringTypeface(R.id.createUserMP);
+                    setStringTypeface(R.id.changePwdMP);
 
 
-            findViewById(R.id.createUserMP).setOnClickListener(this.mainOnClickListener);
-            findViewById(R.id.changePwdMP).setOnClickListener(this.mainOnClickListener);
+                    findViewById(R.id.createUserMP).setOnClickListener(mainOnClickListener);
+                    findViewById(R.id.changePwdMP).setOnClickListener(mainOnClickListener);
+                }
+            });
+            clickedView.startAnimation(a);
 
         } else if (clickedID == R.id.musicOnOffMP) {
             //music on/off
@@ -208,33 +242,68 @@ public class MainActivity extends Activity implements View.OnClickListener{
             screen_container.removeAllViews();
             screen_container.addView(createUserMenu);
 
-            setStringTypeface(R.id.createUserHeadline);
-            setStringTypeface(R.id.createUserUsernameStr);
-            setStringTypeface(R.id.createUserPasswordStr);
-            setStringTypeface(R.id.createUserMailStr);
+            a.setAnimationListener(new AbstractAnimationListener() {
+                @Override
+                public void onAnimationEnd(Animation animation) {
+                    // access user mgmt
+                    screen_container.removeAllViews();
+                    screen_container.addView(createUserMenu);
 
-            findViewById(R.id.btnCreateUser).setOnClickListener(this.mainOnClickListener);
+                    setStringTypeface(R.id.createUserHeadline);
+                    setStringTypeface(R.id.createUserUsernameStr);
+                    setStringTypeface(R.id.createUserPasswordStr);
+                    setStringTypeface(R.id.createUserMailStr);
 
-            // assign buttonlistener
-            //findViewById(R.id.createUserMP).setOnClickListener(this.mainOnClickListener);
-            //findViewById(R.id.changePwdMP).setOnClickListener(this.mainOnClickListener);
+                    findViewById(R.id.btnCreateUser).setOnClickListener(mainOnClickListener);
+
+                    // assign buttonlistener
+                    //findViewById(R.id.createUserMP).setOnClickListener(this.mainOnClickListener);
+                    //findViewById(R.id.changePwdMP).setOnClickListener(this.mainOnClickListener);
+                }
+            });
+            clickedView.startAnimation(a);
         }
         // ************************ CHANGE PWD MENU *****************************
         else if(clickedID==R.id.changePwdMP) {
 
+            a.setAnimationListener(new AbstractAnimationListener() {
+                @Override
+                public void onAnimationEnd(Animation animation) {
+
+                    screen_container.removeAllViews();
+                    screen_container.addView(changePwdMenu);
+
+                    setStringTypeface(R.id.changePwdHeadline);
+                    setStringTypeface(R.id.oldPwdStr);
+                    setStringTypeface(R.id.newPwdStr);
+
+                    findViewById(R.id.btnChangePWD).setOnClickListener(mainOnClickListener);
+                }
+            });
+            clickedView.startAnimation(a);
         }
         // *********************** CREATE USER BTN CLICKED **********************
         else if(clickedID == R.id.btnCreateUser) {
+
             String username = ((TextView)findViewById(R.id.txtBoxUsername)).getText().toString();
             String password = ((TextView)findViewById(R.id.txtBoxPwd)).getText().toString();
             String email = ((TextView)findViewById(R.id.txtBoxMail)).getText().toString();
             this.createUser(username, password, email);
+
+        }
+        else if(clickedID == R.id.btnChangePWD) {
+
+            String oldPwd = ((TextView)findViewById(R.id.txtBoxOldPwd)).getText().toString();
+            String newPwd = ((TextView)findViewById(R.id.txtBoxNewPwd)).getText().toString();
+
+            //Session needed for logged in User
+            //this.changePassword(Username, oldPwd, newPwd);
         }
         // if the same OnClickListener is used continue here with else if(...)
     }
 
     private void createUser(String username, String password, String email) {
-        initApp42SDK();
+
         UserService userService = App42API.buildUserService();
         userService.createUser(username, password, email, new App42CallBack() {
             @Override
@@ -252,7 +321,49 @@ public class MainActivity extends Activity implements View.OnClickListener{
         });
     }
 
+    private void changePassword(String username, String oldPwd, String newPwd) {
+
+        UserService userService = App42API.buildUserService();
+        userService.changeUserPassword(username, oldPwd, newPwd, new App42CallBack() {
+
+            @Override
+            public void onSuccess(Object o) {
+
+                //show User a message that password has changed successfully
+            }
+
+            @Override
+            public void onException(Exception e) {
+
+                //show User a message that password has not changed
+            }
+        });
+    }
+
+    public static void login(String username, String password) {
+
+        UserService userService = App42API.buildUserService();
+        userService.authenticate(username, password, new App42CallBack() {
+            @Override
+            public void onSuccess(Object response) {
+                User user = (User)response;
+                isUserLoggedIn = true;
+
+                Message msg = new Message();
+                msg.obj = "User successfully logged in.";
+                toastHandler.sendMessage(msg);
+
+            }
+
+            @Override
+            public void onException(Exception ex) {
+                System.out.println("Exception Message : "+ ex.getMessage());
+            }
+        });
+    }
+
     private void startGame() {
+
         ViewGroup deckPosition = ((ViewGroup)findViewById(R.id.cardDeckPosition));
         // create card deck and set where to put it
         this.cardDeck = new UnoCardDeck(this.getApplicationContext(), (FrameLayout)deckPosition);
@@ -427,6 +538,9 @@ public class MainActivity extends Activity implements View.OnClickListener{
 
         // TEST STUFF ******************************************************
         // *****************************************************************
+            Display display = getWindowManager().getDefaultDisplay();
+            Point res = new Point();
+            display.getSize(res);
 
             /*
             UnoCard test2 = new UnoCard(getApplicationContext(), (FrameLayout)((ViewGroup)findViewById(R.id.container)), new Point(res.x/2-50, res.y-130), getResources().getDrawable(R.drawable.blue_2), getResources().getDrawable(R.drawable.card_back), "Blue 2", "", "2", "Blue");
