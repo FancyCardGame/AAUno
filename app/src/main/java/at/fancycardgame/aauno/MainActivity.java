@@ -1,7 +1,9 @@
 package at.fancycardgame.aauno;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Point;
 import android.graphics.Typeface;
 import android.os.Bundle;
@@ -48,6 +50,7 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
     private ViewGroup createUserMenu;
     private ViewGroup changePwdMenu;
 
+    final Context context = this;
 
     private View.OnClickListener mainOnClickListener = this;
 
@@ -142,7 +145,7 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
                 @Override
                 public void onAnimationEnd(Animation animation) {
                     // remove everything that is in screen_container
-                    if(isUserLoggedIn == false) {
+                    /*if(isUserLoggedIn == false) {
                         DialogFragment loginDialog = new LoginDialogFragment();
                         loginDialog.show(getSupportFragmentManager(), "login");
                     }
@@ -153,8 +156,11 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
                         // ... and add it to the screen_container
                         screen_container.addView(gameBoard);
                         startGame();
-                    }
-
+                    }*/
+                    screen_container.removeAllViews();
+                    // create gameboard from layout ...
+                    // ... and add it to the screen_container
+                    screen_container.addView(gameBoard);
                     startGame();
                 }
             } );
@@ -346,7 +352,7 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
         userService.authenticate(username, password, new App42CallBack() {
             @Override
             public void onSuccess(Object response) {
-                User user = (User)response;
+                User user = (User) response;
                 isUserLoggedIn = true;
 
                 Message msg = new Message();
@@ -357,7 +363,7 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
 
             @Override
             public void onException(Exception ex) {
-                System.out.println("Exception Message : "+ ex.getMessage());
+                System.out.println("Exception Message : " + ex.getMessage());
             }
         });
     }
@@ -377,7 +383,7 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
         //Give the player 7 cards from the deck
 
         Display display = getWindowManager().getDefaultDisplay();
-        final Point res = new Point();
+        Point res = new Point();
         display.getSize(res);
 
         final ArrayList<UnoCard> playerCards = new ArrayList<>();
@@ -392,8 +398,25 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
             cardDeck.removeCard(playerCards.get(i));
         }
 
+/*        UnoCard testCard = new UnoCard(getApplicationContext(), (FrameLayout)((ViewGroup)findViewById(R.id.container)), new Point(res.x/2-50, res.y-130), getResources().getDrawable(R.drawable.color_change), getResources().getDrawable(R.drawable.card_back), "Color Change", "", "COLOR CHANGE", "COLOR CHANGE");
+        testCard.viewFront();
+        testCard.setContainer((FrameLayout) findViewById(R.id.container));
+        playerCards.add(playedCards.size(), testCard);
+
+        UnoCard testPlus4 = new UnoCard(getApplicationContext(), (FrameLayout)((ViewGroup)findViewById(R.id.container)), new Point(200, 200), getResources().getDrawable(R.drawable.color_change_plus4), getResources().getDrawable(R.drawable.card_back), "Color Change Plus 4", "", "COLOR CHANGE PLUS 4", "COLOR CHANGE PLUS 4");
+        UnoCard testPlus4_1 = new UnoCard(getApplicationContext(), (FrameLayout)((ViewGroup)findViewById(R.id.container)), new Point(210, 210), getResources().getDrawable(R.drawable.color_change_plus4), getResources().getDrawable(R.drawable.card_back), "Color Change Plus 4", "", "COLOR CHANGE PLUS 4", "COLOR CHANGE PLUS 4");
+
+        testPlus4.viewFront();
+        testPlus4.setContainer((FrameLayout) findViewById(R.id.container));
+        testPlus4_1.viewFront();
+        testPlus4_1.setContainer((FrameLayout) findViewById(R.id.container));
+
+        playedCards.add(playedCards.size(), testPlus4);
+        playedCards.add(playedCards.size(), testPlus4_1);*/
+
         // add OnDragListener to playCardsPosition where player can drag&drop their cards
         // TODO: Create method for checking if a play is valid and clean this mess up
+        final Point finalRes1 = res;
         findViewById(R.id.playCardsPosition).setOnDragListener(new View.OnDragListener() {
             //Drawable enterShape = getResources().getDrawable(entershape);
             //Drawable normalShape = getResources().getDrawable(normalshape);
@@ -418,7 +441,6 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
                         //view.setBackgroundDrawable(normalShape);
                         break;
                     case DragEvent.ACTION_DRAG_ENTERED:
-
                         // show user where to put the card
                         //v.setBackgroundDrawable(enterShape);
                         break;
@@ -431,8 +453,10 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
                             // get current X and Y coordinates from drop event
                            // view.setX(event.getX() - (view.getWidth() / 2));
                             //view.setY(event.getY() - (view.getHeight() / 2));
-                            cardToBePlayed(view).setLocation(res.x/2 - (view.getWidth() + 50), res.y/2 - view.getHeight()/2);
-                            cardToBePlayed(view).viewFront();
+                            if (cardToBePlayed(view) != null){
+                                cardToBePlayed(view).setLocation(finalRes1.x/2 - (view.getWidth() + 50), finalRes1.y/2 - view.getHeight()/2);
+                                cardToBePlayed(view).viewFront();
+                            }
 
 
                             // add dropped view to new parent (playCardsPosition)
@@ -440,7 +464,10 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
                             // make original view visible again
                             view.setVisibility(View.VISIBLE);
                             // delete touchlistener
-                            view.setOnTouchListener(null);
+                            // Problem with deleting Touch Listener:
+                            // same cards use same view, if you have played one card you cannot touch the next card if you draw it
+                            // add a view for each card?
+                            //view.setOnTouchListener(null);
                             Log.d("ImgView dropped:", "" + view);
                             playCard(view);
                             break;
@@ -454,12 +481,37 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
                 return true;
             }
 
+            int cardsToDraw = 0;
+            //played card logic goes here, e.g. color chooser, turn turner, etc.??
             private void playCard(View playedCard) {
                 for (int i=0;i<playerCards.size();i++){
                     if (playerCards.get(i).getImageView() == playedCard){
                         Log.d("Played Card:", playerCards.get(i).getName());
                         playedCards.add(playerCards.get(i));
+                        String card = playerCards.get(i).getValue();
+                        switch (card) {
+                            case "COLOR CHANGE":
+                                chosenColor = chooseColor();
+                                break;
+                            case "COLOR CHANGE PLUS 4":
+                                //Player has played color chooser, let him choose a color and enforce it
+                                cardsToDraw += 4;
+                                chosenColor = chooseColor();
+                                break;
+                            case "SKIP":
+                                Toast.makeText(context, "Next player has to skip his turn!", Toast.LENGTH_SHORT).show();
+                                break;
+                            case "TURN":
+                                Toast.makeText(context, "Turn order has been reversed!", Toast.LENGTH_SHORT).show();
+                                break;
+                            case "PLUS 2":
+                                cardsToDraw += 2;
+                                break;
+                            default:
+                                break;
+                        }
                         playerCards.remove(i);
+                        break;
                     }
                 }
             }
@@ -475,54 +527,117 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
             }
 
             private void drawCards(int count){
+                Toast.makeText(context, "Drawing " + count + " cards", Toast.LENGTH_SHORT).show();
                 // This should go somewhere else to be accessible
                 for (int i=0;i<count;i++){
                     // Give cards to the player, remove given cards from draw stack
                     playerCards.add(i, cardDeck.getCard());
-                    playerCards.get(i).setLocation(res.x / 3 + (playerCards.size() * 50), res.y - 130);
+                    playerCards.get(i).setLocation(finalRes1.x / 3 + (playerCards.size() * 50), finalRes1.y - 130);
                     playerCards.get(i).viewFront();
                     playerCards.get(i).setContainer((FrameLayout) findViewById(R.id.container));
                     cardDeck.removeCard(playerCards.get(i));
                 }
             }
 
+            String chosenColor = "";
+
+            private String chooseColor(){
+                final String[] colorArray = {"Blue", "Green", "Red", "Yellow"};
+
+
+                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
+                alertDialogBuilder.setTitle("Choose a color!");
+                alertDialogBuilder.setItems(colorArray,
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                //Toast.makeText(context, "Which: " + which, Toast.LENGTH_LONG).show();
+                                chosenColor = colorArray[which];
+                            }
+                        });
+                alertDialogBuilder.show();
+                return chosenColor;
+            }
+
             private boolean validPlay(UnoCard played, UnoCard toBePlayed){
                 // Rules of play go here
-                // (Next) player has to skip his turn after a "Stop" card has been played
+                // (Next) player has to skip his turn after a "Skip" card has been played
                 // (Next) Player has to X draw cards if a "draw X cards" card is played
                 // Player has to select a color if he/she plays a color change card
                 // Turn order has to be reversed if a player plays a turn card
                 // TODO: Color Change card gets played on top of a special card
-                if (played.getValue() == toBePlayed.getValue()){
+                if (played.getValue().equals(toBePlayed.getValue())){
                     switch (played.getValue()){
                         case "PLUS 2":
-                            drawCards(2);
+                            if (!toBePlayed.getValue().equals("PLUS 2")) {
+                                // If no +2 card is played on top of a +2 card player has to draw cards
+                                drawCards(cardsToDraw);
+                                cardsToDraw = 0;
+                            }
                             break;
                         default:
                             break;
                     }
                     return true;
-                } else if (played.getColor() == toBePlayed.getColor()) {
+                } else if ((played.getColor().equals(toBePlayed.getColor()))) {
                     switch (played.getValue()){
                         case "PLUS 2":
-                            drawCards(2);
+                            if (!toBePlayed.getValue().equals("PLUS 2")) {
+                                // If no +2 card is played on top of a +2 card player has to draw cards
+                                drawCards(cardsToDraw);
+                                cardsToDraw = 0;
+                            }
                             break;
                         default:
                             break;
                     }
                     return true;
-                } else if (toBePlayed.getValue() == "COLOR CHANGE") {
+                } else if (toBePlayed.getValue().equals("COLOR CHANGE")) {
                     // This card can be played on top of every other card
-                    // TODO: Let player choose a color
+                    switch (played.getValue()){
+                        case "PLUS 2":
+                        case "COLOR CHANGE PLUS 4":
+                            drawCards(cardsToDraw);
+                            cardsToDraw = 0;
+                            break;
+                        default:
+                            break;
+                    }
+
                     return true;
-                } else if (played.getValue() == "COLOR CHANGE") {
-                    // TODO: Enforce chosen color
+                } else if (played.getValue().equals("COLOR CHANGE")) {
+                    // Enforce chosen color
+                    if (toBePlayed.getColor().equals(chosenColor)){
+                        chosenColor = "";
+                        return true;
+                    } else if (toBePlayed.getValue().equals("COLOR CHANGE PLUS 4")){
+                        chosenColor = "";
+                        return true;
+                    } else {
+                        return false;
+                    }
+
+                } else if (toBePlayed.getValue().equals("COLOR CHANGE PLUS 4")) {
                     return true;
-                } else if (toBePlayed.getValue() == "COLOR CHANGE PLUS 4") {
-                    return true;
-                } else if (played.getValue() == "COLOR CHANGE PLUS 4"){
-                    drawCards(4);
-                    return true;
+                } else if (played.getValue().equals("COLOR CHANGE PLUS 4")){
+                    if (toBePlayed.getColor().equals(chosenColor)){
+                        switch (toBePlayed.getValue()) {
+                            case "PLUS 2":
+                                //cardsToDraw += 2;
+                                break;
+                            case "COLOR CHANGE PLUS 4":
+                                //cardsToDraw += 4;
+                                break;
+                            default:
+                                drawCards(cardsToDraw);
+                                cardsToDraw = 0;
+                                break;
+                        }
+                        chosenColor = "";
+                        return true;
+                    } else {
+                        return false;
+                    }
                 } else {
                     return false;
                 }
@@ -538,8 +653,8 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
 
         // TEST STUFF ******************************************************
         // *****************************************************************
-            Display display = getWindowManager().getDefaultDisplay();
-            Point res = new Point();
+        display = getWindowManager().getDefaultDisplay();
+        res = new Point();
             display.getSize(res);
 
             /*
@@ -551,7 +666,8 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
            test3.viewFront();
            test4.viewFront();*/
 
-            testBtn.setOnClickListener(new View.OnClickListener() {
+        final Point finalRes = res;
+        testBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     // Draw a card
@@ -559,19 +675,21 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
                     // Add new card to the left of the other cards
                     // Remove the drawn card from the draw stack
                     for (int i=0;i<playerCards.size();i++){
-                        playerCards.get(i).setLocation(res.x / 3 + (i * 50), res.y - 130);
+                        playerCards.get(i).setLocation(finalRes.x / 3 + (i * 50), finalRes.y - 130);
                         playerCards.get(i).viewFront();
                         playerCards.get(i).setContainer((FrameLayout) findViewById(R.id.container));
 
                     }
                     playerCards.add(cardDeck.getCard());
-                    playerCards.get(playerCards.size() - 1).setLocation(res.x / 3 + (playerCards.size() * 50), res.y - 130);
+                    playerCards.get(playerCards.size() - 1).setLocation(finalRes.x / 3 + (playerCards.size() * 50), finalRes.y - 130);
                     playerCards.get(playerCards.size() - 1).viewFront();
                     playerCards.get(playerCards.size() - 1).setContainer((FrameLayout) findViewById(R.id.container));
                     cardDeck.removeCard(playerCards.get(playerCards.size() - 1));
                     Log.d("Size matters", "" + cardDeck.getSize());
                     Log.d("Player SIze", "" + playerCards.size());
                     Log.d("Drawn card", playerCards.get(playerCards.size() - 1).getName());
+
+
 
                 }
             });
