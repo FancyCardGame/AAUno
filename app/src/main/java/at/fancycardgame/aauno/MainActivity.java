@@ -1,14 +1,19 @@
 package at.fancycardgame.aauno;
 
-import android.app.ProgressDialog;
+import android.app.Activity;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Point;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
+import android.util.Log;
 import android.view.Display;
 import android.view.DragEvent;
 import android.view.View;
@@ -16,6 +21,7 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -28,10 +34,15 @@ import com.shephertz.app42.paas.sdk.android.App42CallBack;
 import com.shephertz.app42.paas.sdk.android.user.User;
 import com.shephertz.app42.paas.sdk.android.user.UserService;
 
+import java.util.ArrayList;
 
 public class MainActivity extends FragmentActivity implements View.OnClickListener, ConnectionRequestListener{
 
     // AppWarp API key / Secret key
+    //Fragmentvariablen
+
+
+    // App42 API key / Secret key
     private static final String API_KEY = "c908e0df7084fad2caab981905cf15d77943912511d6550747e46d7dd5e665ce";
     private static final String SECRET_KEY = "02fd16bc09eb0b836d3794b3d6dfcac6c010e12e08ef454c0fc91f6a77ec1249";
     private WarpClient theClient;
@@ -68,15 +79,35 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
 
     // Loginstatus
     private static boolean isUserLoggedIn = false;
+    //test button
+    private Button testBtn;
+    private View playedCard;
 
     private Display display;
+
+
+/*
+    public void onBackPressed(){
+        FragmentManager fm = getFragmentManager();
+        if (fm.getBackStackEntryCount() > 0) {
+
+            fm.popBackStack();
+        } else {
+
+            super.onBackPressed();
+        }
+    }
+*/
+
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //init App42 SDK
+         //init App42 SDK
         this.initApp42SDK();
 
         // set menu typeface
@@ -96,6 +127,8 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
 
         // get current display
         this.display = ((WindowManager)getBaseContext().getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
+
+
 
         // ***** PREPARE WHOLE MENU *******
         // startpage
@@ -135,6 +168,9 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
     // main onclick method
     @Override
     public void onClick(View clickedView) {
+
+
+
         //OnClickListener that determines which TextView has been clicked by ID
         int clickedID = clickedView.getId();
 
@@ -142,31 +178,35 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
         Animation a = AnimationUtils.loadAnimation(this, R.anim.pulse);
 
         if(clickedID==R.id.startGameMP) {
-            a.setAnimationListener(new AbstractAnimationListener() {
+
+              a.setAnimationListener(new AbstractAnimationListener() {
                 @Override
                 public void onAnimationEnd(Animation animation) {
-                    // remove everything that is in screen_container
-                    if(isUserLoggedIn == false) {
-                        DialogFragment loginDialog = new LoginDialogFragment();
-                        loginDialog.show(getSupportFragmentManager(), "login");
-                    }
+                        // remove everything that is in screen_container
+                        if(isUserLoggedIn == false) {
+                            DialogFragment loginDialog = new LoginDialogFragment();
+                            loginDialog.show(getSupportFragmentManager(), "login");
+                        }
 
-                    else if(isUserLoggedIn == true) {
-                        screen_container.removeAllViews();
-                        // create gameboard from layout ...
-                        // ... and add it to the screen_container
-                        screen_container.addView(gameBoard);
-                        startGame();
-                    }
+                        else if(isUserLoggedIn == true) {
+                            //screen_container.removeAllViews();
+                            // create gameboard from layout ...
+                            // ... and add it to the screen_container
+                           //screen_container.addView(gameBoard);
 
+                            startActivity(new Intent(MainActivity.this,Game.class));
+                        }
                 }
             } );
             clickedView.startAnimation(a);
 
         } else if(clickedID==R.id.optionsMP) {
-            a.setAnimationListener(new AbstractAnimationListener() {
+
+           a.setAnimationListener(new AbstractAnimationListener() {
                 @Override
                 public void onAnimationEnd(Animation animation) {
+                    //startOptionsMenu
+                    startActivity(new Intent(MainActivity.this,Options.class));
 
                     // remove everything that is in screen_container
                     screen_container.removeAllViews();
@@ -241,6 +281,9 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
         } // TODO: implement return arrow + add if(..) here
         // ************************ CREATE USER MENU *******************************
         else if(clickedID == R.id.createUserMP) {
+            // access user mgmt
+            screen_container.removeAllViews();
+            screen_container.addView(createUserMenu);
 
             a.setAnimationListener(new AbstractAnimationListener() {
                 @Override
@@ -301,6 +344,10 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
         }
         // if the same OnClickListener is used continue here with else if(...)
     }
+
+
+
+
 
     private void createUser(String username, String password, String email) {
 
@@ -520,4 +567,20 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
         registerReceiver(mReceiver, filter); // Don't forget to unregister during onDestroy
 
     }*/
+/*
+    public void loadFragment(){
+
+       final Fragment f = new Fragment();
+         getSupportFragmentManager().beginTransaction()
+                .add(R.id.screens, f,"screens")
+                .addToBackStack("tag")
+                .commit();
+
+    }
+
+    public void onBackPressed(){
+
+}
+  */
+
 }

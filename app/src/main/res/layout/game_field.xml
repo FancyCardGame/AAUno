@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
@@ -40,9 +41,19 @@
                     android:layout_alignTop="@+id/playCardsPosition"
                     android:layout_toRightOf="@+id/playCardsPosition"
                     android:layout_toEndOf="@+id/playCardsPosition" />
+
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Draw"
+                    android:id="@+id/testBtn"
+                    android:layout_alignParentTop="true"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true" />
             </RelativeLayout>
 
         </FrameLayout>
 
     </RelativeLayout>
 </FrameLayout>
+
