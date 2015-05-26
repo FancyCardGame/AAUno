@@ -392,7 +392,7 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
         for (int i=0;i<8;i++){
             // Give cards to the player, remove given cards from draw stack
             playerCards.add(i, cardDeck.getCard());
-            playerCards.get(i).setLocation(res.x/3 + (i * 50), res.y - 130);
+            playerCards.get(i).setLocation(res.x/8 + (i * 50), res.y - 130);
             playerCards.get(i).viewFront();
             playerCards.get(i).setContainer((FrameLayout) findViewById(R.id.container));
             cardDeck.removeCard(playerCards.get(i));
@@ -532,10 +532,13 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
                 for (int i=0;i<count;i++){
                     // Give cards to the player, remove given cards from draw stack
                     playerCards.add(i, cardDeck.getCard());
-                    playerCards.get(i).setLocation(finalRes1.x / 3 + (playerCards.size() * 50), finalRes1.y - 130);
+                    cardDeck.removeCard(playerCards.get(i));
+                }
+                // reposition current cards
+                for (int i=0;i<playerCards.size();i++){
+                    playerCards.get(i).setLocation(finalRes1.x / (playerCards.size()) + (i * 50), finalRes1.y - 130);
                     playerCards.get(i).viewFront();
                     playerCards.get(i).setContainer((FrameLayout) findViewById(R.id.container));
-                    cardDeck.removeCard(playerCards.get(i));
                 }
             }
 
@@ -603,7 +606,6 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
                         default:
                             break;
                     }
-
                     return true;
                 } else if (played.getValue().equals("COLOR CHANGE")) {
                     // Enforce chosen color
@@ -616,7 +618,6 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
                     } else {
                         return false;
                     }
-
                 } else if (toBePlayed.getValue().equals("COLOR CHANGE PLUS 4")) {
                     return true;
                 } else if (played.getValue().equals("COLOR CHANGE PLUS 4")){
@@ -674,23 +675,18 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
                     // Refresh the position of the other cards
                     // Add new card to the left of the other cards
                     // Remove the drawn card from the draw stack
-                    for (int i=0;i<playerCards.size();i++){
-                        playerCards.get(i).setLocation(finalRes.x / 3 + (i * 50), finalRes.y - 130);
-                        playerCards.get(i).viewFront();
-                        playerCards.get(i).setContainer((FrameLayout) findViewById(R.id.container));
 
-                    }
                     playerCards.add(cardDeck.getCard());
-                    playerCards.get(playerCards.size() - 1).setLocation(finalRes.x / 3 + (playerCards.size() * 50), finalRes.y - 130);
-                    playerCards.get(playerCards.size() - 1).viewFront();
-                    playerCards.get(playerCards.size() - 1).setContainer((FrameLayout) findViewById(R.id.container));
                     cardDeck.removeCard(playerCards.get(playerCards.size() - 1));
                     Log.d("Size matters", "" + cardDeck.getSize());
-                    Log.d("Player SIze", "" + playerCards.size());
+                    Log.d("Player Size", "" + playerCards.size());
                     Log.d("Drawn card", playerCards.get(playerCards.size() - 1).getName());
 
-
-
+                    for (int i=0;i<playerCards.size();i++){
+                        playerCards.get(i).setLocation(finalRes.x / (playerCards.size()) + (i * 50), finalRes.y - 130);
+                        playerCards.get(i).viewFront();
+                        playerCards.get(i).setContainer((FrameLayout) findViewById(R.id.container));
+                    }
                 }
             });
 
