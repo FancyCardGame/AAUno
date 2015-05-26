@@ -370,7 +370,7 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
 
     private void startGame() {
 
-        ViewGroup deckPosition = ((ViewGroup)findViewById(R.id.cardDeckPosition));
+        final ViewGroup deckPosition = ((ViewGroup)findViewById(R.id.cardDeckPosition));
         // create card deck and set where to put it
         this.cardDeck = new UnoCardDeck(this.getApplicationContext(), (FrameLayout)deckPosition);
 
@@ -413,10 +413,62 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
 
         playedCards.add(playedCards.size(), testPlus4);
         playedCards.add(playedCards.size(), testPlus4_1);*/
+        final Point finalRes1 = res;
+        // Draw cards by dragging from the stack to the player card position
+        findViewById(R.id.playerCardsPosition).setOnDragListener(new View.OnDragListener() {
+            @Override
+            public boolean onDrag(View v, DragEvent event) {
+                int action = event.getAction();
+                final View view = (View)event.getLocalState();
+
+                // switch user action
+                switch(action) {
+                    case DragEvent.ACTION_DRAG_STARTED:
+                        // show user where to put the card
+                        //v.setBackgroundDrawable(enterShape);
+                        break;
+                    case DragEvent.ACTION_DRAG_ENDED:
+                        view.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                view.setVisibility(View.VISIBLE);
+                            }
+                        });
+                        //view.setBackgroundDrawable(normalShape);
+                        break;
+                    case DragEvent.ACTION_DRAG_ENTERED:
+                        // show user where to put the card
+                        //v.setBackgroundDrawable(enterShape);
+                        break;
+                    case DragEvent.ACTION_DROP:
+                        Toast.makeText(context, "Dropped", Toast.LENGTH_LONG).show();
+                        drawCards(1);
+                    default:
+                        // nothing
+                        break;
+                }
+                return true;
+            }
+
+            private void drawCards(int count){
+                Toast.makeText(context, "Drawing " + count + " cards", Toast.LENGTH_SHORT).show();
+                // This should go somewhere else to be accessible
+                for (int i=0;i<count;i++){
+                    // Give cards to the player, remove given cards from draw stack
+                    playerCards.add(i, cardDeck.getCard());
+                    cardDeck.removeCard(playerCards.get(i));
+                }
+                // reposition current cards
+                for (int i=0;i<playerCards.size();i++){
+                    playerCards.get(i).setLocation(finalRes1.x / (playerCards.size()) + (i * 50), finalRes1.y - 130);
+                    playerCards.get(i).viewFront();
+                    playerCards.get(i).setContainer((FrameLayout) findViewById(R.id.container));
+                }
+            }
+        });
 
         // add OnDragListener to playCardsPosition where player can drag&drop their cards
-        // TODO: Create method for checking if a play is valid and clean this mess up
-        final Point finalRes1 = res;
+
         findViewById(R.id.playCardsPosition).setOnDragListener(new View.OnDragListener() {
             //Drawable enterShape = getResources().getDrawable(entershape);
             //Drawable normalShape = getResources().getDrawable(normalshape);
@@ -457,8 +509,6 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
                                 cardToBePlayed(view).setLocation(finalRes1.x/2 - (view.getWidth() + 50), finalRes1.y/2 - view.getHeight()/2);
                                 cardToBePlayed(view).viewFront();
                             }
-
-
                             // add dropped view to new parent (playCardsPosition)
                             //((ViewGroup) findViewById(R.id.playCardsPosition)).addView(view);
                             // make original view visible again
@@ -646,6 +696,8 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
         });
 
 
+
+
         // mix deck
         //this.mixDeck();
 
@@ -671,13 +723,17 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
         testBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    // Draw a card
-                    // Refresh the position of the other cards
-                    // Add new card to the left of the other cards
-                    // Remove the drawn card from the draw stack
+                    // Draw card, refresh position of all cards
 
-                    playerCards.add(cardDeck.getCard());
-                    cardDeck.removeCard(playerCards.get(playerCards.size() - 1));
+                    if (cardDeck.getSize() > 0){
+                        playerCards.add(cardDeck.getCard());
+                        cardDeck.removeCard(playerCards.get(playerCards.size() - 1));
+                    } else {
+                        cardDeck = new UnoCardDeck(context, (FrameLayout)deckPosition);
+                        playerCards.add(cardDeck.getCard());
+                        cardDeck.removeCard(playerCards.get(playerCards.size() - 1));
+                    }
+
                     Log.d("Size matters", "" + cardDeck.getSize());
                     Log.d("Player Size", "" + playerCards.size());
                     Log.d("Drawn card", playerCards.get(playerCards.size() - 1).getName());
