@@ -1,8 +1,5 @@
 package at.fancycardgame.aauno;
 
-import android.app.Activity;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -12,9 +9,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.DialogFragment;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
-import android.util.Log;
 import android.view.Display;
 import android.view.DragEvent;
 import android.view.View;
@@ -35,18 +30,8 @@ import com.shephertz.app42.paas.sdk.android.App42CallBack;
 import com.shephertz.app42.paas.sdk.android.user.User;
 import com.shephertz.app42.paas.sdk.android.user.UserService;
 
-import java.util.ArrayList;
-
 public class MainActivity extends FragmentActivity implements View.OnClickListener, ConnectionRequestListener{
 
-    // AppWarp API key / Secret key
-    //Fragmentvariablen
-
-
-    // App42 API key / Secret key
-    private static final String API_KEY = "c908e0df7084fad2caab981905cf15d77943912511d6550747e46d7dd5e665ce";
-    private static final String SECRET_KEY = "02fd16bc09eb0b836d3794b3d6dfcac6c010e12e08ef454c0fc91f6a77ec1249";
-    private WarpClient theClient;
 
     // define font name, can be changed later on here
     private static final String menu_font = "Comic Book Bold.ttf";
@@ -86,6 +71,7 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
 
     private Display display;
 
+    private static WarpClient theClient;
 
 /*
     public void onBackPressed(){
@@ -140,8 +126,9 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
     }
 
     private void initApp42SDK() {
-        App42API.initialize(getApplicationContext(),MainActivity.API_KEY , MainActivity.SECRET_KEY);
-        WarpClient.initialize(MainActivity.API_KEY , MainActivity.SECRET_KEY);
+        App42API.initialize(getApplicationContext(), Constants.API_KEY, Constants.SECRET_KEY);
+        WarpClient.initialize(Constants.API_KEY, Constants.SECRET_KEY);
+
         try {
             theClient = WarpClient.getInstance();
             WarpClient.enableTrace(true);
@@ -195,7 +182,7 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
                             // ... and add it to the screen_container
                            //screen_container.addView(gameBoard);
 
-                            startActivity(new Intent(MainActivity.this,Game.class));
+                            startActivity(new Intent(MainActivity.this,GameActivity.class));
                         }
                 }
             } );
@@ -207,7 +194,7 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
                 @Override
                 public void onAnimationEnd(Animation animation) {
                     //startOptionsMenu
-                    startActivity(new Intent(MainActivity.this,Options.class));
+                    startActivity(new Intent(MainActivity.this,OptionsActivity.class));
 
                     // remove everything that is in screen_container
                     screen_container.removeAllViews();
@@ -404,6 +391,14 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
                 User user = (User)response;
                 isUserLoggedIn = true;
 
+                at.fancycardgame.aauno.User.setUsername(user.getUserName());
+                at.fancycardgame.aauno.User.setPwd(user.getPassword());
+                at.fancycardgame.aauno.User.setEmail(user.getEmail());
+                at.fancycardgame.aauno.User.login();
+
+                // Toast.makeText(getApplicationContext(), "before room creation", Toast.LENGTH_SHORT).show();
+                theClient.connectWithUserName(at.fancycardgame.aauno.User.getUsername());
+
                 Message msg = new Message();
                 msg.obj = "User successfully logged in.";
                 toastHandler.sendMessage(msg);
@@ -515,7 +510,9 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
 
     @Override
     public void onConnectDone(ConnectEvent connectEvent) {
-
+        Message msg = new Message();
+        msg.obj = "User succesfully connected to the cloud.";
+        toastHandler.sendMessage(msg);
     }
 
     @Override

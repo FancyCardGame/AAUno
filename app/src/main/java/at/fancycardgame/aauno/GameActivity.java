@@ -1,22 +1,46 @@
 package at.fancycardgame.aauno;
 
 import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
+import android.database.sqlite.SQLiteTableLockedException;
 import android.graphics.Point;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.support.v4.app.DialogFragment;
 import android.util.Log;
 import android.view.Display;
 import android.view.DragEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.ListView;
+import android.widget.Spinner;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.shephertz.app42.gaming.multiplayer.client.WarpClient;
+import com.shephertz.app42.gaming.multiplayer.client.events.AllRoomsEvent;
+import com.shephertz.app42.gaming.multiplayer.client.events.AllUsersEvent;
+import com.shephertz.app42.gaming.multiplayer.client.events.ConnectEvent;
+import com.shephertz.app42.gaming.multiplayer.client.events.LiveUserInfoEvent;
+import com.shephertz.app42.gaming.multiplayer.client.events.MatchedRoomsEvent;
+import com.shephertz.app42.gaming.multiplayer.client.events.RoomEvent;
+import com.shephertz.app42.gaming.multiplayer.client.listener.ConnectionRequestListener;
+import com.shephertz.app42.gaming.multiplayer.client.listener.ZoneRequestListener;
+import com.shephertz.app42.paas.sdk.android.App42API;
 
 import java.util.ArrayList;
 
 /**
  * Created by Christian on 26.05.2015.
  */
-public class Game extends Activity {
+public class GameActivity extends Activity implements View.OnClickListener, ZoneRequestListener, ConnectionRequestListener {
 
 
     public ViewGroup gameBoard;
@@ -34,16 +58,60 @@ public class Game extends Activity {
     private ViewGroup game_activity_start;
 
     // Done by Thomas
-    private ViewGroup createGameView;
+    private ViewGroup game_activity_creategame;
+    private  ViewGroup game_activity_joingame;
+    private ViewGroup game_activity_startedGameLobby;
+
+    private View.OnClickListener gameActivityListener = this;
+
+    // App42 API key / Secret key
+    private static final String API_KEY = Constants.API_KEY;
+    private static final String SECRET_KEY = Constants.SECRET_KEY;
+    private WarpClient theClient;
+
+    private static Context appContext;
+
+    private String gamename;
+    private int maxUsers;
+    private String[] allRooms;
 
 
-    // test
+    private static Handler toastHandler = new Handler() {
+        @Override
+        public void handleMessage(android.os.Message msg) {
+            Toast.makeText(GameActivity.appContext, (String)msg.obj, Toast.LENGTH_SHORT).show();
+        }
+    };
+
     protected void onCreate(Bundle savedInstanceState) {
       super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.game_activity_start);
-        this.game_activity_start = (ViewGroup)getLayoutInflater().inflate(R.layout.game_activity_start, null);
+        GameActivity.appContext = this.getApplicationContext();
 
+        this.game_activity_start = (ViewGroup)getLayoutInflater().inflate(R.layout.game_activity_start, null);
+        setContentView(this.game_activity_start);
+
+        findViewById(R.id.createGameMP).setOnClickListener(this);
+        findViewById(R.id.joinGameMP).setOnClickListener(this);
+
+
+        //preparing views
+        this.game_activity_creategame = (ViewGroup)getLayoutInflater().inflate(R.layout.game_activity_creategame, null);
+        this.game_activity_joingame = (ViewGroup)getLayoutInflater().inflate(R.layout.game_activity_joingame, null);
+        this.game_activity_startedGameLobby = (ViewGroup)getLayoutInflater().inflate(R.layout.game_activity_gamelobby, null);
+
+        Toast.makeText(getApplicationContext(), "before init app42", Toast.LENGTH_SHORT).show();
+        this.initApp42SDK();
+        Toast.makeText(getApplicationContext(), "after init app42", Toast.LENGTH_SHORT).show();
+
+        //prepare spinner in creategame view
+       // Spinner maxUsers = (Spinner)findViewById(R.id.spinnerMaxUsers);
+       // ArrayAdapter<CharSequence> spnAdapter = ArrayAdapter.createFromResource(getApplicationContext(), R.array.maxPlayersSelection, android.R.layout.simple_spinner_dropdown_item);
+       // spnAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+       // maxUsers.setAdapter(spnAdapter);
+
+
+        //old
         //setContentView(R.layout.game_field);
         //this.gameBoard = (ViewGroup)getLayoutInflater().inflate(R.layout.game_field, null);
         //startGame();
@@ -51,6 +119,20 @@ public class Game extends Activity {
     }
 
 
+    private void initApp42SDK() {
+        App42API.initialize(getApplicationContext(), Constants.API_KEY, Constants.SECRET_KEY);
+        WarpClient.initialize(Constants.API_KEY, Constants.SECRET_KEY);
+
+
+        try {
+            theClient = WarpClient.getInstance();
+            WarpClient.enableTrace(true);
+        } catch (Exception ex) {
+            Toast.makeText(this, "Exception in Initilization", Toast.LENGTH_LONG).show();
+        }
+        theClient.addConnectionRequestListener(this);
+        theClient.addZoneRequestListener(this);
+    }
 
 
     private void startGame() {
@@ -285,7 +367,144 @@ public class Game extends Activity {
     }
 
     public static int scale(int v) {
-        return (int)Game.density * v;
+        return (int) GameActivity.density * v;
+    }
+
+    @Override
+    public void onClick(View v) {
+        //OnClickListener that determines which TextView has been clicked by ID
+        int clickedID = v.getId();
+
+        // create pulse animation when clicking on menue textviews
+        Animation a = AnimationUtils.loadAnimation(this, R.anim.pulse);
+
+        if(clickedID==R.id.createGameMP) {
+
+            a.setAnimationListener(new AbstractAnimationListener() {
+                @Override
+                public void onAnimationEnd(Animation animation) {
+                    setContentView(game_activity_creategame);
+
+                    findViewById(R.id.btnStartGameLobby).setOnClickListener(gameActivityListener);
+
+                    //prepare spinner in creategame view
+                    Spinner maxUsers = (Spinner)findViewById(R.id.spinnerMaxUsers);
+                    ArrayAdapter<CharSequence> spnAdapter = ArrayAdapter.createFromResource(getApplicationContext(), R.array.maxPlayersSelection, android.R.layout.simple_spinner_dropdown_item);
+                    spnAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                    maxUsers.setAdapter(spnAdapter);
+
+                }
+            });
+            v.startAnimation(a);
+
+        } else if(clickedID==R.id.joinGameMP) {
+            a.setAnimationListener(new AbstractAnimationListener() {
+                @Override
+                public void onAnimationEnd(Animation animation) {
+
+                    setContentView(game_activity_joingame);
+
+                    theClient.getAllRooms();
+
+                    try {
+                        Thread.sleep(3000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+
+
+                    ListView availableGames = ((ListView)findViewById(R.id.listViewAvailGame));
+                    ArrayAdapter<String> adapter = new ArrayAdapter<String>(appContext, android.R.layout.simple_list_item_1, allRooms);
+                    availableGames.setAdapter(adapter);
+
+                    //findViewById(R.id.btnStartGameLobby).setOnClickListener(gameActivityListener);
+                }
+            });
+            v.startAnimation(a);
+        } else if(clickedID==R.id.btnStartGameLobby) {
+
+            // getting entered info & create room in cloud
+            this.gamename = ((TextView)findViewById(R.id.txtBoxGameName)).getText().toString();
+            this.maxUsers = Integer.parseInt(((Spinner)findViewById(R.id.spinnerMaxUsers)).getSelectedItem().toString());
+
+            // Toast.makeText(getApplicationContext(), "before room creation", Toast.LENGTH_SHORT).show();
+            theClient.createRoom(this.gamename, User.getUsername(), this.maxUsers, null);
+
+            Message msg1 = new Message();
+            msg1.obj = "Room should be created.";
+            toastHandler.sendMessage(msg1);
+
+            setContentView(game_activity_startedGameLobby);
+            findViewById(R.id.btnStartGameFromRoom).setOnClickListener(gameActivityListener);
+
+            theClient.getAllRooms();
+        } else if(clickedID==R.id.btnStartGameFromRoom) {
+
+            // check if e.g. 2 of 2 users are connected, 4 of 4 ...
+
+            setContentView(R.layout.game_field);
+            this.gameBoard = (ViewGroup)getLayoutInflater().inflate(R.layout.game_field, null);
+            startGame();
+        }
+    }
+
+    @Override
+    public void onDeleteRoomDone(RoomEvent roomEvent) {
+
+    }
+
+    @Override
+    public void onGetAllRoomsDone(AllRoomsEvent allRoomsEvent) {
+
+        // ID IS RECEIVED
+       // Message msg = new Message();
+       // msg.obj = (allRoomsEvent.[0]);
+        //toastHandler.sendMessage(msg);
+
+        this.allRooms = allRoomsEvent.getRoomIds();
+
+    }
+
+    @Override
+    public void onCreateRoomDone(RoomEvent roomEvent) {
+        //Toast.makeText(getApplicationContext(), roomEvent.toString(), Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void onGetOnlineUsersDone(AllUsersEvent allUsersEvent) {
+
+    }
+
+    @Override
+    public void onGetLiveUserInfoDone(LiveUserInfoEvent liveUserInfoEvent) {
+
+    }
+
+    @Override
+    public void onSetCustomUserDataDone(LiveUserInfoEvent liveUserInfoEvent) {
+
+    }
+
+    @Override
+    public void onGetMatchedRoomsDone(MatchedRoomsEvent matchedRoomsEvent) {
+
+    }
+
+    @Override
+    public void onConnectDone(ConnectEvent connectEvent) {
+        Message msg = new Message();
+        msg.obj = "Successfully connected to the cloud.";
+        toastHandler.sendMessage(msg);
+    }
+
+    @Override
+    public void onDisconnectDone(ConnectEvent connectEvent) {
+
+    }
+
+    @Override
+    public void onInitUDPDone(byte b) {
+
     }
 
     //List available Bluetooth devices

@@ -13,7 +13,7 @@ import android.widget.TextView;
 /**
  * Created by Christian on 26.05.2015.
  */
-public class Options extends Activity implements View.OnClickListener  {
+public class OptionsActivity extends Activity implements View.OnClickListener  {
 
    // public ViewGroup userMgmtMenu;
     public ViewGroup createUserMenu;
@@ -58,7 +58,7 @@ public class Options extends Activity implements View.OnClickListener  {
                 public void onAnimationEnd(Animation animation) {
                     // access user mgmt
 
-                    startActivity(new Intent(Options.this,Usermanager.class));
+                    startActivity(new Intent(OptionsActivity.this,Usermanager.class));
 
 
                 }
