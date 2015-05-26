@@ -1,6 +1,7 @@
 package at.fancycardgame.aauno;
 
 import android.app.Activity;
+import android.content.Context;
 import android.graphics.Point;
 import android.os.Bundle;
 import android.util.Log;
@@ -31,12 +32,13 @@ public class Game extends Activity {
     public View playedCard;
 
     private Display display;
-
+    private static Context appContext;
 
     protected void onCreate(Bundle savedInstanceState) {
       super.onCreate(savedInstanceState);
 
         setContentView(R.layout.game_field);
+        Game.appContext = this.getApplicationContext();
         this.gameBoard = (ViewGroup)getLayoutInflater().inflate(R.layout.game_field, null);
         startGame();
 

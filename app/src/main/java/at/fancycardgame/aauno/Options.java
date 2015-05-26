@@ -15,7 +15,7 @@ import android.widget.TextView;
  */
 public class Options extends Activity implements View.OnClickListener  {
 
-   // public ViewGroup userMgmtMenu;
+
     public ViewGroup createUserMenu;
 
     private View.OnClickListener mainOnClickListener = this;
@@ -25,7 +25,7 @@ public class Options extends Activity implements View.OnClickListener  {
 
 
     protected void onCreate(Bundle savedInstanceState) {
-        //super.onCreate(savedInstanceState);
+        super.onCreate(savedInstanceState);
 
         setContentView(R.layout.menu_options_page);
 
