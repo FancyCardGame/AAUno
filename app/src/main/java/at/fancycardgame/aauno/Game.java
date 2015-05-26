@@ -33,6 +33,7 @@ public class Game extends Activity {
     private Display display;
 
 
+
     protected void onCreate(Bundle savedInstanceState) {
       super.onCreate(savedInstanceState);
 
