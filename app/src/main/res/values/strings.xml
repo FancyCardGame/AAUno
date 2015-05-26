@@ -26,5 +26,7 @@
     <string name="cancel">Cancel</string>
     <string name="PleaseLogin">Please login</string>
     <string name="remember">Remember?</string>
+    <string name="createGame">Create Game</string>
+    <string name="joinGame">Join Game</string>
 
 </resources>

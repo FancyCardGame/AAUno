@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/background_menu"
+    android:id="@+id/menu"
+    >
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/menu_opaque">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:gravity="center">
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/createGame"
+                android:id="@+id/createGameMP"
+                android:layout_gravity="center_horizontal"
+                android:paddingBottom="10dp"
+                android:paddingLeft="5dp"
+                android:textColor="@color/white"
+                android:shadowColor="@color/menuefont_shadow"
+                android:shadowRadius="20"
+                android:shadowDx="10"
+                android:shadowDy="-10"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/joinGame"
+                android:id="@+id/joinGameMP"
+                android:layout_gravity="center_horizontal"
+                android:paddingBottom="10dp"
+                android:paddingLeft="5dp"
+                android:textColor="@color/white"
+                android:shadowColor="@color/menuefont_shadow"
+                android:shadowRadius="20"
+                android:shadowDx="10"
+                android:shadowDy="-10"/>
+        </LinearLayout>
+    </FrameLayout>
+</FrameLayout>
+
