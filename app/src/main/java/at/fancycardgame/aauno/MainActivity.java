@@ -33,8 +33,8 @@ import java.util.Set;
 public class MainActivity extends FragmentActivity implements View.OnClickListener{
 
     // App42 API key / Secret key
-    private static final String API_KEY = "7a265fad48e6892e8ddd7ca1090ab63bc9c210dbcdadce06de22f0a13bab60bd";
-    private static final String SECRET_KEY = "20634cd138c05b8a8c2d34ebcd11d523ec6137a9c26a050d63ad39f5da76ca60";
+    private static final String API_KEY = "c908e0df7084fad2caab981905cf15d77943912511d6550747e46d7dd5e665ce";
+    private static final String SECRET_KEY = "02fd16bc09eb0b836d3794b3d6dfcac6c010e12e08ef454c0fc91f6a77ec1249";
 
     // define font name, can be changed later on here
     private static final String menu_font = "Comic Book Bold.ttf";
@@ -299,6 +299,10 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
         userService.createUser(username, password, email, new App42CallBack() {
             @Override
             public void onSuccess(Object response) {
+
+                Message msg = new Message();
+                msg.obj = "User successfully created.";
+                toastHandler.sendMessage(msg);
                 //User user = (User)response;
                 //Toast.makeText(getApplicationContext(),"Successfully created User.", Toast.LENGTH_SHORT);
 
@@ -308,6 +312,9 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
             @Override
             public void onException(Exception ex) {
                 //Toast.makeText(getApplicationContext(),"Error creating User.", Toast.LENGTH_SHORT);
+                Message msg = new Message();
+                msg.obj = "Error creating user. ERROR: " + ex.getMessage();
+                toastHandler.sendMessage(msg);
             }
         });
     }
