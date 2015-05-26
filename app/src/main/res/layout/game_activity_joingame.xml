@@ -10,14 +10,38 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/menu_opaque">
+
         <LinearLayout
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_gravity="center"
-            android:paddingTop="35dp">
+            android:paddingTop="35dp"
+            android:weightSum="1">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/joinGameHeadline"
+                android:id="@+id/joinGameHeadline"
+                android:layout_gravity="center"
+                android:paddingBottom="10dp"
+                android:paddingLeft="5dp"
+                android:textColor="@color/white"
+                android:shadowColor="@color/menuefont_shadow"
+                android:shadowRadius="20"
+                android:shadowDx="10"
+                android:shadowDy="-10"
+                />
+
+            <ListView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/listViewAvailGame" />
 
         </LinearLayout>
+
     </FrameLayout>
+
 </FrameLayout>
 

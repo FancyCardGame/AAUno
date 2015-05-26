@@ -31,19 +31,21 @@ public class Game extends Activity {
     public View playedCard;
 
     private Display display;
+    private ViewGroup game_activity_start;
 
     // Done by Thomas
     private ViewGroup createGameView;
 
 
-
     protected void onCreate(Bundle savedInstanceState) {
       super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.game_field);
-        this.gameBoard = (ViewGroup)getLayoutInflater().inflate(R.layout.game_field, null);
-        startGame();
+        setContentView(R.layout.game_activity_start);
+        this.game_activity_start = (ViewGroup)getLayoutInflater().inflate(R.layout.game_activity_start, null);
 
+        //setContentView(R.layout.game_field);
+        //this.gameBoard = (ViewGroup)getLayoutInflater().inflate(R.layout.game_field, null);
+        //startGame();
 
     }
 
