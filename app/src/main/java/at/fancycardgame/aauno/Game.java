@@ -37,6 +37,7 @@ public class Game extends Activity {
     private ViewGroup createGameView;
 
 
+    // test
     protected void onCreate(Bundle savedInstanceState) {
       super.onCreate(savedInstanceState);
 
