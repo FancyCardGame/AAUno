@@ -280,6 +280,7 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
                     screen_container.removeAllViews();
                     screen_container.addView(createUserMenu);
 
+                    // changed diete remove
                     setStringTypeface(R.id.createUserHeadline);
                     setStringTypeface(R.id.createUserUsernameStr);
                     setStringTypeface(R.id.createUserPasswordStr);
