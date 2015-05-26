@@ -41,6 +41,7 @@ public class Game extends Activity {
         this.gameBoard = (ViewGroup)getLayoutInflater().inflate(R.layout.game_field, null);
         startGame();
 
+
     }
 
 
