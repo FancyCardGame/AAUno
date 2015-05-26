@@ -145,7 +145,7 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
                 @Override
                 public void onAnimationEnd(Animation animation) {
                     // remove everything that is in screen_container
-                    /*if(isUserLoggedIn == false) {
+                    if(isUserLoggedIn == false) {
                         DialogFragment loginDialog = new LoginDialogFragment();
                         loginDialog.show(getSupportFragmentManager(), "login");
                     }
@@ -156,12 +156,7 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
                         // ... and add it to the screen_container
                         screen_container.addView(gameBoard);
                         startGame();
-                    }*/
-                    screen_container.removeAllViews();
-                    // create gameboard from layout ...
-                    // ... and add it to the screen_container
-                    screen_container.addView(gameBoard);
-                    startGame();
+                    }
                 }
             } );
             clickedView.startAnimation(a);
@@ -359,7 +354,7 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
         userService.authenticate(username, password, new App42CallBack() {
             @Override
             public void onSuccess(Object response) {
-                User user = (User) response;
+                User user = (User)response;
                 isUserLoggedIn = true;
 
                 Message msg = new Message();
@@ -370,7 +365,7 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
 
             @Override
             public void onException(Exception ex) {
-                System.out.println("Exception Message : " + ex.getMessage());
+                System.out.println("Exception Message : "+ ex.getMessage());
             }
         });
     }
@@ -544,6 +539,7 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
                 // reposition current cards
                 for (int i=0;i<playerCards.size();i++){
                     playerCards.get(i).setLocation(finalRes1.x / (playerCards.size()) + (i * 50), finalRes1.y - 130);
+                    playerCards.get(i).setLocation(finalRes1.x / 3 + (playerCards.size() * 50), finalRes1.y - 130);
                     playerCards.get(i).viewFront();
                     playerCards.get(i).setContainer((FrameLayout) findViewById(R.id.container));
                 }
