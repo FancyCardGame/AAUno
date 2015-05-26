@@ -3,6 +3,7 @@ package at.fancycardgame.aauno;
 import android.content.Context;
 import android.graphics.Point;
 import android.graphics.drawable.Drawable;
+import android.util.Log;
 import android.widget.FrameLayout;
 import android.widget.Toast;
 import java.util.ArrayList;
@@ -131,7 +132,7 @@ public class UnoCardDeck {
 
         // red
         // 0 only once
-        this.cards.add(new UnoCard(this.appContext, deckPos, new Point(20, 20), red_0, card_back, "red 0", "", "0", "red"));
+        this.cards.add(new UnoCard(this.appContext, deckPos, new Point(20, 20), red_0, card_back, "red 0", "", "0", "Red"));
         for (int twice = 0; twice < 2; twice++) {
             this.cards.add(new UnoCard(this.appContext, deckPos, new Point(20, 20), red_1, card_back, "Red 1", "", "1", "Red"));
             this.cards.add(new UnoCard(this.appContext, deckPos, new Point(20, 20), red_2, card_back, "Red 2", "", "2", "Red"));
@@ -221,5 +222,33 @@ public class UnoCardDeck {
         for(UnoCard c : this.cards) {
             c.setContainer(this.deckPos);
         }
+    }
+
+    public ArrayList<UnoCard> getCards() {
+        return cards;
+    }
+
+    // Return a random card from the card deck
+    public UnoCard getCard(){
+        Random rnd = new Random();
+        int rnd_number = rnd.nextInt(((this.cards.size()-1)-0) + 1) + 0;
+        return this.cards.get(rnd_number);
+
+    }
+
+    public void removeCard(UnoCard cardToRemove){
+        // remove a given card from the the card deck
+        // e.g. because it has been drawn by a player
+        for (UnoCard c : this.cards){
+            if (c.getName() == cardToRemove.getName()){
+                Log.d("Removed Card:", c.getName());
+                this.cards.remove(c);
+                break;
+            }
+        }
+    }
+
+    public int getSize(){
+        return this.cards.size();
     }
 }
