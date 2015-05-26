@@ -89,6 +89,7 @@
     <orderEntry type="library" exported="" name="App42_ANDROID_SDK_3.2" level="project" />
     <orderEntry type="library" exported="" name="support-v4-22.0.0" level="project" />
     <orderEntry type="library" exported="" name="support-annotations-22.0.0" level="project" />
+    <orderEntry type="library" exported="" name="App42MultiPlayerGamingSDK" level="project" />
   </component>
 </module>
 

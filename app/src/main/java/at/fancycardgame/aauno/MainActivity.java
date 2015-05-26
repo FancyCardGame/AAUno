@@ -1,7 +1,6 @@
 package at.fancycardgame.aauno;
 
-import android.app.Activity;
-import android.app.FragmentManager;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.graphics.Point;
 import android.graphics.Typeface;
@@ -10,7 +9,6 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
-import android.util.Log;
 import android.view.Display;
 import android.view.DragEvent;
 import android.view.View;
@@ -22,19 +20,21 @@ import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.shephertz.app42.gaming.multiplayer.client.WarpClient;
+import com.shephertz.app42.gaming.multiplayer.client.events.ConnectEvent;
+import com.shephertz.app42.gaming.multiplayer.client.listener.ConnectionRequestListener;
 import com.shephertz.app42.paas.sdk.android.App42API;
 import com.shephertz.app42.paas.sdk.android.App42CallBack;
 import com.shephertz.app42.paas.sdk.android.user.User;
 import com.shephertz.app42.paas.sdk.android.user.UserService;
 
-import java.util.Set;
 
+public class MainActivity extends FragmentActivity implements View.OnClickListener, ConnectionRequestListener{
 
-public class MainActivity extends FragmentActivity implements View.OnClickListener{
-
-    // App42 API key / Secret key
+    // AppWarp API key / Secret key
     private static final String API_KEY = "c908e0df7084fad2caab981905cf15d77943912511d6550747e46d7dd5e665ce";
     private static final String SECRET_KEY = "02fd16bc09eb0b836d3794b3d6dfcac6c010e12e08ef454c0fc91f6a77ec1249";
+    private WarpClient theClient;
 
     // define font name, can be changed later on here
     private static final String menu_font = "Comic Book Bold.ttf";
@@ -48,6 +48,7 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
     private ViewGroup createUserMenu;
     private ViewGroup changePwdMenu;
 
+    private ProgressDialog progressDialog;
 
     private View.OnClickListener mainOnClickListener = this;
 
@@ -106,6 +107,14 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
 
     private void initApp42SDK() {
         App42API.initialize(getApplicationContext(),MainActivity.API_KEY , MainActivity.SECRET_KEY);
+        WarpClient.initialize(MainActivity.API_KEY , MainActivity.SECRET_KEY);
+        try {
+            theClient = WarpClient.getInstance();
+            WarpClient.enableTrace(true);
+        } catch (Exception ex) {
+            Toast.makeText(this, "Exception in Initilization", Toast.LENGTH_LONG).show();
+        }
+        theClient.addConnectionRequestListener(this);
     }
 
 
@@ -454,6 +463,21 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
 
     public static int scale(int v) {
         return (int)MainActivity.density * v;
+    }
+
+    @Override
+    public void onConnectDone(ConnectEvent connectEvent) {
+
+    }
+
+    @Override
+    public void onDisconnectDone(ConnectEvent connectEvent) {
+
+    }
+
+    @Override
+    public void onInitUDPDone(byte b) {
+
     }
 
     //List available Bluetooth devices
