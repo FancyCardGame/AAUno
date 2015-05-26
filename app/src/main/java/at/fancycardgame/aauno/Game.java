@@ -33,19 +33,14 @@ public class Game extends Activity {
     private Display display;
 
 
+
     protected void onCreate(Bundle savedInstanceState) {
       super.onCreate(savedInstanceState);
 
         setContentView(R.layout.game_field);
         this.gameBoard = (ViewGroup)getLayoutInflater().inflate(R.layout.game_field, null);
         startGame();
-
-
-
-
     }
-
-
 
 
     private void startGame() {
