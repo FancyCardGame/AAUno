@@ -28,5 +28,12 @@
     <string name="remember">Remember?</string>
     <string name="createGame">Create Game</string>
     <string name="joinGame">Join Game</string>
-
+    <string name="start">Start</string>
+    <string name="waitingForPlayers">Waiting for Players ...</string>
+    <string-array name="maxPlayersSelection">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+    </string-array>
 </resources>

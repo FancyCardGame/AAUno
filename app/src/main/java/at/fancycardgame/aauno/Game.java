@@ -32,6 +32,9 @@ public class Game extends Activity {
 
     private Display display;
 
+    // Done by Thomas
+    private ViewGroup createGameView;
+
 
 
     protected void onCreate(Bundle savedInstanceState) {
