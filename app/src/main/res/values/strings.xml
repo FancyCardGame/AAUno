@@ -28,5 +28,6 @@
     <string name="remember">Remember?</string>
     <string name="createGame">Create Game</string>
     <string name="joinGame">Join Game</string>
+    <string name="joinGameHeadline">Choose a game to join...</string>
 
 </resources>
