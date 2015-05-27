@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.FrameLayout;
@@ -27,20 +28,32 @@ import android.widget.Toast;
 import com.shephertz.app42.gaming.multiplayer.client.WarpClient;
 import com.shephertz.app42.gaming.multiplayer.client.events.AllRoomsEvent;
 import com.shephertz.app42.gaming.multiplayer.client.events.AllUsersEvent;
+import com.shephertz.app42.gaming.multiplayer.client.events.ChatEvent;
 import com.shephertz.app42.gaming.multiplayer.client.events.ConnectEvent;
+import com.shephertz.app42.gaming.multiplayer.client.events.LiveRoomInfoEvent;
 import com.shephertz.app42.gaming.multiplayer.client.events.LiveUserInfoEvent;
+import com.shephertz.app42.gaming.multiplayer.client.events.LobbyData;
 import com.shephertz.app42.gaming.multiplayer.client.events.MatchedRoomsEvent;
+import com.shephertz.app42.gaming.multiplayer.client.events.MoveEvent;
+import com.shephertz.app42.gaming.multiplayer.client.events.RoomData;
 import com.shephertz.app42.gaming.multiplayer.client.events.RoomEvent;
+import com.shephertz.app42.gaming.multiplayer.client.events.UpdateEvent;
 import com.shephertz.app42.gaming.multiplayer.client.listener.ConnectionRequestListener;
+import com.shephertz.app42.gaming.multiplayer.client.listener.NotifyListener;
+import com.shephertz.app42.gaming.multiplayer.client.listener.RoomRequestListener;
 import com.shephertz.app42.gaming.multiplayer.client.listener.ZoneRequestListener;
 import com.shephertz.app42.paas.sdk.android.App42API;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Created by Christian on 26.05.2015.
  */
-public class GameActivity extends Activity implements View.OnClickListener, ZoneRequestListener, ConnectionRequestListener {
+
+// TODO:
+// move implemented methods from interfaces to extra classes to have a more managed code !
+public class GameActivity extends Activity implements View.OnClickListener, ZoneRequestListener, ConnectionRequestListener, RoomRequestListener, NotifyListener {
 
 
     public ViewGroup gameBoard;
@@ -73,7 +86,10 @@ public class GameActivity extends Activity implements View.OnClickListener, Zone
 
     private String gamename;
     private int maxUsers;
-    private String[] allRooms;
+    private String[] allRoomIDs;
+    private String currentRoom;
+    private ArrayList<String> allRoomNamesList = new ArrayList<>();
+    private ArrayList<String> joinedPlayers = new ArrayList<>();
 
 
     private static Handler toastHandler = new Handler() {
@@ -132,6 +148,8 @@ public class GameActivity extends Activity implements View.OnClickListener, Zone
         }
         theClient.addConnectionRequestListener(this);
         theClient.addZoneRequestListener(this);
+        theClient.addRoomRequestListener(this);
+        theClient.addNotificationListener(this);
     }
 
 
@@ -413,9 +431,38 @@ public class GameActivity extends Activity implements View.OnClickListener, Zone
                     }
 
 
+                    for(String id : allRoomIDs) {
+                        theClient.getLiveRoomInfo(id);
+                    }
+
+
+                    // wait at least 3 seconds until data is ready (maybe can be reduced)
+                    try {
+                        Thread.sleep(3000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+
+
+
+
                     ListView availableGames = ((ListView)findViewById(R.id.listViewAvailGame));
-                    ArrayAdapter<String> adapter = new ArrayAdapter<String>(appContext, android.R.layout.simple_list_item_1, allRooms);
+                    availableGames.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                        @Override
+                        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                            String room = ((TextView)view).getText().toString().split("ID:")[1];
+
+                            Message msg1 = new Message();
+                            msg1.obj = room;
+                            toastHandler.sendMessage(msg1);
+
+                            theClient.joinRoom(room);
+                            setContentView(game_activity_startedGameLobby);
+                        }
+                    });
+                    ArrayAdapter<String> adapter = new ArrayAdapter<String>(appContext, android.R.layout.simple_list_item_1, allRoomNamesList);
                     availableGames.setAdapter(adapter);
+
 
                     //findViewById(R.id.btnStartGameLobby).setOnClickListener(gameActivityListener);
                 }
@@ -427,7 +474,6 @@ public class GameActivity extends Activity implements View.OnClickListener, Zone
             this.gamename = ((TextView)findViewById(R.id.txtBoxGameName)).getText().toString();
             this.maxUsers = Integer.parseInt(((Spinner)findViewById(R.id.spinnerMaxUsers)).getSelectedItem().toString());
 
-            // Toast.makeText(getApplicationContext(), "before room creation", Toast.LENGTH_SHORT).show();
             theClient.createRoom(this.gamename, User.getUsername(), this.maxUsers, null);
 
             Message msg1 = new Message();
@@ -437,7 +483,15 @@ public class GameActivity extends Activity implements View.OnClickListener, Zone
             setContentView(game_activity_startedGameLobby);
             findViewById(R.id.btnStartGameFromRoom).setOnClickListener(gameActivityListener);
 
-            theClient.getAllRooms();
+            this.joinedPlayers.add(User.getUsername());
+
+            theClient.subscribeRoom(this.currentRoom);
+
+            this.updateJoinedPlayersListView();
+
+            // for what?
+            //theClient.getAllRooms();
+
         } else if(clickedID==R.id.btnStartGameFromRoom) {
 
             // check if e.g. 2 of 2 users are connected, 4 of 4 ...
@@ -446,6 +500,12 @@ public class GameActivity extends Activity implements View.OnClickListener, Zone
             this.gameBoard = (ViewGroup)getLayoutInflater().inflate(R.layout.game_field, null);
             startGame();
         }
+    }
+
+    public void updateJoinedPlayersListView() {
+        ListView listViewConPlayers = ((ListView)findViewById(R.id.listViewConnectedPlayers));
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(appContext, android.R.layout.simple_list_item_1, joinedPlayers);
+        listViewConPlayers.setAdapter(adapter);
     }
 
     @Override
@@ -460,14 +520,12 @@ public class GameActivity extends Activity implements View.OnClickListener, Zone
        // Message msg = new Message();
        // msg.obj = (allRoomsEvent.[0]);
         //toastHandler.sendMessage(msg);
-
-        this.allRooms = allRoomsEvent.getRoomIds();
-
+        this.allRoomIDs = allRoomsEvent.getRoomIds();
     }
 
     @Override
     public void onCreateRoomDone(RoomEvent roomEvent) {
-        //Toast.makeText(getApplicationContext(), roomEvent.toString(), Toast.LENGTH_LONG).show();
+        // room created message
     }
 
     @Override
@@ -504,6 +562,146 @@ public class GameActivity extends Activity implements View.OnClickListener, Zone
 
     @Override
     public void onInitUDPDone(byte b) {
+
+    }
+
+    @Override
+    public void onSubscribeRoomDone(RoomEvent roomEvent) {
+       // Message msg1 = new Message();
+        //msg1.obj = "Subscribed to room "+ roomEvent.getData().getName();
+        //toastHandler.sendMessage(msg1);
+    }
+
+    @Override
+    public void onUnSubscribeRoomDone(RoomEvent roomEvent) {
+
+    }
+
+    @Override
+    public void onJoinRoomDone(RoomEvent roomEvent) {
+        Message msg1 = new Message();
+        msg1.obj = "You joined the room " + roomEvent.getData().getName();
+        toastHandler.sendMessage(msg1);
+    }
+
+    @Override
+    public void onLeaveRoomDone(RoomEvent roomEvent) {
+
+    }
+
+    @Override
+    public void onGetLiveRoomInfoDone(LiveRoomInfoEvent liveRoomInfoEvent) {
+        this.allRoomNamesList.add(liveRoomInfoEvent.getData().getName() + " - ID:" + liveRoomInfoEvent.getData().getId());
+    }
+
+    @Override
+    public void onSetCustomRoomDataDone(LiveRoomInfoEvent liveRoomInfoEvent) {
+
+    }
+
+    @Override
+    public void onUpdatePropertyDone(LiveRoomInfoEvent liveRoomInfoEvent) {
+
+    }
+
+    @Override
+    public void onLockPropertiesDone(byte b) {
+
+    }
+
+    @Override
+    public void onUnlockPropertiesDone(byte b) {
+
+    }
+
+    @Override
+    public void onRoomCreated(RoomData roomData) {
+        this.currentRoom = roomData.getId();
+
+    }
+
+    @Override
+    public void onRoomDestroyed(RoomData roomData) {
+
+    }
+
+    @Override
+    public void onUserLeftRoom(RoomData roomData, String s) {
+        this.joinedPlayers.remove(s);
+        this.updateJoinedPlayersListView();
+    }
+
+    @Override
+    public void onUserJoinedRoom(RoomData roomData, String s) {
+        //this.joinedPlayers.add(s);
+        //this.updateJoinedPlayersListView();
+        Message msg1 = new Message();
+        msg1.obj = "Someone joined!";
+        toastHandler.sendMessage(msg1);
+    }
+
+    @Override
+    public void onUserLeftLobby(LobbyData lobbyData, String s) {
+
+    }
+
+    @Override
+    public void onUserJoinedLobby(LobbyData lobbyData, String s) {
+
+    }
+
+    @Override
+    public void onChatReceived(ChatEvent chatEvent) {
+
+    }
+
+    @Override
+    public void onPrivateChatReceived(String s, String s2) {
+
+    }
+
+    @Override
+    public void onPrivateUpdateReceived(String s, byte[] bytes, boolean b) {
+
+    }
+
+    @Override
+    public void onUpdatePeersReceived(UpdateEvent updateEvent) {
+
+    }
+
+    @Override
+    public void onUserChangeRoomProperty(RoomData roomData, String s, HashMap<String, Object> stringObjectHashMap, HashMap<String, String> stringStringHashMap) {
+
+    }
+
+    @Override
+    public void onMoveCompleted(MoveEvent moveEvent) {
+
+    }
+
+    @Override
+    public void onGameStarted(String s, String s2, String s3) {
+
+    }
+
+    @Override
+    public void onGameStopped(String s, String s2) {
+
+    }
+
+    @Override
+    public void onUserPaused(String s, boolean b, String s2) {
+
+    }
+
+    @Override
+    public void onUserResumed(String s, boolean b, String s2) {
+
+    }
+
+    @Override
+    public void onNextTurnRequest(String s) {
 
     }
 

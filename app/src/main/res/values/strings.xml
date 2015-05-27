@@ -35,6 +35,6 @@
         <item>3</item>
         <item>4</item>
     </string-array>
-    <string name="joinGameHeadline">Choose a game and join...</string>
+    <string name="joinGameHeadline">Select a Game ...</string>
 
 </resources>
