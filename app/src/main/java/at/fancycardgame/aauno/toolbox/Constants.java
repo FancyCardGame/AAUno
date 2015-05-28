@@ -1,4 +1,4 @@
-package at.fancycardgame.aauno;
+package at.fancycardgame.aauno.toolbox;
 
 /**
  * Created by Dietmar on 26.05.2015.

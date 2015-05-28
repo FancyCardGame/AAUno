@@ -1,13 +1,14 @@
 package at.fancycardgame.aauno;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.TextView;
+
+import at.fancycardgame.aauno.listeners.AbstractAnimationListener;
 
 /**
  * Created by Christian on 26.05.2015.

@@ -1,4 +1,4 @@
-package at.fancycardgame.aauno;
+package at.fancycardgame.aauno.listeners;
 
 import android.view.animation.Animation;
 

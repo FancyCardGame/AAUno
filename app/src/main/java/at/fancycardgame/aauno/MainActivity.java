@@ -6,8 +6,6 @@ import android.content.Intent;
 import android.graphics.Point;
 import android.graphics.Typeface;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
 import android.view.Display;
@@ -22,15 +20,15 @@ import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.shephertz.app42.gaming.multiplayer.client.WarpClient;
-import com.shephertz.app42.gaming.multiplayer.client.events.ConnectEvent;
-import com.shephertz.app42.gaming.multiplayer.client.listener.ConnectionRequestListener;
 import com.shephertz.app42.paas.sdk.android.App42API;
 import com.shephertz.app42.paas.sdk.android.App42CallBack;
 import com.shephertz.app42.paas.sdk.android.user.User;
 import com.shephertz.app42.paas.sdk.android.user.UserService;
 
-public class MainActivity extends FragmentActivity implements View.OnClickListener, ConnectionRequestListener{
+import at.fancycardgame.aauno.listeners.AbstractAnimationListener;
+import at.fancycardgame.aauno.toolbox.Tools;
+
+public class MainActivity extends FragmentActivity implements View.OnClickListener {
 
 
     // define font name, can be changed later on here
@@ -49,58 +47,28 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
 
     private View.OnClickListener mainOnClickListener = this;
 
-    private static Context appContext;
-    private static Handler toastHandler = new Handler() {
-        @Override
-        public void handleMessage(android.os.Message msg) {
-            Toast.makeText(MainActivity.appContext, (String)msg.obj, Toast.LENGTH_SHORT).show();
-        }
-    };
-
     // the card deck
     private UnoCardDeck cardDeck;
 
     // the logical density of the display
     private static float density;
 
-    // Loginstatus
-    private static boolean isUserLoggedIn = false;
     //test button
     private Button testBtn;
     private View playedCard;
 
     private Display display;
 
-    private static WarpClient theClient;
-
-/*
-    public void onBackPressed(){
-        FragmentManager fm = getFragmentManager();
-        if (fm.getBackStackEntryCount() > 0) {
-
-            fm.popBackStack();
-        } else {
-
-            super.onBackPressed();
-        }
-    }
-*/
-
-
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-         //init App42 SDK
-        this.initApp42SDK();
+        Tools.init(this.getApplicationContext());
 
         // set menu typeface
         this.setMenuTypeface();
 
-        MainActivity.appContext = this.getApplicationContext();
         // get density of display (to scale images later)
         MainActivity.density = getResources().getDisplayMetrics().density;
         // get container where game content is shown later
@@ -123,20 +91,11 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
         findViewById(R.id.optionsMP).setOnClickListener(this.mainOnClickListener);
         findViewById(R.id.helpMP).setOnClickListener(this.mainOnClickListener);
         findViewById(R.id.quitMP).setOnClickListener(this.mainOnClickListener);
+
+
     }
 
-    private void initApp42SDK() {
-        App42API.initialize(getApplicationContext(), Constants.API_KEY, Constants.SECRET_KEY);
-        WarpClient.initialize(Constants.API_KEY, Constants.SECRET_KEY);
 
-        try {
-            theClient = WarpClient.getInstance();
-            WarpClient.enableTrace(true);
-        } catch (Exception ex) {
-            Toast.makeText(this, "Exception in Initilization", Toast.LENGTH_LONG).show();
-        }
-        theClient.addConnectionRequestListener(this);
-    }
 
 
     // method that takes *.ttf file, creates a typeface and applies it to the menu TextViews
@@ -171,18 +130,19 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
                 @Override
                 public void onAnimationEnd(Animation animation) {
                         // remove everything that is in screen_container
-                        if(isUserLoggedIn == false) {
+                        if(at.fancycardgame.aauno.User.isLoggedIn() == false) {
                             DialogFragment loginDialog = new LoginDialogFragment();
                             loginDialog.show(getSupportFragmentManager(), "login");
                         }
 
-                        else if(isUserLoggedIn == true) {
+                        else if(at.fancycardgame.aauno.User.isLoggedIn() == true) {
                             //screen_container.removeAllViews();
                             // create gameboard from layout ...
                             // ... and add it to the screen_container
                            //screen_container.addView(gameBoard);
 
                             startActivity(new Intent(MainActivity.this,GameActivity.class));
+                            finish();
                         }
                 }
             } );
@@ -345,9 +305,7 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
             @Override
             public void onSuccess(Object response) {
 
-                Message msg = new Message();
-                msg.obj = "User successfully created.";
-                toastHandler.sendMessage(msg);
+                Tools.showToast("User successfully created.", Toast.LENGTH_SHORT);
                 //User user = (User)response;
                 //Toast.makeText(getApplicationContext(),"Successfully created User.", Toast.LENGTH_SHORT);
 
@@ -356,10 +314,7 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
 
             @Override
             public void onException(Exception ex) {
-                //Toast.makeText(getApplicationContext(),"Error creating User.", Toast.LENGTH_SHORT);
-                Message msg = new Message();
-                msg.obj = "Error creating user. ERROR: " + ex.getMessage();
-                toastHandler.sendMessage(msg);
+                Tools.showToast("Error creating user. ERROR: " + ex.getMessage(), Toast.LENGTH_SHORT);
             }
         });
     }
@@ -390,7 +345,6 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
             @Override
             public void onSuccess(Object response) {
                 User user = (User)response;
-                isUserLoggedIn = true;
 
                 at.fancycardgame.aauno.User.setUsername(user.getUserName());
                 at.fancycardgame.aauno.User.setPwd(user.getPassword());
@@ -398,17 +352,14 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
                 at.fancycardgame.aauno.User.login();
 
                 // Toast.makeText(getApplicationContext(), "before room creation", Toast.LENGTH_SHORT).show();
-                theClient.connectWithUserName(at.fancycardgame.aauno.User.getUsername());
+                Tools.wClient.connectWithUserName(at.fancycardgame.aauno.User.getUsername());
 
-                Message msg = new Message();
-                msg.obj = "User successfully logged in.";
-                toastHandler.sendMessage(msg);
-
+                Tools.showToast("User successfully logged in.", Toast.LENGTH_SHORT);
             }
 
             @Override
             public void onException(Exception ex) {
-                System.out.println("Exception Message : "+ ex.getMessage());
+                Tools.showToast("Exception Message : "+ ex.getMessage(), Toast.LENGTH_SHORT);
             }
         });
     }
@@ -507,23 +458,6 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
 
     public static int scale(int v) {
         return (int)MainActivity.density * v;
-    }
-
-    @Override
-    public void onConnectDone(ConnectEvent connectEvent) {
-        Message msg = new Message();
-        msg.obj = "User succesfully connected to the cloud.";
-        toastHandler.sendMessage(msg);
-    }
-
-    @Override
-    public void onDisconnectDone(ConnectEvent connectEvent) {
-
-    }
-
-    @Override
-    public void onInitUDPDone(byte b) {
-
     }
 
     //List available Bluetooth devices

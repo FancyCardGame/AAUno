@@ -2,60 +2,32 @@ package at.fancycardgame.aauno;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
-import android.database.sqlite.SQLiteTableLockedException;
 import android.graphics.Point;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Message;
-import android.support.v4.app.DialogFragment;
 import android.util.Log;
 import android.view.Display;
 import android.view.DragEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ListView;
-import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.shephertz.app42.gaming.multiplayer.client.WarpClient;
-import com.shephertz.app42.gaming.multiplayer.client.events.AllRoomsEvent;
-import com.shephertz.app42.gaming.multiplayer.client.events.AllUsersEvent;
-import com.shephertz.app42.gaming.multiplayer.client.events.ChatEvent;
-import com.shephertz.app42.gaming.multiplayer.client.events.ConnectEvent;
-import com.shephertz.app42.gaming.multiplayer.client.events.LiveRoomInfoEvent;
-import com.shephertz.app42.gaming.multiplayer.client.events.LiveUserInfoEvent;
-import com.shephertz.app42.gaming.multiplayer.client.events.LobbyData;
-import com.shephertz.app42.gaming.multiplayer.client.events.MatchedRoomsEvent;
-import com.shephertz.app42.gaming.multiplayer.client.events.MoveEvent;
-import com.shephertz.app42.gaming.multiplayer.client.events.RoomData;
-import com.shephertz.app42.gaming.multiplayer.client.events.RoomEvent;
-import com.shephertz.app42.gaming.multiplayer.client.events.UpdateEvent;
-import com.shephertz.app42.gaming.multiplayer.client.listener.ConnectionRequestListener;
-import com.shephertz.app42.gaming.multiplayer.client.listener.NotifyListener;
-import com.shephertz.app42.gaming.multiplayer.client.listener.RoomRequestListener;
-import com.shephertz.app42.gaming.multiplayer.client.listener.ZoneRequestListener;
-import com.shephertz.app42.paas.sdk.android.App42API;
-
 import java.util.ArrayList;
-import java.util.HashMap;
+
+import at.fancycardgame.aauno.toolbox.Tools;
 
 /**
  * Created by Christian on 26.05.2015.
  */
 
-// TODO: Use this new Activity to clean up the code (e.g. move methods out of startGame() to make them public)
-// move implemented methods from interfaces to extra classes to have a more managed code !
-public class GameActivity extends Activity implements View.OnClickListener, ZoneRequestListener, ConnectionRequestListener, RoomRequestListener, NotifyListener {
+public class GameActivity extends Activity {
 
 
     public ViewGroup gameBoard;
@@ -63,56 +35,34 @@ public class GameActivity extends Activity implements View.OnClickListener, Zone
     private UnoCardDeck cardDeck;
     // the logical density of the display
     private static float density;
-    // Loginstatus
-    private static boolean isUserLoggedIn = false;
+
     //test button
     private Button testBtn;
     public View playedCard;
 
     private Display display;
+
     private ViewGroup game_activity_start;
-
-    // Done by Thomas
-    private ViewGroup game_activity_creategame;
-    private  ViewGroup game_activity_joingame;
-    private ViewGroup game_activity_startedGameLobby;
-
-    private View.OnClickListener gameActivityListener = this;
-
-    // App42 API key / Secret key
-    private static final String API_KEY = Constants.API_KEY;
-    private static final String SECRET_KEY = Constants.SECRET_KEY;
-    private WarpClient theClient;
-
-    private static Context appContext;
-
-    private String gamename;
-    private int maxUsers;
-    private String[] allRoomIDs;
-    private String currentRoom;
-    private ArrayList<String> allRoomNamesList = new ArrayList<>();
-    private ArrayList<String> joinedPlayers = new ArrayList<>();
-
-    private final Context context = this;
+    public ViewGroup game_activity_creategame;
+    public  ViewGroup game_activity_joingame;
+    public ViewGroup game_activity_startedGameLobby;
 
 
-    private static Handler toastHandler = new Handler() {
-        @Override
-        public void handleMessage(android.os.Message msg) {
-            Toast.makeText(GameActivity.appContext, (String)msg.obj, Toast.LENGTH_SHORT).show();
-        }
-    };
+
+
+
 
     protected void onCreate(Bundle savedInstanceState) {
       super.onCreate(savedInstanceState);
 
-        GameActivity.appContext = this.getApplicationContext();
-
         this.game_activity_start = (ViewGroup)getLayoutInflater().inflate(R.layout.game_activity_start, null);
         setContentView(this.game_activity_start);
 
-        findViewById(R.id.createGameMP).setOnClickListener(this);
-        findViewById(R.id.joinGameMP).setOnClickListener(this);
+
+
+        findViewById(R.id.createGameMP).setOnClickListener(Tools.gameOnClickListner);
+        findViewById(R.id.joinGameMP).setOnClickListener(Tools.gameOnClickListner);
+
 
 
         //preparing views
@@ -120,10 +70,12 @@ public class GameActivity extends Activity implements View.OnClickListener, Zone
         this.game_activity_joingame = (ViewGroup)getLayoutInflater().inflate(R.layout.game_activity_joingame, null);
         this.game_activity_startedGameLobby = (ViewGroup)getLayoutInflater().inflate(R.layout.game_activity_gamelobby, null);
 
-        Toast.makeText(getApplicationContext(), "before init app42", Toast.LENGTH_SHORT).show();
-        this.initApp42SDK();
-        Toast.makeText(getApplicationContext(), "after init app42", Toast.LENGTH_SHORT).show();
+        Tools.game = this;
+        Tools.init(this.getApplicationContext());
 
+        // Toast.makeText(getApplicationContext(), "before room creation", Toast.LENGTH_SHORT).show();
+        //if(at.fancycardgame.aauno.User.getUsername()!=null)
+            //theClient.connectWithUserName(at.fancycardgame.aauno.User.getUsername());
         //prepare spinner in creategame view
        // Spinner maxUsers = (Spinner)findViewById(R.id.spinnerMaxUsers);
        // ArrayAdapter<CharSequence> spnAdapter = ArrayAdapter.createFromResource(getApplicationContext(), R.array.maxPlayersSelection, android.R.layout.simple_spinner_dropdown_item);
@@ -135,29 +87,11 @@ public class GameActivity extends Activity implements View.OnClickListener, Zone
         //setContentView(R.layout.game_field);
         //this.gameBoard = (ViewGroup)getLayoutInflater().inflate(R.layout.game_field, null);
         //startGame();
-
     }
 
 
-    private void initApp42SDK() {
-        App42API.initialize(getApplicationContext(), Constants.API_KEY, Constants.SECRET_KEY);
-        WarpClient.initialize(Constants.API_KEY, Constants.SECRET_KEY);
 
-
-        try {
-            theClient = WarpClient.getInstance();
-            WarpClient.enableTrace(true);
-        } catch (Exception ex) {
-            Toast.makeText(this, "Exception in Initilization", Toast.LENGTH_LONG).show();
-        }
-        theClient.addConnectionRequestListener(this);
-        theClient.addZoneRequestListener(this);
-        theClient.addRoomRequestListener(this);
-        theClient.addNotificationListener(this);
-    }
-
-
-    private void startGame() {
+    public void startGame() {
 
         final ViewGroup deckPosition = ((ViewGroup)findViewById(R.id.cardDeckPosition));
         // create card deck and set where to put it
@@ -286,10 +220,10 @@ public class GameActivity extends Activity implements View.OnClickListener, Zone
                                 chosenColor = chooseColor();
                                 break;
                             case "SKIP":
-                                Toast.makeText(context, "Next player has to skip his turn!", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(Tools.appContext, "Next player has to skip his turn!", Toast.LENGTH_SHORT).show();
                                 break;
                             case "TURN":
-                                Toast.makeText(context, "Turn order has been reversed!", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(Tools.appContext, "Turn order has been reversed!", Toast.LENGTH_SHORT).show();
                                 break;
                             case "PLUS 2":
                                 cardsToDraw += 2;
@@ -314,7 +248,7 @@ public class GameActivity extends Activity implements View.OnClickListener, Zone
             }
 
             private void drawCards(int count){
-                Toast.makeText(context, "Drawing " + count + " cards", Toast.LENGTH_SHORT).show();
+                Toast.makeText(Tools.appContext, "Drawing " + count + " cards", Toast.LENGTH_SHORT).show();
                 // This should go somewhere else to be accessible
                 for (int i=0;i<count;i++){
                     // Give cards to the player, remove given cards from draw stack
@@ -335,7 +269,7 @@ public class GameActivity extends Activity implements View.OnClickListener, Zone
                 final String[] colorArray = {"Blue", "Green", "Red", "Yellow"};
 
 
-                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
+                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(Tools.appContext);
                 alertDialogBuilder.setTitle("Choose a color!");
                 alertDialogBuilder.setItems(colorArray,
                         new DialogInterface.OnClickListener() {
@@ -466,7 +400,7 @@ public class GameActivity extends Activity implements View.OnClickListener, Zone
                     playerCards.add(cardDeck.getCard());
                     cardDeck.removeCard(playerCards.get(playerCards.size() - 1));
                 } else {
-                    cardDeck = new UnoCardDeck(context, (FrameLayout)deckPosition);
+                    cardDeck = new UnoCardDeck(Tools.appContext, (FrameLayout)deckPosition);
                     playerCards.add(cardDeck.getCard());
                     cardDeck.removeCard(playerCards.get(playerCards.size() - 1));
                 }
@@ -504,322 +438,73 @@ public class GameActivity extends Activity implements View.OnClickListener, Zone
         return (int) GameActivity.density * v;
     }
 
-    @Override
-    public void onClick(View v) {
-        //OnClickListener that determines which TextView has been clicked by ID
-        int clickedID = v.getId();
 
-        // create pulse animation when clicking on menue textviews
-        Animation a = AnimationUtils.loadAnimation(this, R.anim.pulse);
-
-        if(clickedID==R.id.createGameMP) {
-
-            a.setAnimationListener(new AbstractAnimationListener() {
-                @Override
-                public void onAnimationEnd(Animation animation) {
-                    setContentView(game_activity_creategame);
-
-                    findViewById(R.id.btnStartGameLobby).setOnClickListener(gameActivityListener);
-
-                    //prepare spinner in creategame view
-                    Spinner maxUsers = (Spinner)findViewById(R.id.spinnerMaxUsers);
-                    ArrayAdapter<CharSequence> spnAdapter = ArrayAdapter.createFromResource(getApplicationContext(), R.array.maxPlayersSelection, android.R.layout.simple_spinner_dropdown_item);
-                    spnAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                    maxUsers.setAdapter(spnAdapter);
-
-                }
-            });
-            v.startAnimation(a);
-
-        } else if(clickedID==R.id.joinGameMP) {
-            a.setAnimationListener(new AbstractAnimationListener() {
-                @Override
-                public void onAnimationEnd(Animation animation) {
-
-                    setContentView(game_activity_joingame);
-
-                    theClient.getAllRooms();
-
-                    try {
-                        Thread.sleep(3000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-
-
-                    for(String id : allRoomIDs) {
-                        theClient.getLiveRoomInfo(id);
-                    }
-
-
-                    // wait at least 3 seconds until data is ready (maybe can be reduced)
-                    try {
-                        Thread.sleep(3000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-
-
-
-
-                    ListView availableGames = ((ListView)findViewById(R.id.listViewAvailGame));
-                    availableGames.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                        @Override
-                        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                            String room = ((TextView)view).getText().toString().split("ID:")[1];
-
-                            Message msg1 = new Message();
-                            msg1.obj = room;
-                            toastHandler.sendMessage(msg1);
-
-                            theClient.joinRoom(room);
-                            setContentView(game_activity_startedGameLobby);
-                        }
-                    });
-                    ArrayAdapter<String> adapter = new ArrayAdapter<String>(appContext, android.R.layout.simple_list_item_1, allRoomNamesList);
-                    availableGames.setAdapter(adapter);
-
-
-                    //findViewById(R.id.btnStartGameLobby).setOnClickListener(gameActivityListener);
-                }
-            });
-            v.startAnimation(a);
-        } else if(clickedID==R.id.btnStartGameLobby) {
-
-            // getting entered info & create room in cloud
-            this.gamename = ((TextView)findViewById(R.id.txtBoxGameName)).getText().toString();
-            this.maxUsers = Integer.parseInt(((Spinner)findViewById(R.id.spinnerMaxUsers)).getSelectedItem().toString());
-
-            theClient.createRoom(this.gamename, User.getUsername(), this.maxUsers, null);
-
-            Message msg1 = new Message();
-            msg1.obj = "Room should be created.";
-            toastHandler.sendMessage(msg1);
-
-            setContentView(game_activity_startedGameLobby);
-            findViewById(R.id.btnStartGameFromRoom).setOnClickListener(gameActivityListener);
-
-            this.joinedPlayers.add(User.getUsername());
-
-            theClient.subscribeRoom(this.currentRoom);
-
-            this.updateJoinedPlayersListView();
-
-            // for what?
-            //theClient.getAllRooms();
-
-        } else if(clickedID==R.id.btnStartGameFromRoom) {
-
-            // check if e.g. 2 of 2 users are connected, 4 of 4 ...
-
-            setContentView(R.layout.game_field);
-            this.gameBoard = (ViewGroup)getLayoutInflater().inflate(R.layout.game_field, null);
-            startGame();
-        }
-    }
 
     public void updateJoinedPlayersListView() {
-        ListView listViewConPlayers = ((ListView)findViewById(R.id.listViewConnectedPlayers));
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(appContext, android.R.layout.simple_list_item_1, joinedPlayers);
-        listViewConPlayers.setAdapter(adapter);
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                //Tools.getUsersInRoom(Tools.currentRoom);
+                Tools.game.findViewById(R.id.btnPlay).setOnClickListener(Tools.gameOnClickListner);
+
+                ListView listViewConPlayers = ((ListView)findViewById(R.id.listViewConnectedPlayers));
+                ArrayAdapter<String> adapter = new ArrayAdapter<>(Tools.appContext, android.R.layout.simple_list_item_1, Tools.joinedPlayers);
+                listViewConPlayers.setAdapter(adapter);
+                adapter.notifyDataSetChanged();
+            }
+        });
     }
 
-    @Override
-    public void onDeleteRoomDone(RoomEvent roomEvent) {
+    public void updateOpenGamesList() {
 
-    }
+        Tools.showToast("Update!", Toast.LENGTH_SHORT);
 
-    @Override
-    public void onGetAllRoomsDone(AllRoomsEvent allRoomsEvent) {
+        ((ListView)findViewById(R.id.listViewAvailGame)).setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                String room = ((TextView) view).getText().toString().split("ID:")[1];
+                Tools.currentRoom = room;
 
-        // ID IS RECEIVED
-       // Message msg = new Message();
-       // msg.obj = (allRoomsEvent.[0]);
-        //toastHandler.sendMessage(msg);
-        this.allRoomIDs = allRoomsEvent.getRoomIds();
-    }
+                Handler h = new Handler();
+                h.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        Tools.wClient.joinRoom(Tools.currentRoom);
+                        Tools.wClient.subscribeRoom(Tools.currentRoom);
+                        Tools.wClient.getLiveRoomInfo(Tools.currentRoom);
 
-    @Override
-    public void onCreateRoomDone(RoomEvent roomEvent) {
-        // room created message
-    }
 
-    @Override
-    public void onGetOnlineUsersDone(AllUsersEvent allUsersEvent) {
+                    }
+                }, 2000);
 
-    }
 
-    @Override
-    public void onGetLiveUserInfoDone(LiveUserInfoEvent liveUserInfoEvent) {
+                // must be placed here tried also to set code here but it seems
+                // that the view update process is faster than the getLiveRoomInfo(...) method --> NullPointerE.
+                Handler h2 = new Handler();
+                h2.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        Tools.playerArrayToList();
+                        updateJoinedPlayersListView();
+                    }
+                }, 3000);
 
-    }
+                setContentView(game_activity_startedGameLobby);
+            }
+        });
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(Tools.appContext, android.R.layout.simple_list_item_1, Tools.allRoomNamesList);
+        ((ListView)findViewById(R.id.listViewAvailGame)).setAdapter(adapter);
+        adapter.notifyDataSetChanged();
 
-    @Override
-    public void onSetCustomUserDataDone(LiveUserInfoEvent liveUserInfoEvent) {
-
-    }
-
-    @Override
-    public void onGetMatchedRoomsDone(MatchedRoomsEvent matchedRoomsEvent) {
-
-    }
-
-    @Override
-    public void onConnectDone(ConnectEvent connectEvent) {
-        Message msg = new Message();
-        msg.obj = "Successfully connected to the cloud.";
-        toastHandler.sendMessage(msg);
-    }
-
-    @Override
-    public void onDisconnectDone(ConnectEvent connectEvent) {
-
-    }
-
-    @Override
-    public void onInitUDPDone(byte b) {
 
     }
 
-    @Override
-    public void onSubscribeRoomDone(RoomEvent roomEvent) {
-       // Message msg1 = new Message();
-        //msg1.obj = "Subscribed to room "+ roomEvent.getData().getName();
-        //toastHandler.sendMessage(msg1);
-    }
 
-    @Override
-    public void onUnSubscribeRoomDone(RoomEvent roomEvent) {
 
-    }
 
-    @Override
-    public void onJoinRoomDone(RoomEvent roomEvent) {
-        Message msg1 = new Message();
-        msg1.obj = "You joined the room " + roomEvent.getData().getName();
-        toastHandler.sendMessage(msg1);
-    }
 
-    @Override
-    public void onLeaveRoomDone(RoomEvent roomEvent) {
 
-    }
 
-    @Override
-    public void onGetLiveRoomInfoDone(LiveRoomInfoEvent liveRoomInfoEvent) {
-        this.allRoomNamesList.add(liveRoomInfoEvent.getData().getName() + " - ID:" + liveRoomInfoEvent.getData().getId());
-    }
-
-    @Override
-    public void onSetCustomRoomDataDone(LiveRoomInfoEvent liveRoomInfoEvent) {
-
-    }
-
-    @Override
-    public void onUpdatePropertyDone(LiveRoomInfoEvent liveRoomInfoEvent) {
-
-    }
-
-    @Override
-    public void onLockPropertiesDone(byte b) {
-
-    }
-
-    @Override
-    public void onUnlockPropertiesDone(byte b) {
-
-    }
-
-    @Override
-    public void onRoomCreated(RoomData roomData) {
-        this.currentRoom = roomData.getId();
-
-    }
-
-    @Override
-    public void onRoomDestroyed(RoomData roomData) {
-
-    }
-
-    @Override
-    public void onUserLeftRoom(RoomData roomData, String s) {
-        this.joinedPlayers.remove(s);
-        this.updateJoinedPlayersListView();
-    }
-
-    @Override
-    public void onUserJoinedRoom(RoomData roomData, String s) {
-        //this.joinedPlayers.add(s);
-        //this.updateJoinedPlayersListView();
-        Message msg1 = new Message();
-        msg1.obj = "Someone joined!";
-        toastHandler.sendMessage(msg1);
-    }
-
-    @Override
-    public void onUserLeftLobby(LobbyData lobbyData, String s) {
-
-    }
-
-    @Override
-    public void onUserJoinedLobby(LobbyData lobbyData, String s) {
-
-    }
-
-    @Override
-    public void onChatReceived(ChatEvent chatEvent) {
-
-    }
-
-    @Override
-    public void onPrivateChatReceived(String s, String s2) {
-
-    }
-
-    @Override
-    public void onPrivateUpdateReceived(String s, byte[] bytes, boolean b) {
-
-    }
-
-    @Override
-    public void onUpdatePeersReceived(UpdateEvent updateEvent) {
-
-    }
-
-    @Override
-    public void onUserChangeRoomProperty(RoomData roomData, String s, HashMap<String, Object> stringObjectHashMap, HashMap<String, String> stringStringHashMap) {
-
-    }
-
-    @Override
-    public void onMoveCompleted(MoveEvent moveEvent) {
-
-    }
-
-    @Override
-    public void onGameStarted(String s, String s2, String s3) {
-
-    }
-
-    @Override
-    public void onGameStopped(String s, String s2) {
-
-    }
-
-    @Override
-    public void onUserPaused(String s, boolean b, String s2) {
-
-    }
-
-    @Override
-    public void onUserResumed(String s, boolean b, String s2) {
-
-    }
-
-    @Override
-    public void onNextTurnRequest(String s) {
-
-    }
 
     //List available Bluetooth devices
     /*public void showPlayers() {

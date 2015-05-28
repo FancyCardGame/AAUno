@@ -10,6 +10,8 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.TextView;
 
+import at.fancycardgame.aauno.listeners.AbstractAnimationListener;
+
 /**
  * Created by Christian on 26.05.2015.
  */

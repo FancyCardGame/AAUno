@@ -8,7 +8,7 @@ public class User {
     private static String username;
     private static String email;
     private static String pwd;
-    private static Boolean loggedIn;
+    private static Boolean loggedIn = false;
 
     public static String getEmail() {
         return email;
@@ -24,6 +24,10 @@ public class User {
 
     public static void logout() {
         User.loggedIn = false;
+    }
+
+    public static Boolean isLoggedIn() {
+        return User.loggedIn;
     }
 
     public static String getPwd() {
