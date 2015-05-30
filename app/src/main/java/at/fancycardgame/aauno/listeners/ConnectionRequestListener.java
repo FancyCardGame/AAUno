@@ -4,6 +4,7 @@ import android.widget.Toast;
 
 import com.shephertz.app42.gaming.multiplayer.client.events.ConnectEvent;
 
+import at.fancycardgame.aauno.tasks.AuthenticateToGameCloudTask;
 import at.fancycardgame.aauno.toolbox.Tools;
 
 /**
@@ -14,6 +15,7 @@ public class ConnectionRequestListener implements com.shephertz.app42.gaming.mul
     @Override
     public void onConnectDone(ConnectEvent connectEvent) {
         Tools.showToast("Successfully connected to the cloud.", Toast.LENGTH_SHORT);
+        AuthenticateToGameCloudTask.isConnectedToCloud = true;
     }
 
     @Override

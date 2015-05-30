@@ -11,6 +11,9 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
+import at.fancycardgame.aauno.tasks.AuthenticateToGameCloudTask;
+import at.fancycardgame.aauno.toolbox.Tools;
+
 /**
  * Created by Diete on 12.05.2015.
  */
@@ -38,14 +41,19 @@ public class LoginDialogFragment extends DialogFragment {
                 })*/
                 .setPositiveButton(R.string.login, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
+                        String username = ((TextView)getDialog().findViewById(R.id.username_dialog)).getText().toString();
+                        String pwd = ((TextView)getDialog().findViewById(R.id.password_dialog)).getText().toString();
 
-                        MainActivity.login(((TextView)getDialog().findViewById(R.id.username_dialog)).getText().toString(),((TextView)getDialog().findViewById(R.id.password_dialog)).getText().toString());
+                        AuthenticateToGameCloudTask auth = new AuthenticateToGameCloudTask(username, pwd);
+                        auth.execute();
+                        //MainActivity.login(,);
 
                     }
                 })
                 .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         // User cancelled the dialog
+                        // TODO: do nothing? stay on menu?
                     }
                 });
         // Create the AlertDialog object and return it

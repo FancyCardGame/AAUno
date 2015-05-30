@@ -4,6 +4,7 @@
     tools:context=".MainActivity"
     android:id="@+id/screens">
 
+
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -78,5 +79,18 @@
                     android:shadowDy="-10"/>
             </LinearLayout>
         </FrameLayout>
+        <RelativeLayout
+            android:id="@+id/loadingPanel"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:background="@color/menu_opaque"
+            android:visibility="invisible">
+
+            <ProgressBar
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:indeterminate="true" />
+        </RelativeLayout>
     </FrameLayout>
 </FrameLayout>

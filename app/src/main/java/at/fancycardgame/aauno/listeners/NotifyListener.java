@@ -1,5 +1,6 @@
 package at.fancycardgame.aauno.listeners;
 
+import android.os.Handler;
 import android.util.Base64;
 import android.view.ViewGroup;
 import android.widget.Toast;
@@ -15,6 +16,8 @@ import java.util.HashMap;
 
 import at.fancycardgame.aauno.GameActivity;
 import at.fancycardgame.aauno.R;
+import at.fancycardgame.aauno.User;
+import at.fancycardgame.aauno.toolbox.Constants;
 import at.fancycardgame.aauno.toolbox.Tools;
 
 /**
@@ -48,6 +51,25 @@ public class NotifyListener implements com.shephertz.app42.gaming.multiplayer.cl
         //this.updateJoinedPlayersListView();
         Tools.showToast("Someone joined!", Toast.LENGTH_SHORT);
         Tools.game.updateJoinedPlayersListView();
+
+       if(roomData.getMaxUsers()==Tools.joinedPlayers.size() && roomData.getRoomOwner().equals(User.getUsername())) {
+           // last user entered the room, room owner starts the game, get ready to play!
+           Tools.wClient.sendUpdatePeers(Constants.PREP_TO_PLAY.getBytes());
+           Tools.startGameCountDown();
+
+           Tools.game.runOnUiThread(new Runnable() {
+               @Override
+               public void run() {
+                   Handler h = new Handler();
+                   h.postDelayed(new Runnable() {
+                       @Override
+                       public void run() {
+                           Tools.wClient.sendUpdatePeers(Constants.STARTGAME.getBytes());
+                       }
+                   }, 4000);
+               }
+           });
+       }
     }
 
     @Override

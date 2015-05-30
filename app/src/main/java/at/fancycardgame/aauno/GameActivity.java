@@ -48,7 +48,10 @@ public class GameActivity extends Activity {
     public ViewGroup game_activity_startedGameLobby;
 
 
-
+    public static String gameCondition;
+    // game conditions (TODO: maybe more to add?)
+    public static final String STARTED = "STARTED";
+    public static final String END = "END";
 
 
 
@@ -70,8 +73,9 @@ public class GameActivity extends Activity {
         this.game_activity_joingame = (ViewGroup)getLayoutInflater().inflate(R.layout.game_activity_joingame, null);
         this.game_activity_startedGameLobby = (ViewGroup)getLayoutInflater().inflate(R.layout.game_activity_gamelobby, null);
 
-        Tools.game = this;
         Tools.init(this.getApplicationContext());
+        Tools.game = this;
+
 
         // Toast.makeText(getApplicationContext(), "before room creation", Toast.LENGTH_SHORT).show();
         //if(at.fancycardgame.aauno.User.getUsername()!=null)
@@ -92,6 +96,7 @@ public class GameActivity extends Activity {
 
 
     public void startGame() {
+        GameActivity.gameCondition = GameActivity.STARTED;
 
         final ViewGroup deckPosition = ((ViewGroup)findViewById(R.id.cardDeckPosition));
         // create card deck and set where to put it
@@ -424,15 +429,7 @@ public class GameActivity extends Activity {
 
 
 
-    // method that sets a view invisible which is specified with a parameter
-    protected void hideView(int view) {
-        findViewById(view).setVisibility(View.INVISIBLE);
-    }
 
-    // method that sets a view visible which is specified with a parameter
-    protected void showView(int view) {
-        findViewById(view).setVisibility(View.VISIBLE);
-    }
 
     public static int scale(int v) {
         return (int) GameActivity.density * v;
@@ -441,18 +438,22 @@ public class GameActivity extends Activity {
 
 
     public void updateJoinedPlayersListView() {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                //Tools.getUsersInRoom(Tools.currentRoom);
-                Tools.game.findViewById(R.id.btnPlay).setOnClickListener(Tools.gameOnClickListner);
+        // next line was implemented because of an error
+        //if(Tools.game.getWindow().getDecorView()==Tools.game.game_activity_startedGameLobby)
+        // workaround: check if game is not started (problem was tried to access view elements which are not on display anymore
+        if(GameActivity.gameCondition!=GameActivity.STARTED)
+            Tools.game.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    //Tools.getUsersInRoom(Tools.currentRoom);
+                    Tools.game.findViewById(R.id.btnPlay).setOnClickListener(Tools.gameOnClickListner);
 
-                ListView listViewConPlayers = ((ListView)findViewById(R.id.listViewConnectedPlayers));
-                ArrayAdapter<String> adapter = new ArrayAdapter<>(Tools.appContext, android.R.layout.simple_list_item_1, Tools.joinedPlayers);
-                listViewConPlayers.setAdapter(adapter);
-                adapter.notifyDataSetChanged();
-            }
-        });
+                    ListView listViewConPlayers = ((ListView)findViewById(R.id.listViewConnectedPlayers));
+                    ArrayAdapter<String> adapter = new ArrayAdapter<>(Tools.appContext, android.R.layout.simple_list_item_1, Tools.joinedPlayers);
+                    listViewConPlayers.setAdapter(adapter);
+                    adapter.notifyDataSetChanged();
+                }
+            });
     }
 
     public void updateOpenGamesList() {
@@ -465,6 +466,8 @@ public class GameActivity extends Activity {
                 String room = ((TextView) view).getText().toString().split("ID:")[1];
                 Tools.currentRoom = room;
 
+                setContentView(game_activity_startedGameLobby);
+
                 Handler h = new Handler();
                 h.postDelayed(new Runnable() {
                     @Override
@@ -472,8 +475,6 @@ public class GameActivity extends Activity {
                         Tools.wClient.joinRoom(Tools.currentRoom);
                         Tools.wClient.subscribeRoom(Tools.currentRoom);
                         Tools.wClient.getLiveRoomInfo(Tools.currentRoom);
-
-
                     }
                 }, 2000);
 
@@ -489,7 +490,7 @@ public class GameActivity extends Activity {
                     }
                 }, 3000);
 
-                setContentView(game_activity_startedGameLobby);
+
             }
         });
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(Tools.appContext, android.R.layout.simple_list_item_1, Tools.allRoomNamesList);

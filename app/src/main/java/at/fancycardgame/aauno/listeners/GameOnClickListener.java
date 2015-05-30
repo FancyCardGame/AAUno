@@ -12,6 +12,7 @@ import android.widget.Toast;
 
 import at.fancycardgame.aauno.R;
 import at.fancycardgame.aauno.User;
+import at.fancycardgame.aauno.toolbox.Constants;
 import at.fancycardgame.aauno.toolbox.Tools;
 
 /**
@@ -89,11 +90,18 @@ public class GameOnClickListener implements View.OnClickListener {
                     Tools.wClient.joinRoom(Tools.currentRoom);
                     Tools.wClient.subscribeRoom(Tools.currentRoom);
                 }
-            }, 2000);
+            },1000);
 
 
+            Handler h2 = new Handler();
+            h2.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    Tools.game.updateJoinedPlayersListView();
+                }
+            }, 3000);
 
-            Tools.game.updateJoinedPlayersListView();
+
 
 
 
@@ -103,12 +111,8 @@ public class GameOnClickListener implements View.OnClickListener {
 
             // WarpClient supports startGame() only in TurnedBasedRooms
             //Tools.wClient.startGame();
-            String s = "START";
-            Tools.wClient.sendUpdatePeers(s.getBytes());
-
-            Tools.game.setContentView(R.layout.game_field);
-            Tools.game.gameBoard = (ViewGroup)Tools.game.getLayoutInflater().inflate(R.layout.game_field, null);
-            Tools.game.startGame();
+            Tools.wClient.sendUpdatePeers(Constants.STARTGAME.getBytes());
+            Tools.startGame();
         }
     }
 }

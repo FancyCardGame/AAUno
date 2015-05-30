@@ -1,7 +1,9 @@
 package at.fancycardgame.aauno;
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Point;
 import android.graphics.Typeface;
@@ -26,6 +28,7 @@ import com.shephertz.app42.paas.sdk.android.user.User;
 import com.shephertz.app42.paas.sdk.android.user.UserService;
 
 import at.fancycardgame.aauno.listeners.AbstractAnimationListener;
+import at.fancycardgame.aauno.tasks.EnablingWLANTask;
 import at.fancycardgame.aauno.toolbox.Tools;
 
 public class MainActivity extends FragmentActivity implements View.OnClickListener {
@@ -65,6 +68,7 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
         setContentView(R.layout.activity_main);
 
         Tools.init(this.getApplicationContext());
+        Tools.mainActivity = this;
 
         // set menu typeface
         this.setMenuTypeface();
@@ -92,11 +96,7 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
         findViewById(R.id.helpMP).setOnClickListener(this.mainOnClickListener);
         findViewById(R.id.quitMP).setOnClickListener(this.mainOnClickListener);
 
-
     }
-
-
-
 
     // method that takes *.ttf file, creates a typeface and applies it to the menu TextViews
     private void setMenuTypeface() {
@@ -115,9 +115,6 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
     // main onclick method
     @Override
     public void onClick(View clickedView) {
-
-
-
         //OnClickListener that determines which TextView has been clicked by ID
         int clickedID = clickedView.getId();
 
@@ -125,28 +122,53 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
         Animation a = AnimationUtils.loadAnimation(this, R.anim.pulse);
 
         if(clickedID==R.id.startGameMP) {
+              // first check internet connection
 
-              a.setAnimationListener(new AbstractAnimationListener() {
-                @Override
-                public void onAnimationEnd(Animation animation) {
-                        // remove everything that is in screen_container
-                        if(at.fancycardgame.aauno.User.isLoggedIn() == false) {
-                            DialogFragment loginDialog = new LoginDialogFragment();
-                            loginDialog.show(getSupportFragmentManager(), "login");
-                        }
 
-                        else if(at.fancycardgame.aauno.User.isLoggedIn() == true) {
-                            //screen_container.removeAllViews();
-                            // create gameboard from layout ...
-                            // ... and add it to the screen_container
-                           //screen_container.addView(gameBoard);
+             // checking internet connection
+             if(!Tools.checkInternetConnection(this)) {
+                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(MainActivity.this);
+                alertDialogBuilder.setTitle("Network Connection");
+                alertDialogBuilder.setMessage("Sorry, but you have to be connected to the internet when you want to play this game. Do you want to turn on WLAN?");
+                alertDialogBuilder.setPositiveButton("Yeah, I want to play!", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        EnablingWLANTask t = new EnablingWLANTask(MainActivity.this);
+                        t.execute();
+                    }
+                }).setNegativeButton("No, thanks.", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        // cancel
+                        // TODO: do nothing? stay on menu? quit?
+                    }
+                });
+                alertDialogBuilder.show();
+             } else {
+                 a.setAnimationListener(new AbstractAnimationListener() {
+                     @Override
+                     public void onAnimationEnd(Animation animation) {
+                         // remove everything that is in screen_container
+                         if (at.fancycardgame.aauno.User.isLoggedIn() == false) {
+                             DialogFragment loginDialog = new LoginDialogFragment();
+                             loginDialog.show(getSupportFragmentManager(), "login");
+                         } else if (at.fancycardgame.aauno.User.isLoggedIn() == true) {
+                             //screen_container.removeAllViews();
+                             // create gameboard from layout ...
+                             // ... and add it to the screen_container
+                             //screen_container.addView(gameBoard);
 
-                            startActivity(new Intent(MainActivity.this,GameActivity.class));
-                            finish();
-                        }
-                }
-            } );
-            clickedView.startAnimation(a);
+                             // start new gameActivity
+                             startActivity(new Intent(MainActivity.this, GameActivity.class));
+
+                             // "cleanup"
+                             Tools.mainActivity = null;
+                             finish();
+                         }
+                     }
+                 });
+                 clickedView.startAnimation(a);
+             }
 
         } else if(clickedID==R.id.optionsMP) {
 
@@ -351,7 +373,6 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
                 at.fancycardgame.aauno.User.setEmail(user.getEmail());
                 at.fancycardgame.aauno.User.login();
 
-                // Toast.makeText(getApplicationContext(), "before room creation", Toast.LENGTH_SHORT).show();
                 Tools.wClient.connectWithUserName(at.fancycardgame.aauno.User.getUsername());
 
                 Tools.showToast("User successfully logged in.", Toast.LENGTH_SHORT);
