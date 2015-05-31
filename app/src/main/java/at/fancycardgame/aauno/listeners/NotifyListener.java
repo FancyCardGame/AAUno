@@ -1,8 +1,6 @@
 package at.fancycardgame.aauno.listeners;
 
 import android.os.Handler;
-import android.util.Base64;
-import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.shephertz.app42.gaming.multiplayer.client.events.ChatEvent;
@@ -14,8 +12,6 @@ import com.shephertz.app42.gaming.multiplayer.client.events.UpdateEvent;
 import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 
-import at.fancycardgame.aauno.GameActivity;
-import at.fancycardgame.aauno.R;
 import at.fancycardgame.aauno.User;
 import at.fancycardgame.aauno.toolbox.Constants;
 import at.fancycardgame.aauno.toolbox.Tools;
@@ -84,7 +80,11 @@ public class NotifyListener implements com.shephertz.app42.gaming.multiplayer.cl
 
     @Override
     public void onChatReceived(ChatEvent chatEvent) {
+        String sender = chatEvent.getSender();
+        String recMsg = chatEvent.getMessage();
 
+        Tools.chatQueue.add(" " + sender + ": " + recMsg);
+        Tools.game.updateChatView();
     }
 
     @Override

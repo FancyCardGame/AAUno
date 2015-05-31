@@ -5,9 +5,6 @@ import android.widget.Toast;
 import com.shephertz.app42.gaming.multiplayer.client.events.LiveRoomInfoEvent;
 import com.shephertz.app42.gaming.multiplayer.client.events.RoomEvent;
 
-import java.util.ArrayList;
-
-import at.fancycardgame.aauno.GameActivity;
 import at.fancycardgame.aauno.toolbox.Tools;
 
 /**
@@ -31,8 +28,12 @@ public class RoomRequestListener implements com.shephertz.app42.gaming.multiplay
 
     @Override
     public void onJoinRoomDone(RoomEvent roomEvent) {
-        if(roomEvent.getData()!=null)
+        if(roomEvent.getData()!=null) {
             Tools.showToast("You joined the room " + roomEvent.getData().getName(), Toast.LENGTH_SHORT);
+            Tools.maxPlayersInRoom = roomEvent.getData().getMaxUsers();
+            Tools.currentRoomName = roomEvent.getData().getName();
+            Tools.roomOwner = roomEvent.getData().getRoomOwner();
+        }
     }
 
     @Override

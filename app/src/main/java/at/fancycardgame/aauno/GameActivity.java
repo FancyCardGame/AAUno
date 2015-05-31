@@ -21,6 +21,8 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 
+import at.fancycardgame.aauno.adapters.JoinedPlayersAdapter;
+import at.fancycardgame.aauno.toolbox.GameState;
 import at.fancycardgame.aauno.toolbox.Tools;
 
 /**
@@ -48,10 +50,7 @@ public class GameActivity extends Activity {
     public ViewGroup game_activity_startedGameLobby;
 
 
-    public static String gameCondition;
-    // game conditions (TODO: maybe more to add?)
-    public static final String STARTED = "STARTED";
-    public static final String END = "END";
+
 
 
 
@@ -96,7 +95,7 @@ public class GameActivity extends Activity {
 
 
     public void startGame() {
-        GameActivity.gameCondition = GameActivity.STARTED;
+        GameState.gameCondition = GameState.STARTED;
 
         final ViewGroup deckPosition = ((ViewGroup)findViewById(R.id.cardDeckPosition));
         // create card deck and set where to put it
@@ -436,22 +435,68 @@ public class GameActivity extends Activity {
     }
 
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        // HINT: with savedInstanceState, currently not working
+        if(GameState.gameCondition!=null)
+            if(GameState.gameCondition.equals(GameState.LOBBY)) {
+                Tools.wClient.leaveRoom(Tools.currentRoom);
+                updateJoinedPlayersListView();
+            }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        // HINT: with savedInstanceState,currently not working
+        if(GameState.gameCondition!=null)
+            if(GameState.gameCondition.equals(GameState.LOBBY)) {
+                Tools.wClient.joinRoom(Tools.currentRoom);
+                updateJoinedPlayersListView();
+            }
+    }
 
     public void updateJoinedPlayersListView() {
         // next line was implemented because of an error
         //if(Tools.game.getWindow().getDecorView()==Tools.game.game_activity_startedGameLobby)
         // workaround: check if game is not started (problem was tried to access view elements which are not on display anymore
-        if(GameActivity.gameCondition!=GameActivity.STARTED)
+        //if(GameState.gameCondition.equals(GameState.STARTED))
             Tools.game.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
                     //Tools.getUsersInRoom(Tools.currentRoom);
+                    ((TextView)Tools.game.findViewById(R.id.lobbyInfo)).setText("Players online (" + Tools.joinedPlayers.size() + "/"+ Tools.maxPlayersInRoom +") in Lobby \"" + Tools.currentRoomName + "\"");
+
                     Tools.game.findViewById(R.id.btnPlay).setOnClickListener(Tools.gameOnClickListner);
 
                     ListView listViewConPlayers = ((ListView)findViewById(R.id.listViewConnectedPlayers));
-                    ArrayAdapter<String> adapter = new ArrayAdapter<>(Tools.appContext, android.R.layout.simple_list_item_1, Tools.joinedPlayers);
-                    listViewConPlayers.setAdapter(adapter);
-                    adapter.notifyDataSetChanged();
+
+                    JoinedPlayersAdapter customAdpt = new JoinedPlayersAdapter(Tools.appContext, Tools.joinedPlayers);
+
+                    listViewConPlayers.setAdapter(customAdpt);
+                    customAdpt.notifyDataSetChanged();
+
+                   //ArrayAdapter<String> adapter = new ArrayAdapter<>(Tools.appContext, android.R.layout.simple_list_item_1, Tools.joinedPlayers);
+
+                }
+            });
+    }
+
+    public void updateChatView() {
+        //if(GameState.gameCondition.equals(GameState.STARTED))
+            Tools.game.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    ListView chat = ((ListView)findViewById(R.id.listViewChatMsgs));
+                    JoinedPlayersAdapter adp = new JoinedPlayersAdapter(Tools.appContext, Tools.chatQueue);
+                    chat.setAdapter(adp);
+                    adp.notifyDataSetChanged();
+
+                    chat.setSelection(adp.getCount()-1);
+                    chat.setDivider(null);
                 }
             });
     }
@@ -463,10 +508,12 @@ public class GameActivity extends Activity {
         ((ListView)findViewById(R.id.listViewAvailGame)).setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                String room = ((TextView) view).getText().toString().split("ID:")[1];
-                Tools.currentRoom = room;
+                Tools.currentRoom = ((TextView) view).getText().toString().split("ID:")[1];
 
                 setContentView(game_activity_startedGameLobby);
+
+                // now it should work no matter what
+                Tools.game.findViewById(R.id.btnSendChatMsg).setOnClickListener(Tools.gameOnClickListner);
 
                 Handler h = new Handler();
                 h.postDelayed(new Runnable() {
@@ -487,17 +534,20 @@ public class GameActivity extends Activity {
                     public void run() {
                         Tools.playerArrayToList();
                         updateJoinedPlayersListView();
+
+                        // only admin sees the play button
+                        if(Tools.roomOwner.equals(User.getUsername()))
+                            (Tools.game.findViewById(R.id.btnPlay)).setVisibility(View.VISIBLE);
                     }
                 }, 3000);
 
 
             }
         });
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(Tools.appContext, android.R.layout.simple_list_item_1, Tools.allRoomNamesList);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(Tools.appContext, android.R.layout.simple_list_item_1, Tools.allRoomNamesList);
         ((ListView)findViewById(R.id.listViewAvailGame)).setAdapter(adapter);
+        ((ListView)findViewById(R.id.listViewAvailGame)).setDivider(null);
         adapter.notifyDataSetChanged();
-
-
     }
 
 

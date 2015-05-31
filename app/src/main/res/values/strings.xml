@@ -37,5 +37,10 @@
     </string-array>
     <string name="joinGameHeadline">Select a Game ...</string>
     <string name="openGame">Open Game</string>
+    <string name="gameLobbyStartAutomatically">The game will start automatically when the last player joins. Only the admin can start the game manually. (maybe: You can also start the game manually by clicking on \"Play\")</string>
+    <string name="gameLobby">Game Lobby</string>
+    <string name="joinedPlayersListView">Joined Players</string>
+    <string name="sendChatMsg">Send</string>
+    <string name="sendChatMsgHint">Send a Message</string>
 
 </resources>

@@ -1,6 +1,5 @@
 package at.fancycardgame.aauno.toolbox;
 
-import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
@@ -39,16 +38,21 @@ public class Tools {
     public static MainActivity mainActivity;
 
     public static GameActivity game;
+
+
     public static View.OnClickListener gameOnClickListner = new GameOnClickListener();
 
-    // useful class variables
+    // it's all about the room
     public static String[] allRoomIDs;
     public static String currentRoom;
-    public static ArrayList<String> allRoomNamesList = new ArrayList<>();
+    public static String currentRoomName;
+    public static String roomOwner;
+    public static int maxPlayersInRoom;
     public static ArrayList<String> joinedPlayers = new ArrayList<>();
     public static String[] playersInRoom;
+    public static ArrayList<String> chatQueue = new ArrayList<>();
 
-
+    public static ArrayList<String> allRoomNamesList = new ArrayList<>();
 
     public static ConnectionRequestListener crl = new ConnectionRequestListener();
     public static NotifyListener nl = new NotifyListener();
@@ -139,9 +143,9 @@ public class Tools {
             public void run() {
                 final TextView countdown = new TextView(Tools.appContext);
                 countdown.setGravity(Gravity.CENTER);
-                countdown.setTextSize(40);
-                countdown.setTextColor(Color.BLACK);
-                countdown.setText("4");
+                countdown.setTextSize(70);
+                countdown.setTextColor(Color.YELLOW);
+                countdown.setText("3");
 
                 ViewGroup.LayoutParams p = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
                 Tools.game.addContentView(countdown, p);

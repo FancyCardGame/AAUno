@@ -2,7 +2,6 @@ package at.fancycardgame.aauno.listeners;
 
 import android.os.Handler;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ArrayAdapter;
@@ -13,6 +12,7 @@ import android.widget.Toast;
 import at.fancycardgame.aauno.R;
 import at.fancycardgame.aauno.User;
 import at.fancycardgame.aauno.toolbox.Constants;
+import at.fancycardgame.aauno.toolbox.GameState;
 import at.fancycardgame.aauno.toolbox.Tools;
 
 /**
@@ -80,6 +80,14 @@ public class GameOnClickListener implements View.OnClickListener {
 
             Tools.game.setContentView(Tools.game.game_activity_startedGameLobby);
 
+            GameState.gameCondition = GameState.LOBBY;
+
+
+            Tools.game.findViewById(R.id.btnSendChatMsg).setOnClickListener(Tools.gameOnClickListner);
+
+            // only admin sees the play button
+
+
             Tools.joinedPlayers.add(User.getUsername() + " (You)");
 
             // worked with waiting 2 seconds after room was created
@@ -92,11 +100,15 @@ public class GameOnClickListener implements View.OnClickListener {
                 }
             },1000);
 
-
             Handler h2 = new Handler();
             h2.postDelayed(new Runnable() {
                 @Override
                 public void run() {
+
+                    // only admin sees the play button
+                    if(Tools.roomOwner.equals(User.getUsername()))
+                        (Tools.game.findViewById(R.id.btnPlay)).setVisibility(View.VISIBLE);
+
                     Tools.game.updateJoinedPlayersListView();
                 }
             }, 3000);
@@ -113,6 +125,12 @@ public class GameOnClickListener implements View.OnClickListener {
             //Tools.wClient.startGame();
             Tools.wClient.sendUpdatePeers(Constants.STARTGAME.getBytes());
             Tools.startGame();
+        } else if(clickedID==R.id.btnSendChatMsg) {
+            String txt = ((TextView)Tools.game.findViewById(R.id.txtChatMsg)).getText().toString();
+            if(!txt.equals("")) {
+                Tools.wClient.sendChat(txt);
+                ((TextView)Tools.game.findViewById(R.id.txtChatMsg)).setText("");
+            }
         }
     }
 }

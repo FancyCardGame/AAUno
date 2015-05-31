@@ -18,47 +18,146 @@
             android:paddingTop="35dp">
 
             <LinearLayout
-                android:orientation="horizontal"
+                android:orientation="vertical"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:text="@string/waitingForPlayers"
-                    android:id="@+id/textView3"
-                    android:layout_gravity="right|top" />
+                android:layout_height="wrap_content" >
 
                 <LinearLayout
-                    android:orientation="vertical"
+                    android:orientation="horizontal"
                     android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="right">
+                    android:layout_height="fill_parent"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="?android:attr/textAppearanceMedium"
+                        android:text="@string/gameLobby"
+                        android:id="@+id/textView3"
+                        android:layout_gravity="left"
+                        android:layout_weight="2"
+                        android:textColor="#ffffffff" />
 
                     <Button
                         style="?android:attr/buttonStyleSmall"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Play"
-                        android:id="@+id/btnPlay" />
+                        android:id="@+id/btnPlay"
+                        android:layout_gravity="right"
+                        android:visibility="invisible" />
                 </LinearLayout>
+
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent" >
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="20sp"
+                        android:id="@+id/textView4"
+                        android:text="@string/gameLobbyStartAutomatically"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginRight="10dp" />
+                </LinearLayout>
+
             </LinearLayout>
 
             <LinearLayout
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal">
+                android:layout_height="match_parent"
+                android:layout_gravity="center_horizontal"
+                android:background="#ffffc666"
+                android:alpha="1"
+                android:layout_margin="10dp"
+                android:baselineAligned="false">
 
-                <ListView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/listViewConnectedPlayers" />
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="2">
+
+                    <ListView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/listViewConnectedPlayers"
+                        android:layout_margin="5dp"
+                        android:choiceMode="none"
+                        android:alpha="1"
+                        android:layout_gravity="top|left"
+                        android:visibility="visible"
+                        android:layout_weight="2" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="?android:attr/textAppearanceSmall"
+                        android:id="@+id/lobbyInfo"
+                        android:textSize="13sp"
+                        android:textColor="@android:color/black"
+                        android:layout_gravity="left|bottom"
+                        android:layout_marginLeft="5dp" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:layout_weight="2"
+                    android:alpha="1">
+
+                    <ListView
+                        android:layout_width="fill_parent"
+                        android:layout_height="fill_parent"
+                        android:id="@+id/listViewChatMsgs"
+                        android:background="#ffffffff"
+                        android:layout_gravity="top"
+                        android:alpha="1"
+                        android:layout_weight="3"
+                        android:layout_margin="5dp" />
+
+                    <LinearLayout
+                        android:orientation="horizontal"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content">
+
+                        <EditText
+                            android:layout_width="0sp"
+                            android:layout_height="wrap_content"
+                            android:id="@+id/txtChatMsg"
+                            android:hint="@string/sendChatMsgHint"
+                            android:textSize="20sp"
+                            android:alpha="1"
+                            android:layout_weight="1"
+                            android:layout_marginLeft="5dp" />
+                        <Button
+                            style="?android:attr/buttonStyleSmall"
+                            android:textSize="20sp"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/sendChatMsg"
+                            android:id="@+id/btnSendChatMsg"
+                            android:alpha="1"
+                            android:layout_marginRight="5dp"
+                            android:clickable="true" />
+
+
+                    </LinearLayout>
+
+
+                </LinearLayout>
+
+
             </LinearLayout>
 
         </LinearLayout>
+
     </FrameLayout>
 
 </FrameLayout>

@@ -149,10 +149,10 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
                      @Override
                      public void onAnimationEnd(Animation animation) {
                          // remove everything that is in screen_container
-                         if (at.fancycardgame.aauno.User.isLoggedIn() == false) {
+                         if (!at.fancycardgame.aauno.User.isLoggedIn()) {
                              DialogFragment loginDialog = new LoginDialogFragment();
                              loginDialog.show(getSupportFragmentManager(), "login");
-                         } else if (at.fancycardgame.aauno.User.isLoggedIn() == true) {
+                         } else if (at.fancycardgame.aauno.User.isLoggedIn()) {
                              //screen_container.removeAllViews();
                              // create gameboard from layout ...
                              // ... and add it to the screen_container
@@ -161,9 +161,9 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
                              // start new gameActivity
                              startActivity(new Intent(MainActivity.this, GameActivity.class));
 
-                             // "cleanup"
-                             Tools.mainActivity = null;
-                             finish();
+                             // "cleanup" TODO: check if necessary, because of back press button
+                             //Tools.mainActivity = null;
+                             //finish();
                          }
                      }
                  });
@@ -451,18 +451,18 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
 
         // TEST STUFF ******************************************************
         // *****************************************************************
-            Display display = getWindowManager().getDefaultDisplay();
-            Point res = new Point();
-            display.getSize(res);
+           // Display display = getWindowManager().getDefaultDisplay();
+           // Point res = new Point();
+           // display.getSize(res);
 
 
-            UnoCard test2 = new UnoCard(getApplicationContext(), (FrameLayout)((ViewGroup)findViewById(R.id.container)), new Point(res.x/2-50, res.y-130), getResources().getDrawable(R.drawable.blue_2), getResources().getDrawable(R.drawable.card_back), "Blue 2", "", "2", "Blue");
-            UnoCard test3 = new UnoCard(getApplicationContext(), (FrameLayout)((ViewGroup)findViewById(R.id.container)), new Point(res.x/2-100, res.y-130), getResources().getDrawable(R.drawable.red_6), getResources().getDrawable(R.drawable.card_back),"Red 6", "", "6", "Red");
-            UnoCard test4 = new UnoCard(getApplicationContext(), (FrameLayout)((ViewGroup)findViewById(R.id.container)), new Point(res.x/2-150, res.y-130), getResources().getDrawable(R.drawable.green_9), getResources().getDrawable(R.drawable.card_back),"Green 9", "", "9", "Green");
+           // UnoCard test2 = new UnoCard(getApplicationContext(), (FrameLayout)((ViewGroup)findViewById(R.id.container)), new Point(res.x/2-50, res.y-130), getResources().getDrawable(R.drawable.blue_2), getResources().getDrawable(R.drawable.card_back), "Blue 2", "", "2", "Blue");
+           // UnoCard test3 = new UnoCard(getApplicationContext(), (FrameLayout)((ViewGroup)findViewById(R.id.container)), new Point(res.x/2-100, res.y-130), getResources().getDrawable(R.drawable.red_6), getResources().getDrawable(R.drawable.card_back),"Red 6", "", "6", "Red");
+           // UnoCard test4 = new UnoCard(getApplicationContext(), (FrameLayout)((ViewGroup)findViewById(R.id.container)), new Point(res.x/2-150, res.y-130), getResources().getDrawable(R.drawable.green_9), getResources().getDrawable(R.drawable.card_back),"Green 9", "", "9", "Green");
 
-           test2.viewFront();
-           test3.viewFront();
-           test4.viewFront();
+           //test2.viewFront();
+           //test3.viewFront();
+           //test4.viewFront();
         // TEST STUFF ******************************************************
         // *****************************************************************
     }
