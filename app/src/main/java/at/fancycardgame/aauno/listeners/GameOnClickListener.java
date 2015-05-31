@@ -4,6 +4,7 @@ import android.content.Context;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
 import android.os.Handler;
+import android.os.Vibrator;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -22,10 +23,6 @@ import at.fancycardgame.aauno.toolbox.Tools;
  * Created by Thomas on 28.05.2015.
  */
 public class GameOnClickListener implements View.OnClickListener {
-
-    private ShakeEventListener mShakeDetector;
-    private SensorManager mSensorManager;
-    private Sensor mAccelerometer;
 
 
     @Override
@@ -123,32 +120,13 @@ public class GameOnClickListener implements View.OnClickListener {
             }, 3000);
 
         } else if(clickedID==R.id.btnPlay) {
+
             Tools.showToast("game should start!", Toast.LENGTH_SHORT);
             // check if e.g. 2 of 2 users are connected, 4 of 4 ...
 
             // WarpClient supports startGame() only in TurnedBasedRooms
             //Tools.wClient.startGame();
             Tools.wClient.sendUpdatePeers(Constants.WAIT_FOR_MIX.getBytes());
-
-            // shake listener init
-            mSensorManager = (SensorManager)Tools.game.getSystemService(Context.SENSOR_SERVICE);
-            mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-            mShakeDetector = new ShakeEventListener(new ShakeEventListener.OnShakeListener() {
-                @Override
-                public void onShake() {
-                    Tools.showToast("Device has been shaken! Mix CardDeck.", Toast.LENGTH_SHORT);
-                    Tools.wClient.sendUpdatePeers(Constants.STARTGAME.getBytes());
-                    //Tools.startGame();
-
-
-
-                    // only use it once then unregister
-                    mSensorManager.unregisterListener(mShakeDetector);
-                }
-            });
-
-            // register after init, it will unregister itself in onShake method
-            mSensorManager.registerListener(mShakeDetector, mAccelerometer, SensorManager.SENSOR_DELAY_UI);
 
         } else if(clickedID==R.id.btnSendChatMsg) {
             String txt = ((TextView)Tools.game.findViewById(R.id.txtChatMsg)).getText().toString();

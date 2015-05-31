@@ -4,11 +4,14 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.hardware.Sensor;
+import android.hardware.SensorManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.CountDownTimer;
 import android.os.Handler;
 import android.os.Message;
+import android.os.Vibrator;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,6 +31,7 @@ import at.fancycardgame.aauno.listeners.ConnectionRequestListener;
 import at.fancycardgame.aauno.listeners.GameOnClickListener;
 import at.fancycardgame.aauno.listeners.NotifyListener;
 import at.fancycardgame.aauno.listeners.RoomRequestListener;
+import at.fancycardgame.aauno.listeners.ShakeEventListener;
 import at.fancycardgame.aauno.listeners.ZoneRequestListener;
 
 /**
@@ -43,8 +47,11 @@ public class Tools {
     public static MainActivity mainActivity;
 
     public static GameActivity game;
-
     public static TextView shakeCardDeckHint;
+
+    private static ShakeEventListener mShakeDetector;
+    private static SensorManager mSensorManager;
+    private static Sensor mAccelerometer;
 
 
     public static View.OnClickListener gameOnClickListner = new GameOnClickListener();
@@ -128,6 +135,11 @@ public class Tools {
                 break;
 
             case Constants.STARTGAME:
+                // vibration feedback when device was shaked
+                Vibrator vib = (Vibrator)Tools.game.getSystemService(Context.VIBRATOR_SERVICE);
+                if(vib!=null)
+                    vib.vibrate(100);
+
                 Tools.game.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -188,6 +200,24 @@ public class Tools {
                             ViewGroup.LayoutParams p = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
                             Tools.game.addContentView(Tools.shakeCardDeckHint, p);
                             Tools.shakeCardDeckHint.invalidate();
+
+                            // shake listener init
+                            mSensorManager = (SensorManager)Tools.game.getSystemService(Context.SENSOR_SERVICE);
+                            mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+                            mShakeDetector = new ShakeEventListener(new ShakeEventListener.OnShakeListener() {
+                                @Override
+                                public void onShake() {
+                                    Tools.showToast("Mix it!", Toast.LENGTH_SHORT);
+
+                                    // send start command
+                                    Tools.wClient.sendUpdatePeers(Constants.STARTGAME.getBytes());
+
+                                    // only use it once then unregister
+                                    mSensorManager.unregisterListener(mShakeDetector);
+                                }
+                            });
+                            // register after init, it will unregister itself in onShake method
+                            mSensorManager.registerListener(mShakeDetector, mAccelerometer, SensorManager.SENSOR_DELAY_UI);
                         }
                     });
                 break;

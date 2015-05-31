@@ -60,7 +60,7 @@ public class NotifyListener implements com.shephertz.app42.gaming.multiplayer.cl
                    h.postDelayed(new Runnable() {
                        @Override
                        public void run() {
-                           Tools.wClient.sendUpdatePeers(Constants.STARTGAME.getBytes());
+                           Tools.wClient.sendUpdatePeers(Constants.WAIT_FOR_MIX.getBytes());
                        }
                    }, 4000);
                }

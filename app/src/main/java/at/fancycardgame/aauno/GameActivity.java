@@ -277,7 +277,7 @@ public class GameActivity extends Activity {
                 final String[] colorArray = {"Blue", "Green", "Red", "Yellow"};
 
 
-                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(Tools.appContext);
+                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(GameActivity.this);
                 alertDialogBuilder.setTitle("Choose a color!");
                 alertDialogBuilder.setItems(colorArray,
                         new DialogInterface.OnClickListener() {
