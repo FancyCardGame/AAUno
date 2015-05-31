@@ -3,6 +3,7 @@ package at.fancycardgame.aauno.toolbox;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.CountDownTimer;
@@ -23,7 +24,11 @@ import at.fancycardgame.aauno.GameActivity;
 import at.fancycardgame.aauno.MainActivity;
 import at.fancycardgame.aauno.R;
 import at.fancycardgame.aauno.User;
-import at.fancycardgame.aauno.listeners.*;
+import at.fancycardgame.aauno.listeners.ConnectionRequestListener;
+import at.fancycardgame.aauno.listeners.GameOnClickListener;
+import at.fancycardgame.aauno.listeners.NotifyListener;
+import at.fancycardgame.aauno.listeners.RoomRequestListener;
+import at.fancycardgame.aauno.listeners.ZoneRequestListener;
 
 /**
  * Created by Thomas on 27.05.2015.
@@ -38,6 +43,8 @@ public class Tools {
     public static MainActivity mainActivity;
 
     public static GameActivity game;
+
+    public static TextView shakeCardDeckHint;
 
 
     public static View.OnClickListener gameOnClickListner = new GameOnClickListener();
@@ -65,8 +72,6 @@ public class Tools {
 
             App42API.initialize(Tools.appContext, Constants.API_KEY, Constants.SECRET_KEY);
             WarpClient.initialize(Constants.API_KEY, Constants.SECRET_KEY);
-
-
 
             try {
                 Tools.wClient = WarpClient.getInstance();
@@ -115,24 +120,86 @@ public class Tools {
     }
 
     public static void executeFromRemote(String command) {
+
+
         switch(command) {
             case Constants.PREP_TO_PLAY:
                 Tools.startGameCountDown();
                 break;
 
             case Constants.STARTGAME:
-                Tools.startGame();
+                Tools.game.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        // no matter who you are just hide the mixText txt on screen
+                        Tools.shakeCardDeckHint.setVisibility(View.GONE); // <-- not working, but also no exeception
+                        //Tools.shakeCardDeckHint.setText("");
+                        //Tools.shakeCardDeckHint.invalidate(); // <-- not working, but also no exeception
+
+
+                        //Tools.showToast(v.toString(), Toast.LENGTH_LONG);
+                        // not working -->((View)mixText.getParent()).invalidate();
+                        // not working --> Tools.game.getWindow().getDecorView().findViewById(mixText.getId()).setVisibility(View.GONE);
+                        //((FrameLayout)mixText.getParent()).invalidate();
+                        //((FrameLayout)mixText.getParent()).removeView(mixText);
+                        Tools.game.startGame();
+                    }
+                });
+                break;
+
+            case Constants.WAIT_FOR_MIX:
+                // show gamefield but start game not yet
+
+                Tools.showGameField();
+
+                if(!Tools.roomOwner.equals(User.getUsername()))
+                // if you're not the admin
+                    Tools.game.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+
+                            Tools.shakeCardDeckHint= new TextView(Tools.game.getApplicationContext());
+                            Typeface font = Typeface.createFromAsset(Tools.game.getAssets(), "Comic Book Bold.ttf");
+                            Tools.shakeCardDeckHint.setTypeface(font);
+                            Tools.shakeCardDeckHint.setGravity(Gravity.CENTER);
+                            Tools.shakeCardDeckHint.setTextSize(50);
+                            Tools.shakeCardDeckHint.setTextColor(Color.YELLOW);
+                            Tools.shakeCardDeckHint.setText("Wait until match maker mixes the card deck!");
+
+                            ViewGroup.LayoutParams p = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+                            Tools.game.addContentView(Tools.shakeCardDeckHint, p);
+
+                            Tools.shakeCardDeckHint.invalidate();
+                        }
+                    });
+                else
+                // if you're the admin
+                    Tools.game.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Tools.shakeCardDeckHint= new TextView(Tools.game.getApplicationContext());
+                            Typeface font = Typeface.createFromAsset(Tools.game.getAssets(), "Comic Book Bold.ttf");
+                            Tools.shakeCardDeckHint.setTypeface(font);
+                            Tools.shakeCardDeckHint.setGravity(Gravity.CENTER);
+                            Tools.shakeCardDeckHint.setTextSize(50);
+                            Tools.shakeCardDeckHint.setTextColor(Color.YELLOW);
+                            Tools.shakeCardDeckHint.setText("Mix the card deck by shaking your device!");
+
+                            ViewGroup.LayoutParams p = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+                            Tools.game.addContentView(Tools.shakeCardDeckHint, p);
+                            Tools.shakeCardDeckHint.invalidate();
+                        }
+                    });
                 break;
         }
     }
 
-    public static void startGame(){
+    public static void showGameField(){
         Tools.game.runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 Tools.game.setContentView(R.layout.game_field);
                 Tools.game.gameBoard = (ViewGroup)Tools.game.getLayoutInflater().inflate(R.layout.game_field, null);
-                Tools.game.startGame();
             }
         });
     }

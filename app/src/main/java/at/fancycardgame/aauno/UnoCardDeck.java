@@ -3,11 +3,16 @@ package at.fancycardgame.aauno;
 import android.content.Context;
 import android.graphics.Point;
 import android.graphics.drawable.Drawable;
+import android.hardware.Sensor;
+import android.hardware.SensorManager;
 import android.util.Log;
 import android.widget.FrameLayout;
 import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.Random;
+
+import at.fancycardgame.aauno.listeners.ShakeEventListener;
+import at.fancycardgame.aauno.toolbox.Tools;
 
 /**
  * Created by Thomas on 15.04.2015.
@@ -24,6 +29,11 @@ public class UnoCardDeck {
     private Context appContext;
     // the position of the deck
     private FrameLayout deckPos;
+
+
+
+
+
 
     // constructor
     public UnoCardDeck(Context appcon, FrameLayout deckPos) {
@@ -197,31 +207,35 @@ public class UnoCardDeck {
         // LOGGING ONLY
         Toast.makeText(this.appContext, "CardDeck created. Size=" + this.cards.size(), Toast.LENGTH_LONG).show();
         this.mixDeck();
-        Toast.makeText(this.appContext, "CardDeck mixed.", Toast.LENGTH_LONG).show();
+        // mix it !
+        Tools.showToast("CardDeck mixed.", Toast.LENGTH_SHORT);
     }
 
     private void mixDeck() {
+       // Toast.makeText(Tools.game.appContext, "CardDeck mixed.", Toast.LENGTH_LONG).show();
+
         // to generate random numbers between 0 and this.cards.size()
         Random rnd = new Random();
         ArrayList<UnoCard> mixed = new ArrayList<UnoCard>();
 
         // mix it!
-        for(int i = this.cards.size()-1; i>0;i--) {
+        for(int i = cards.size()-1; i>0;i--) {
             int index = rnd.nextInt(i+1);
-            UnoCard helper = this.cards.get(index);
-            this.cards.remove(index);
+            UnoCard helper = cards.get(index);
+            cards.remove(index);
             mixed.add(helper);
         }
 
         // delete current arrayList
-        this.cards = null;
+        cards = null;
         // set mixed cards to original carddeck
-        this.cards = mixed;
+        cards = mixed;
 
         // paint cards again because order has changed
-        for(UnoCard c : this.cards) {
-            c.setContainer(this.deckPos);
+        for(UnoCard c : cards) {
+            c.setContainer(deckPos);
         }
+
     }
 
     public ArrayList<UnoCard> getCards() {

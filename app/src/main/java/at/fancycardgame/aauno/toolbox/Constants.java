@@ -13,6 +13,7 @@ public class Constants {
     // game commands constants
     public static final String STARTGAME = "START";
     public static final String PREP_TO_PLAY = "CNTDWN";
+    public static final String WAIT_FOR_MIX = "WAIT_MIX";
 
 
 }

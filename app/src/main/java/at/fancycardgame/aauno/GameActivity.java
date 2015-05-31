@@ -2,8 +2,11 @@ package at.fancycardgame.aauno;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Point;
+import android.hardware.Sensor;
+import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -22,6 +25,7 @@ import android.widget.Toast;
 import java.util.ArrayList;
 
 import at.fancycardgame.aauno.adapters.JoinedPlayersAdapter;
+import at.fancycardgame.aauno.listeners.ShakeEventListener;
 import at.fancycardgame.aauno.toolbox.GameState;
 import at.fancycardgame.aauno.toolbox.Tools;
 
@@ -53,7 +57,6 @@ public class GameActivity extends Activity {
 
 
 
-
     protected void onCreate(Bundle savedInstanceState) {
       super.onCreate(savedInstanceState);
 
@@ -74,6 +77,7 @@ public class GameActivity extends Activity {
 
         Tools.init(this.getApplicationContext());
         Tools.game = this;
+
 
 
         // Toast.makeText(getApplicationContext(), "before room creation", Toast.LENGTH_SHORT).show();
@@ -437,7 +441,9 @@ public class GameActivity extends Activity {
 
     @Override
     protected void onPause() {
-        super.onPause();
+
+        // unregister if neede (to save battery)
+        //
 
         // HINT: with savedInstanceState, currently not working
         if(GameState.gameCondition!=null)
@@ -445,13 +451,15 @@ public class GameActivity extends Activity {
                 Tools.wClient.leaveRoom(Tools.currentRoom);
                 updateJoinedPlayersListView();
             }
+
+        super.onPause();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
 
-        // HINT: with savedInstanceState,currently not working
+        // HINT: maybe try with savedInstanceState, next codelines currently not working
         if(GameState.gameCondition!=null)
             if(GameState.gameCondition.equals(GameState.LOBBY)) {
                 Tools.wClient.joinRoom(Tools.currentRoom);
