@@ -46,12 +46,25 @@ public class GameActivity extends Activity {
     private Button testBtn;
     public View playedCard;
 
-    private Display display;
-
     private ViewGroup game_activity_start;
     public ViewGroup game_activity_creategame;
     public  ViewGroup game_activity_joingame;
     public ViewGroup game_activity_startedGameLobby;
+
+    private final Context context = this;
+
+    private String chosenColor;
+    private int cardsToDraw;
+
+    //List of lists of player cards
+    //private ArrayList<ArrayList<UnoCard>> playerCards
+    private ArrayList<UnoCard> playerCards;
+    private ArrayList<UnoCard> playedCards;
+
+    private Display display;
+    private Point res;
+
+    private ViewGroup deckPosition;
 
 
 
@@ -99,65 +112,41 @@ public class GameActivity extends Activity {
 
 
     public void startGame() {
-        GameState.gameCondition = GameState.STARTED;
-
-        final ViewGroup deckPosition = ((ViewGroup)findViewById(R.id.cardDeckPosition));
-        // create card deck and set where to put it
-        this.cardDeck = new UnoCardDeck(this.getApplicationContext(), (FrameLayout)deckPosition);
-
         // test button
         this.testBtn = (Button) findViewById(R.id.testBtn);
 
-        //Store played cards somewhere
-        final ArrayList<UnoCard> playedCards = new ArrayList<>();
-
-        //Give the player 7 cards from the deck
-
-        Display display = getWindowManager().getDefaultDisplay();
-        Point res = new Point();
+        this.display = getWindowManager().getDefaultDisplay();
+        this.res = new Point();
         display.getSize(res);
 
-        final ArrayList<UnoCard> playerCards = new ArrayList<>();
+        this.playedCards = new ArrayList<>();
+        this.playerCards = new ArrayList<>();
 
+        // Create a card deck and set it's position
+        this.deckPosition = ((ViewGroup) findViewById(R.id.cardDeckPosition));
+        this.cardDeck = new UnoCardDeck(this.getApplicationContext(), (FrameLayout) deckPosition);
 
-        for (int i=0;i<8;i++){
+        for (int i = 0; i < 8; i++) {
             // Give cards to the player, remove given cards from draw stack
             playerCards.add(i, cardDeck.getCard());
-            playerCards.get(i).setLocation(res.x/8 + (i * 50), res.y - 130);
+            playerCards.get(i).setLocation(res.x / 8 + (i * 50), res.y - 130);
             playerCards.get(i).viewFront();
             playerCards.get(i).setContainer((FrameLayout) findViewById(R.id.container));
             cardDeck.removeCard(playerCards.get(i));
         }
 
-/*        UnoCard testCard = new UnoCard(getApplicationContext(), (FrameLayout)((ViewGroup)findViewById(R.id.container)), new Point(res.x/2-50, res.y-130), getResources().getDrawable(R.drawable.color_change), getResources().getDrawable(R.drawable.card_back), "Color Change", "", "COLOR CHANGE", "COLOR CHANGE");
-        testCard.viewFront();
-        testCard.setContainer((FrameLayout) findViewById(R.id.container));
-        playerCards.add(playedCards.size(), testCard);
+        // TODO: Draw cards by dragging from the stack to the player card position
+        // Add OnDragListener to playerCardsPosition for this
 
-        UnoCard testPlus4 = new UnoCard(getApplicationContext(), (FrameLayout)((ViewGroup)findViewById(R.id.container)), new Point(200, 200), getResources().getDrawable(R.drawable.color_change_plus4), getResources().getDrawable(R.drawable.card_back), "Color Change Plus 4", "", "COLOR CHANGE PLUS 4", "COLOR CHANGE PLUS 4");
-        UnoCard testPlus4_1 = new UnoCard(getApplicationContext(), (FrameLayout)((ViewGroup)findViewById(R.id.container)), new Point(210, 210), getResources().getDrawable(R.drawable.color_change_plus4), getResources().getDrawable(R.drawable.card_back), "Color Change Plus 4", "", "COLOR CHANGE PLUS 4", "COLOR CHANGE PLUS 4");
-
-        testPlus4.viewFront();
-        testPlus4.setContainer((FrameLayout) findViewById(R.id.container));
-        testPlus4_1.viewFront();
-        testPlus4_1.setContainer((FrameLayout) findViewById(R.id.container));
-
-        playedCards.add(playedCards.size(), testPlus4);
-        playedCards.add(playedCards.size(), testPlus4_1);*/
-        final Point finalRes1 = res;
-        // Draw cards by dragging from the stack to the player card position
-        // add OnDragListener to playCardsPosition where player can drag&drop their cards
-
+        // Add onDragListener to playCardsPosition to allow drag & drop of cards
         findViewById(R.id.playCardsPosition).setOnDragListener(new View.OnDragListener() {
-            //Drawable enterShape = getResources().getDrawable(entershape);
-            //Drawable normalShape = getResources().getDrawable(normalshape);
             @Override
             public boolean onDrag(View v, DragEvent event) {
                 int action = event.getAction();
-                final View view = (View)event.getLocalState();
+                final View view = (View) event.getLocalState();
 
                 // switch user action
-                switch(action) {
+                switch (action) {
                     case DragEvent.ACTION_DRAG_STARTED:
                         // show user where to put the card
                         //v.setBackgroundDrawable(enterShape);
@@ -177,15 +166,15 @@ public class GameActivity extends Activity {
                         break;
                     case DragEvent.ACTION_DROP:
                         //if (playedCards.size() > 0 && (playedCards.get(playedCards.size() - 1).getColor() != cardToBePlayed(view).getColor())){
-                        if ((playedCards.size() > 0 && validPlay(playedCards.get(playedCards.size() - 1), cardToBePlayed(view))) || playedCards.size() == 0){
+                        if ((playedCards.size() > 0 && validPlay(playedCards.get(playedCards.size() - 1), cardToBePlayed(view))) || playedCards.size() == 0) {
                             // remove from current owner
                             ViewGroup owner = (ViewGroup) view.getParent();
                             // owner.removeView(view);
                             // get current X and Y coordinates from drop event
                             // view.setX(event.getX() - (view.getWidth() / 2));
                             //view.setY(event.getY() - (view.getHeight() / 2));
-                            if (cardToBePlayed(view) != null){
-                                cardToBePlayed(view).setLocation(finalRes1.x/2 - (view.getWidth() + 50), finalRes1.y/2 - view.getHeight()/2);
+                            if (cardToBePlayed(view) != null) {
+                                cardToBePlayed(view).setLocation(res.x / 2 - (view.getWidth() + 50), res.y / 2 - view.getHeight() / 2);
                                 cardToBePlayed(view).viewFront();
                             }
                             // add dropped view to new parent (playCardsPosition)
@@ -209,227 +198,167 @@ public class GameActivity extends Activity {
                 }
                 return true;
             }
-
-            int cardsToDraw = 0;
-            //played card logic goes here, e.g. color chooser, turn turner, etc.??
-            private void playCard(View playedCard) {
-                for (int i=0;i<playerCards.size();i++){
-                    if (playerCards.get(i).getImageView() == playedCard){
-                        Log.d("Played Card:", playerCards.get(i).getName());
-                        playedCards.add(playerCards.get(i));
-                        String card = playerCards.get(i).getValue();
-                        switch (card) {
-                            case "COLOR CHANGE":
-                                chosenColor = chooseColor();
-                                break;
-                            case "COLOR CHANGE PLUS 4":
-                                //Player has played color chooser, let him choose a color and enforce it
-                                cardsToDraw += 4;
-                                chosenColor = chooseColor();
-                                break;
-                            case "SKIP":
-                                Toast.makeText(Tools.appContext, "Next player has to skip his turn!", Toast.LENGTH_SHORT).show();
-                                break;
-                            case "TURN":
-                                Toast.makeText(Tools.appContext, "Turn order has been reversed!", Toast.LENGTH_SHORT).show();
-                                break;
-                            case "PLUS 2":
-                                cardsToDraw += 2;
-                                break;
-                            default:
-                                break;
-                        }
-                        playerCards.remove(i);
-                        break;
-                    }
-                }
-            }
-
-            private UnoCard cardToBePlayed(View selectedCard){
-                for (int i=0;i<playerCards.size();i++){
-                    if (playerCards.get(i).getImageView() == selectedCard){
-                        Log.d("toBePlayed", playerCards.get(i).getName());
-                        return playerCards.get(i);
-                    }
-                }
-                return null;
-            }
-
-            private void drawCards(int count){
-                Toast.makeText(Tools.appContext, "Drawing " + count + " cards", Toast.LENGTH_SHORT).show();
-                // This should go somewhere else to be accessible
-                for (int i=0;i<count;i++){
-                    // Give cards to the player, remove given cards from draw stack
-                    playerCards.add(i, cardDeck.getCard());
-                    cardDeck.removeCard(playerCards.get(i));
-                }
-                // reposition current cards
-                for (int i=0;i<playerCards.size();i++){
-                    playerCards.get(i).setLocation(finalRes1.x / (playerCards.size()) + (i * 50), finalRes1.y - 130);
-                    playerCards.get(i).viewFront();
-                    playerCards.get(i).setContainer((FrameLayout) findViewById(R.id.container));
-                }
-            }
-
-            String chosenColor = "";
-
-            private String chooseColor(){
-                final String[] colorArray = {"Blue", "Green", "Red", "Yellow"};
-
-
-                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(GameActivity.this);
-                alertDialogBuilder.setTitle("Choose a color!");
-                alertDialogBuilder.setItems(colorArray,
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                //Toast.makeText(context, "Which: " + which, Toast.LENGTH_LONG).show();
-                                chosenColor = colorArray[which];
-                            }
-                        });
-                alertDialogBuilder.show();
-                return chosenColor;
-            }
-
-            private boolean validPlay(UnoCard played, UnoCard toBePlayed){
-                // Rules of play go here
-                // (Next) player has to skip his turn after a "Skip" card has been played
-                // (Next) Player has to X draw cards if a "draw X cards" card is played
-                // Player has to select a color if he/she plays a color change card
-                // Turn order has to be reversed if a player plays a turn card
-                // TODO: Color Change card gets played on top of a special card
-                if (played.getValue().equals(toBePlayed.getValue())){
-                    switch (played.getValue()){
-                        case "PLUS 2":
-                            if (!toBePlayed.getValue().equals("PLUS 2")) {
-                                // If no +2 card is played on top of a +2 card player has to draw cards
-                                drawCards(cardsToDraw);
-                                cardsToDraw = 0;
-                            }
-                            break;
-                        default:
-                            break;
-                    }
-                    return true;
-                } else if ((played.getColor().equals(toBePlayed.getColor()))) {
-                    switch (played.getValue()){
-                        case "PLUS 2":
-                            if (!toBePlayed.getValue().equals("PLUS 2")) {
-                                // If no +2 card is played on top of a +2 card player has to draw cards
-                                drawCards(cardsToDraw);
-                                cardsToDraw = 0;
-                            }
-                            break;
-                        default:
-                            break;
-                    }
-                    return true;
-                } else if (toBePlayed.getValue().equals("COLOR CHANGE")) {
-                    // This card can be played on top of every other card
-                    switch (played.getValue()){
-                        case "PLUS 2":
-                        case "COLOR CHANGE PLUS 4":
-                            drawCards(cardsToDraw);
-                            cardsToDraw = 0;
-                            break;
-                        default:
-                            break;
-                    }
-                    return true;
-                } else if (played.getValue().equals("COLOR CHANGE")) {
-                    // Enforce chosen color
-                    if (toBePlayed.getColor().equals(chosenColor)){
-                        chosenColor = "";
-                        return true;
-                    } else if (toBePlayed.getValue().equals("COLOR CHANGE PLUS 4")){
-                        chosenColor = "";
-                        return true;
-                    } else {
-                        return false;
-                    }
-                } else if (toBePlayed.getValue().equals("COLOR CHANGE PLUS 4")) {
-                    return true;
-                } else if (played.getValue().equals("COLOR CHANGE PLUS 4")){
-                    if (toBePlayed.getColor().equals(chosenColor)){
-                        switch (toBePlayed.getValue()) {
-                            case "PLUS 2":
-                                //cardsToDraw += 2;
-                                break;
-                            case "COLOR CHANGE PLUS 4":
-                                //cardsToDraw += 4;
-                                break;
-                            default:
-                                drawCards(cardsToDraw);
-                                cardsToDraw = 0;
-                                break;
-                        }
-                        chosenColor = "";
-                        return true;
-                    } else {
-                        return false;
-                    }
-                } else {
-                    return false;
-                }
-            }
         });
-
-
-
-
-        // mix deck
-        //this.mixDeck();
-
-        // deal out cards to user (each user gets 7 from the mixed deck)
-        // set on drag listener to null when creating deck
-
-        // TEST STUFF ******************************************************
-        // *****************************************************************
-        display = getWindowManager().getDefaultDisplay();
-        res = new Point();
-        display.getSize(res);
-
-            /*
-            UnoCard test2 = new UnoCard(getApplicationContext(), (FrameLayout)((ViewGroup)findViewById(R.id.container)), new Point(res.x/2-50, res.y-130), getResources().getDrawable(R.drawable.blue_2), getResources().getDrawable(R.drawable.card_back), "Blue 2", "", "2", "Blue");
-            UnoCard test3 = new UnoCard(getApplicationContext(), (FrameLayout)((ViewGroup)findViewById(R.id.container)), new Point(res.x/2-100, res.y-130), getResources().getDrawable(R.drawable.red_6), getResources().getDrawable(R.drawable.card_back),"Red 6", "", "6", "Red");
-            UnoCard test4 = new UnoCard(getApplicationContext(), (FrameLayout)((ViewGroup)findViewById(R.id.container)), new Point(res.x/2-150, res.y-130), getResources().getDrawable(R.drawable.green_9), getResources().getDrawable(R.drawable.card_back),"Green 9", "", "9", "Green");
-
-           test2.viewFront();
-           test3.viewFront();
-           test4.viewFront();*/
-
-        final Point finalRes = res;
-        testBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Draw card, refresh position of all cards
-
-                if (cardDeck.getSize() > 0){
-                    playerCards.add(cardDeck.getCard());
-                    cardDeck.removeCard(playerCards.get(playerCards.size() - 1));
-                } else {
-                    cardDeck = new UnoCardDeck(Tools.appContext, (FrameLayout)deckPosition);
-                    playerCards.add(cardDeck.getCard());
-                    cardDeck.removeCard(playerCards.get(playerCards.size() - 1));
-                }
-
-                Log.d("Size matters", "" + cardDeck.getSize());
-                Log.d("Player Size", "" + playerCards.size());
-                Log.d("Drawn card", playerCards.get(playerCards.size() - 1).getName());
-
-                for (int i=0;i<playerCards.size();i++){
-                    playerCards.get(i).setLocation(finalRes.x / (playerCards.size()) + (i * 50), finalRes.y - 130);
-                    playerCards.get(i).viewFront();
-                    playerCards.get(i).setContainer((FrameLayout) findViewById(R.id.container));
-                }
-            }
-        });
-
-        // TEST STUFF ******************************************************
-        // TEST STUFF ******************************************************
-        // *****************************************************************
     }
 
+    private void playCard(View playedCard) {
+        for (int i=0;i<playerCards.size();i++){
+            if (playerCards.get(i).getImageView() == playedCard){
+                Log.d("Played Card:", playerCards.get(i).getName());
+                playedCards.add(playerCards.get(i));
+                switch (playerCards.get(i).getValue()) {
+                    case "COLOR CHANGE":
+                        // Player played a color chooser, let him choose a color
+                        chosenColor = chooseColor();
+                        break;
+                    case "COLOR CHANGE PLUS 4":
+                        //Player played a color chooser + 4, let him choose a color and increase draw stack
+                        cardsToDraw += 4;
+                        chosenColor = chooseColor();
+                        break;
+                    case "SKIP":
+                        // Next player has to skip his turn
+                        Toast.makeText(context, "Next player has to skip his turn!", Toast.LENGTH_SHORT).show();
+                        break;
+                    case "TURN":
+                        // Turn order has to be reversed
+                        Toast.makeText(context, "Turn order has been reversed!", Toast.LENGTH_SHORT).show();
+                        break;
+                    case "PLUS 2":
+                        // Increase draw stack
+                        cardsToDraw += 2;
+                        break;
+                    default:
+                        // No special card has been played
+                        break;
+                }
+                playerCards.remove(i);
+                break;
+            }
+        }
+    }
+
+    private UnoCard cardToBePlayed(View selectedCard){
+        for (int i=0;i<playerCards.size();i++){
+            if (playerCards.get(i).getImageView() == selectedCard){
+                Log.d("toBePlayed", playerCards.get(i).getName());
+                return playerCards.get(i);
+            }
+        }
+        return null;
+    }
+
+    private void drawCards(int count){
+        Toast.makeText(context, "Drawing " + count + " cards", Toast.LENGTH_SHORT).show();
+        for (int i=0;i<count;i++){
+            if (cardDeck.getSize() > 0){
+                playerCards.add(cardDeck.getCard());
+                cardDeck.removeCard(playerCards.get(playerCards.size() - 1));
+            } else {
+                cardDeck = new UnoCardDeck(context, (FrameLayout)deckPosition);
+                playerCards.add(cardDeck.getCard());
+                cardDeck.removeCard(playerCards.get(playerCards.size() - 1));
+            }
+        }
+        // Reposition cards
+        for (int i=0;i<playerCards.size();i++){
+            playerCards.get(i).setLocation(res.x / (playerCards.size()) + (i * 50), res.y - 130);
+            playerCards.get(i).viewFront();
+            playerCards.get(i).setContainer((FrameLayout) findViewById(R.id.container));
+        }
+    }
+
+    private boolean validPlay(UnoCard played, UnoCard toBePlayed){
+        if (played.getValue().equals(toBePlayed.getValue())){
+            switch (played.getValue()){
+                case "PLUS 2":
+                    if (!toBePlayed.getValue().equals("PLUS 2")) {
+                        // If no +2 card is played on top of a +2 card player has to draw cards
+                        drawCards(cardsToDraw);
+                        cardsToDraw = 0;
+                    }
+                    break;
+                default:
+                    break;
+            }
+            return true;
+        } else if ((played.getColor().equals(toBePlayed.getColor()))) {
+            switch (played.getValue()){
+                case "PLUS 2":
+                    if (!toBePlayed.getValue().equals("PLUS 2")) {
+                        // If no +2 card is played on top of a +2 card player has to draw cards
+                        drawCards(cardsToDraw);
+                        cardsToDraw = 0;
+                    }
+                    break;
+                default:
+                    break;
+            }
+            return true;
+        } else if (toBePlayed.getValue().equals("COLOR CHANGE")) {
+            // This card can be played on top of every other card
+            switch (played.getValue()){
+                case "PLUS 2":
+                case "COLOR CHANGE PLUS 4":
+                    drawCards(cardsToDraw);
+                    cardsToDraw = 0;
+                    break;
+                default:
+                    break;
+            }
+            return true;
+        } else if (played.getValue().equals("COLOR CHANGE")) {
+            // Enforce chosen color
+            if (toBePlayed.getColor().equals(chosenColor)){
+                chosenColor = "";
+                return true;
+            } else if (toBePlayed.getValue().equals("COLOR CHANGE PLUS 4")){
+                chosenColor = "";
+                return true;
+            } else {
+                return false;
+            }
+        } else if (toBePlayed.getValue().equals("COLOR CHANGE PLUS 4")) {
+            return true;
+        } else if (played.getValue().equals("COLOR CHANGE PLUS 4")){
+            if (toBePlayed.getColor().equals(chosenColor)){
+                switch (toBePlayed.getValue()) {
+                    case "PLUS 2":
+                        //cardsToDraw += 2;
+                        break;
+                    case "COLOR CHANGE PLUS 4":
+                        //cardsToDraw += 4;
+                        break;
+                    default:
+                        drawCards(cardsToDraw);
+                        cardsToDraw = 0;
+                        break;
+                }
+                chosenColor = "";
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }
+
+    private String chooseColor(){
+        final String[] colorArray = {"Blue", "Green", "Red", "Yellow"};
+
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
+        alertDialogBuilder.setTitle("Choose a color!");
+        alertDialogBuilder.setItems(colorArray,
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        chosenColor = colorArray[which];
+                    }
+                });
+        alertDialogBuilder.show();
+        return chosenColor;
+    }
 
 
 
