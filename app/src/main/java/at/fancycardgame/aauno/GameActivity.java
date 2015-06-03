@@ -252,6 +252,20 @@ public class GameActivity extends Activity {
         return cardPlayed;
     }
 
+    public void playSomeCard(){
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                UnoCard test = cardDeck.getCard();
+                test.setLocation(200, 200);
+                test.viewFront();
+                test.setContainer((FrameLayout) findViewById(R.id.container));
+            }
+        });
+
+
+    }
+
     public void playCard(View playedCard) {
         for (int i=0;i<playerCards.size();i++){
             if (playerCards.get(i).getImageView() == playedCard){

@@ -109,6 +109,7 @@ public class NotifyListener implements com.shephertz.app42.gaming.multiplayer.cl
             String card =  message.substring(message.indexOf('#')+1, message.length());
             Log.d("updateEvent Message", "" + card);
             //Tools.game.playCard((View) card);
+            Tools.game.playSomeCard();
         }
         try {
             s = new String(updateEvent.getUpdate(), "UTF-8");
