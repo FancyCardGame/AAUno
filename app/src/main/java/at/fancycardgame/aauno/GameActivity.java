@@ -5,10 +5,9 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Point;
-import android.hardware.Sensor;
-import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 import android.view.Display;
 import android.view.DragEvent;
@@ -22,10 +21,17 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+// import com.app.appwarplisterner.WarpListener;
+import com.shephertz.app42.gaming.multiplayer.client.WarpClient;
+import com.shephertz.app42.gaming.multiplayer.client.events.UpdateEvent;
+import com.shephertz.app42.gaming.multiplayer.client.listener.NotifyListener;
+import com.shephertz.app42.gaming.multiplayer.client.listener.RoomRequestListener;
+import com.shephertz.app42.gaming.multiplayer.client.util.Util;
+
 import java.util.ArrayList;
 
 import at.fancycardgame.aauno.adapters.JoinedPlayersAdapter;
-import at.fancycardgame.aauno.listeners.ShakeEventListener;
+import at.fancycardgame.aauno.listeners.WarpListener;
 import at.fancycardgame.aauno.toolbox.GameState;
 import at.fancycardgame.aauno.toolbox.Tools;
 
@@ -35,6 +41,10 @@ import at.fancycardgame.aauno.toolbox.Tools;
 
 public class GameActivity extends Activity {
 
+    // Multiplayer Stuff
+    private WarpClient theClient;
+    private WarpListener eventHandler = new WarpListener(this);
+
 
     public ViewGroup gameBoard;
     // the card deck
@@ -43,8 +53,7 @@ public class GameActivity extends Activity {
     private static float density;
 
     //test button
-    private Button testBtn;
-    public View playedCard;
+    private Button drawBtn;
 
     private ViewGroup game_activity_start;
     public ViewGroup game_activity_creategame;
@@ -65,9 +74,7 @@ public class GameActivity extends Activity {
     private Point res;
 
     private ViewGroup deckPosition;
-
-
-
+    private Button testBtn;
 
 
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,6 +100,7 @@ public class GameActivity extends Activity {
 
 
 
+
         // Toast.makeText(getApplicationContext(), "before room creation", Toast.LENGTH_SHORT).show();
         //if(at.fancycardgame.aauno.User.getUsername()!=null)
             //theClient.connectWithUserName(at.fancycardgame.aauno.User.getUsername());
@@ -109,11 +117,41 @@ public class GameActivity extends Activity {
         //startGame();
     }
 
-
-
     public void startGame() {
+
+        // Multiplayer Stuff
+        try {
+            theClient = WarpClient.getInstance();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        theClient.addRoomRequestListener(eventHandler);
+        theClient.addNotificationListener(eventHandler);
+
+
+
+
         // test button
+        this.drawBtn = (Button) findViewById(R.id.drawBtn);
+
+        drawBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                drawCards(1);
+            }
+        });
+        
         this.testBtn = (Button) findViewById(R.id.testBtn);
+
+        testBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String msg = "TEST";
+                Tools.wClient.sendUpdatePeers(msg.getBytes());
+                updateMove("Helloooo");
+            }
+        });
+        
 
         this.display = getWindowManager().getDefaultDisplay();
         this.res = new Point();
@@ -361,8 +399,6 @@ public class GameActivity extends Activity {
     }
 
 
-
-
     public static int scale(int v) {
         return (int) GameActivity.density * v;
     }
@@ -371,7 +407,7 @@ public class GameActivity extends Activity {
     @Override
     protected void onPause() {
 
-        // unregister if neede (to save battery)
+        // unregister if needed(to save battery)
         //
 
         // HINT: with savedInstanceState, currently not working
@@ -432,7 +468,7 @@ public class GameActivity extends Activity {
                     chat.setAdapter(adp);
                     adp.notifyDataSetChanged();
 
-                    chat.setSelection(adp.getCount()-1);
+                    chat.setSelection(adp.getCount() - 1);
                     chat.setDivider(null);
                 }
             });
@@ -487,67 +523,29 @@ public class GameActivity extends Activity {
         adapter.notifyDataSetChanged();
     }
 
-
-
-
-
-
-
-
-    //List available Bluetooth devices
-    /*public void showPlayers() {
-
-        Set<BluetoothDevice> pairedDevices = bluetoothAdapter.getBondedDevices();
-        final ArrayList<String> list = new ArrayList<String>();
-        final ListView playersList = (ListView) findViewById(R.id.listPlayers);
-
-
-        If there are paired devices
-        if (pairedDevices.size() > 0) {
-            // Loop through paired devices
-            for (BluetoothDevice device : pairedDevices) {
-                // Add the name and address to an array adapter to show in a ListView
-                adapter.add(device.getName() + "\n" + device.getAddress());
-                playersList.setAdapter(adapter);
-            }
+    public void sendUpdateEvent(String msg){
+        try{
+            String message = msg;
+            theClient.sendUDPUpdatePeers(message.getBytes());
+        } catch (Exception e){
+            Log.d("Exc: sendUpdateEvent", e.getMessage());
         }
-
-        bluetoothAdapter.startDiscovery();
-
-        // Create a BroadcastReceiver for ACTION_FOUND
-        BroadcastReceiver mReceiver = new BroadcastReceiver() {
-            public void onReceive(Context context, Intent intent) {
-                String action = intent.getAction();
-                // When discovery finds a device
-                if (BluetoothDevice.ACTION_FOUND.equals(action)) {
-                    // Get the BluetoothDevice object from the Intent
-                    BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-                    // Add the name and address to an array adapter to show in a ListView
-                    list.add(device.getName() + "\n" + device.getAddress());
-                    ArrayAdapter adapter = new ArrayAdapter(getApplication(), android.R.layout.simple_list_item_1, list);
-                    playersList.setAdapter(adapter);
-                }
-            }
-        };
-        // Register the BroadcastReceiver
-        IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
-        registerReceiver(mReceiver, filter); // Don't forget to unregister during onDestroy
-
-    }*/
-/*
-    public void loadFragment(){
-
-       final Fragment f = new Fragment();
-         getSupportFragmentManager().beginTransaction()
-                .add(R.id.screens, f,"screens")
-                .addToBackStack("tag")
-                .commit();
-
     }
 
-    public void onBackPressed(){
+    public void updateMove(String msg){
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                sendUpdateEvent("Hi there!");
+            }
+        });
+    }
 
-}
-  */
+    /*public void onUpdatePeersRecieved(UpdateEvent event){
+        if (event.isUDP()){
+            String message = new String(event.getUpdate());
+            Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
+        }
+    }*/
 
 }
