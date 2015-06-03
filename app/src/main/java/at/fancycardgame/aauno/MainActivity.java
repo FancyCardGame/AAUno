@@ -2,23 +2,16 @@ package at.fancycardgame.aauno;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Point;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
-import android.view.Display;
-import android.view.DragEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.widget.Button;
-import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -50,17 +43,8 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
 
     private View.OnClickListener mainOnClickListener = this;
 
-    // the card deck
-    private UnoCardDeck cardDeck;
-
     // the logical density of the display
     private static float density;
-
-    //test button
-    private Button testBtn;
-    private View playedCard;
-
-    private Display display;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,11 +67,6 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
         this.gameBoard = (ViewGroup)getLayoutInflater().inflate(R.layout.game_field, null);
         this.createUserMenu = (ViewGroup)getLayoutInflater().inflate(R.layout.menu_createuser_page, null);
         this.changePwdMenu = (ViewGroup)getLayoutInflater().inflate(R.layout.menu_changepwd_page, null);
-
-        // get current display
-        this.display = ((WindowManager)getBaseContext().getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
-
-
 
         // ***** PREPARE WHOLE MENU *******
         // startpage
@@ -383,88 +362,6 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
                 Tools.showToast("Exception Message : "+ ex.getMessage(), Toast.LENGTH_SHORT);
             }
         });
-    }
-
-    private void startGame() {
-
-        ViewGroup deckPosition = ((ViewGroup)findViewById(R.id.cardDeckPosition));
-        // create card deck and set where to put it
-        this.cardDeck = new UnoCardDeck(this.getApplicationContext(), (FrameLayout)deckPosition);
-
-        // add OnDragListener to playCardsPosition where player can drag&drop their cards
-        findViewById(R.id.playCardsPosition).setOnDragListener(new View.OnDragListener() {
-            //Drawable enterShape = getResources().getDrawable(entershape);
-            //Drawable normalShape = getResources().getDrawable(normalshape);
-            @Override
-            public boolean onDrag(View v, DragEvent event) {
-                int action = event.getAction();
-                final View view = (View)event.getLocalState();
-
-                // switch user action
-                switch(action) {
-                    case DragEvent.ACTION_DRAG_STARTED:
-                        // show user where to put the card
-                        //v.setBackgroundDrawable(enterShape);
-                        break;
-                    case DragEvent.ACTION_DRAG_ENDED:
-                        view.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                view.setVisibility(View.VISIBLE);
-                            }
-                        });
-                        //view.setBackgroundDrawable(normalShape);
-                        break;
-                    case DragEvent.ACTION_DRAG_ENTERED:
-                        // show user where to put the card
-                        //v.setBackgroundDrawable(enterShape);
-                        break;
-                    case DragEvent.ACTION_DROP:
-                        // remove from current owner
-                        ViewGroup owner = (ViewGroup) view.getParent();
-                        owner.removeView(view);
-                        // get current X and Y coordinates from drop event
-                        view.setX(event.getX() - (view.getWidth() / 2));
-                        view.setY(event.getY()-(view.getHeight()/2));
-
-                        // add dropped view to new parent (playCardsPosition)
-                        ((ViewGroup)findViewById(R.id.playCardsPosition)).addView(view);
-                        // make original view visible again
-                        view.setVisibility(View.VISIBLE);
-                        // delete touchlistener
-                        view.setOnTouchListener(null);
-                        break;
-                    default:
-                        // nothing
-                        break;
-                }
-                return true;
-            }
-        });
-
-
-        // mix deck
-        //this.mixDeck();
-
-        // deal out cards to user (each user gets 7 from the mixed deck)
-        // set on drag listener to null when creating deck
-
-        // TEST STUFF ******************************************************
-        // *****************************************************************
-           // Display display = getWindowManager().getDefaultDisplay();
-           // Point res = new Point();
-           // display.getSize(res);
-
-
-           // UnoCard test2 = new UnoCard(getApplicationContext(), (FrameLayout)((ViewGroup)findViewById(R.id.container)), new Point(res.x/2-50, res.y-130), getResources().getDrawable(R.drawable.blue_2), getResources().getDrawable(R.drawable.card_back), "Blue 2", "", "2", "Blue");
-           // UnoCard test3 = new UnoCard(getApplicationContext(), (FrameLayout)((ViewGroup)findViewById(R.id.container)), new Point(res.x/2-100, res.y-130), getResources().getDrawable(R.drawable.red_6), getResources().getDrawable(R.drawable.card_back),"Red 6", "", "6", "Red");
-           // UnoCard test4 = new UnoCard(getApplicationContext(), (FrameLayout)((ViewGroup)findViewById(R.id.container)), new Point(res.x/2-150, res.y-130), getResources().getDrawable(R.drawable.green_9), getResources().getDrawable(R.drawable.card_back),"Green 9", "", "9", "Green");
-
-           //test2.viewFront();
-           //test3.viewFront();
-           //test4.viewFront();
-        // TEST STUFF ******************************************************
-        // *****************************************************************
     }
 
     // method that sets a view invisible which is specified with a parameter

@@ -225,6 +225,9 @@ public class GameActivity extends Activity {
                             // add a view for each card?
                             //view.setOnTouchListener(null);
                             Log.d("ImgView dropped:", "" + view);
+
+                            String msg = "TEST#" + findCardByView(view);
+                            Tools.wClient.sendUpdatePeers(msg.getBytes());
                             playCard(view);
                             break;
                         } else {
@@ -239,7 +242,17 @@ public class GameActivity extends Activity {
         });
     }
 
-    private void playCard(View playedCard) {
+    public String findCardByView(View card){
+        String cardPlayed = "";
+        for (int i=0;i<playerCards.size();i++) {
+            if (playerCards.get(i).getImageView() == card){
+                cardPlayed = playerCards.get(i).getValue();
+            }
+        }
+        return cardPlayed;
+    }
+
+    public void playCard(View playedCard) {
         for (int i=0;i<playerCards.size();i++){
             if (playerCards.get(i).getImageView() == playedCard){
                 Log.d("Played Card:", playerCards.get(i).getName());

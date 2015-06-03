@@ -32,6 +32,7 @@ import at.fancycardgame.aauno.listeners.GameOnClickListener;
 import at.fancycardgame.aauno.listeners.NotifyListener;
 import at.fancycardgame.aauno.listeners.RoomRequestListener;
 import at.fancycardgame.aauno.listeners.ShakeEventListener;
+import at.fancycardgame.aauno.listeners.WarpListener;
 import at.fancycardgame.aauno.listeners.ZoneRequestListener;
 
 /**
@@ -73,6 +74,8 @@ public class Tools {
     public static RoomRequestListener rrl = new RoomRequestListener();
     public static ZoneRequestListener zrl = new ZoneRequestListener();
 
+    private static WarpListener eventHandler = new WarpListener(Tools.game);
+
 
     public static void init(Context ac) {
             Tools.appContext = ac;
@@ -91,6 +94,11 @@ public class Tools {
             Tools.wClient.addNotificationListener(Tools.nl);
             Tools.wClient.addRoomRequestListener(Tools.rrl);
             Tools.wClient.addZoneRequestListener(Tools.zrl);
+
+           // Tools.wClient.addNotificationListener(eventHandler);
+            //Tools.wClient.addRoomRequestListener(eventHandler);
+
+
     }
 
 
@@ -130,6 +138,15 @@ public class Tools {
 
 
         switch(command) {
+            //Multiplayer Test
+            case "TEST":
+                Tools.game.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(Tools.game, "TEST", Toast.LENGTH_SHORT).show();
+                    }
+                });
+                break;
             case Constants.PREP_TO_PLAY:
                 Tools.startGameCountDown();
                 break;
@@ -186,6 +203,8 @@ public class Tools {
                     });
                 else
                 // if you're the admin
+                // Put the STARTGAME command outside of the Shake Listener to start it in the emulator
+                    Tools.wClient.sendUpdatePeers(Constants.STARTGAME.getBytes());
                     Tools.game.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {

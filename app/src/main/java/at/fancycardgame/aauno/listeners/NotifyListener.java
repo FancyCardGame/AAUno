@@ -1,6 +1,8 @@
 package at.fancycardgame.aauno.listeners;
 
 import android.os.Handler;
+import android.util.Log;
+import android.view.View;
 import android.widget.Toast;
 
 import com.shephertz.app42.gaming.multiplayer.client.events.ChatEvent;
@@ -100,11 +102,22 @@ public class NotifyListener implements com.shephertz.app42.gaming.multiplayer.cl
     @Override
     public void onUpdatePeersReceived(UpdateEvent updateEvent) {
         String s = "";
+        //Tools.showToast("Hello", 5);
+        String message = new String(updateEvent.getUpdate());
+        if (message.startsWith("TEST#")){
+            String test = message.substring(0, message.indexOf("#")).trim();
+            String card =  message.substring(message.indexOf('#')+1, message.length());
+            Log.d("updateEvent Message", "" + card);
+            //Tools.game.playCard((View) card);
+        }
         try {
             s = new String(updateEvent.getUpdate(), "UTF-8");
+            Log.d("updateEvent", "" + s);
+
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
+       //Tools.executeFromRemote("TEST")
        Tools.executeFromRemote(s);
     }
 
