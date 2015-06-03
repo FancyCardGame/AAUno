@@ -10,6 +10,7 @@ import com.shephertz.app42.gaming.multiplayer.client.events.LobbyData;
 import com.shephertz.app42.gaming.multiplayer.client.events.MoveEvent;
 import com.shephertz.app42.gaming.multiplayer.client.events.RoomData;
 import com.shephertz.app42.gaming.multiplayer.client.events.UpdateEvent;
+import com.shephertz.app42.gaming.multiplayer.client.util.Util;
 
 import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
@@ -104,13 +105,27 @@ public class NotifyListener implements com.shephertz.app42.gaming.multiplayer.cl
         String s = "";
         //Tools.showToast("Hello", 5);
         String message = new String(updateEvent.getUpdate());
+
         if (message.startsWith("TEST#")){
+            String sender = message.substring(message.indexOf("#")+1, message.indexOf("@")).trim();
+            if (!sender.equals(Util.userName)){
+                String test = message.substring(0, message.indexOf("#")).trim();
+                String card =  message.substring(message.indexOf('@')+1, message.length());
+                Log.d("updateEvent User", "" + sender);
+                Log.d("updateEvent Message", "dreck" + card);
+                //Tools.game.playCard((View) card);
+                //Tools.game.playSomeCard();
+                Tools.game.playCardByName(card);
+            }
+        }
+
+        /*if (message.startsWith("TEST#")){
             String test = message.substring(0, message.indexOf("#")).trim();
             String card =  message.substring(message.indexOf('#')+1, message.length());
             Log.d("updateEvent Message", "" + card);
             //Tools.game.playCard((View) card);
             Tools.game.playSomeCard();
-        }
+        }*/
         try {
             s = new String(updateEvent.getUpdate(), "UTF-8");
             Log.d("updateEvent", "" + s);

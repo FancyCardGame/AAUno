@@ -74,7 +74,7 @@ public class Tools {
     public static RoomRequestListener rrl = new RoomRequestListener();
     public static ZoneRequestListener zrl = new ZoneRequestListener();
 
-    private static WarpListener eventHandler = new WarpListener(Tools.game);
+    //public static boolean isSender = false;
 
 
     public static void init(Context ac) {

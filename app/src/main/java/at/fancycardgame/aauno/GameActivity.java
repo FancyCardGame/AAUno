@@ -148,7 +148,7 @@ public class GameActivity extends Activity {
             public void onClick(View v) {
                 String msg = "TEST";
                 Tools.wClient.sendUpdatePeers(msg.getBytes());
-                updateMove("Helloooo");
+                //updateMove("Helloooo");
             }
         });
         
@@ -211,10 +211,13 @@ public class GameActivity extends Activity {
                             // get current X and Y coordinates from drop event
                             // view.setX(event.getX() - (view.getWidth() / 2));
                             //view.setY(event.getY() - (view.getHeight() / 2));
-                            if (cardToBePlayed(view) != null) {
+                            String sendCard = findCardByView(view);
+                            sendUpdateEvent("TEST", sendCard);
+                            playCard(view);
+                            /*if (cardToBePlayed(view) != null) {
                                 cardToBePlayed(view).setLocation(res.x / 2 - (view.getWidth() + 50), res.y / 2 - view.getHeight() / 2);
                                 cardToBePlayed(view).viewFront();
-                            }
+                            }*/
                             // add dropped view to new parent (playCardsPosition)
                             //((ViewGroup) findViewById(R.id.playCardsPosition)).addView(view);
                             // make original view visible again
@@ -226,9 +229,18 @@ public class GameActivity extends Activity {
                             //view.setOnTouchListener(null);
                             Log.d("ImgView dropped:", "" + view);
 
-                            String msg = "TEST#" + findCardByView(view);
-                            Tools.wClient.sendUpdatePeers(msg.getBytes());
-                            playCard(view);
+                            //String sendCard = cardDeck.getCardByView(view);
+
+                            //String msg = "TEST#" + findCardByView(view);
+                            //Tools.wClient.sendUpdatePeers(msg.getBytes());
+                            /*for (int i=0;i<playerCards.size();i++) {
+                                if (playerCards.get(i).getImageView() == view) {
+                                    sendCard = playerCards.get(i).getName();
+                                }
+                            }*/
+
+
+
                             break;
                         } else {
                             //not a valid play
@@ -246,7 +258,7 @@ public class GameActivity extends Activity {
         String cardPlayed = "";
         for (int i=0;i<playerCards.size();i++) {
             if (playerCards.get(i).getImageView() == card){
-                cardPlayed = playerCards.get(i).getValue();
+                cardPlayed = playerCards.get(i).getName();
             }
         }
         return cardPlayed;
@@ -262,11 +274,27 @@ public class GameActivity extends Activity {
                 test.setContainer((FrameLayout) findViewById(R.id.container));
             }
         });
+    }
 
+    public void playCardByName(final String cardName){
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                UnoCard dreck = cardDeck.getCardByName(cardName);
+                dreck.setLocation(200, 200);
+                dreck.viewFront();
+                dreck.setContainer((FrameLayout) findViewById(R.id.container));
+                playedCards.add(dreck);
+            }
+        });
 
     }
 
     public void playCard(View playedCard) {
+        if (cardToBePlayed(playedCard) != null) {
+            cardToBePlayed(playedCard).setLocation(res.x / 2 - (playedCard.getWidth() + 50), res.y / 2 - playedCard.getHeight() / 2);
+            cardToBePlayed(playedCard).viewFront();
+        }
         for (int i=0;i<playerCards.size();i++){
             if (playerCards.get(i).getImageView() == playedCard){
                 Log.d("Played Card:", playerCards.get(i).getName());
@@ -550,23 +578,25 @@ public class GameActivity extends Activity {
         adapter.notifyDataSetChanged();
     }
 
-    public void sendUpdateEvent(String msg){
+    public void sendUpdateEvent(String msg, String card){
         try{
-            String message = msg;
-            theClient.sendUDPUpdatePeers(message.getBytes());
+
+
+            String message = msg + "#" + Util.userName + "@" + card;
+            theClient.sendUpdatePeers(message.getBytes());
         } catch (Exception e){
             Log.d("Exc: sendUpdateEvent", e.getMessage());
         }
     }
 
-    public void updateMove(String msg){
+    /*public void updateMove(String msg){
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 sendUpdateEvent("Hi there!");
             }
         });
-    }
+    }*/
 
     /*public void onUpdatePeersRecieved(UpdateEvent event){
         if (event.isUDP()){

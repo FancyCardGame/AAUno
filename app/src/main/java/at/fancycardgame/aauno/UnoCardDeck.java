@@ -6,6 +6,7 @@ import android.graphics.drawable.Drawable;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
 import android.util.Log;
+import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.Toast;
 import java.util.ArrayList;
@@ -250,13 +251,49 @@ public class UnoCardDeck {
 
     }
 
+    public String getCardByView(View cardView){
+        String card = "";
+        for (UnoCard c : this.cards){
+            if (c.getImageView() == cardView){
+                card = c.getValue();
+            }
+        }
+        return card;
+    }
+
+    public UnoCard getCardByName(String cardName){
+        Drawable color_change_plus4 = this.appContext.getResources().getDrawable(R.drawable.color_change_plus4);
+        Drawable card_back = this.appContext.getResources().getDrawable(R.drawable.card_back);
+        UnoCard card = new UnoCard(this.appContext, deckPos, new Point(20, 20), color_change_plus4, card_back, "Color Change Plus 4", "", "COLOR CHANGE PLUS 4", "COLOR CHANGE PLUS 4");
+
+        /*for(int i=0;i<this.cards.size();i++){
+            if (this.cards.get(i).getName().equals(cardName)){
+                card = this.cards.get(i);
+                break;
+            }
+        }*/
+
+        for (UnoCard c : this.cards){
+            Log.d("c.getName()", "" + c.getName());
+            Log.d("cardName", "" + cardName);
+            if (c.getName().equals(cardName)){
+
+                card = c;
+                break;
+
+            }
+        }
+
+        return card;
+    }
+
     public void removeCard(UnoCard cardToRemove){
         // remove a given card from the the card deck
         // e.g. because it has been drawn by a player
         for (UnoCard c : this.cards){
             if (c.getName() == cardToRemove.getName()){
                 Log.d("Removed Card:", c.getName());
-                this.cards.remove(c);
+                //this.cards.remove(c);
                 break;
             }
         }
