@@ -204,6 +204,7 @@ public class Tools {
 
                 if(!Tools.roomOwner.equals(User.getUsername()))
                 // if you're not the admin
+                // TODO: Re-enable this after testing
                     Tools.game.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -227,7 +228,7 @@ public class Tools {
                 else
                 // if you're the admin
                 // Put the STARTGAME command outside of the Shake Listener to start it in the emulator
-                    //Tools.game.setYourTurn(true);
+                    // TODO: Re-enable mixing by shaking after testing
                     Tools.wClient.sendUpdatePeers(Constants.STARTGAME.getBytes());
                     Tools.game.runOnUiThread(new Runnable() {
                         @Override
