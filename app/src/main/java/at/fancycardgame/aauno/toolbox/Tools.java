@@ -161,37 +161,6 @@ public class Tools {
                         Toast.makeText(Tools.game, "currPlayer: " + Tools.game.getCurrPlayer(), Toast.LENGTH_SHORT).show();
                     }
                 });
-                /*Tools.game.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Toast.makeText(Tools.game, "Players: " + Tools.joinedPlayers.toString(), Toast.LENGTH_SHORT).show();
-                        Tools.game.setYourTurn(false);
-                        for (String player : Tools.joinedPlayers){
-                            Tools.game.setYourTurn(false);
-                        }
-                        for (String player : Tools.joinedPlayers){
-                            //Tools.game.setYourTurn(false);
-                            if (player.equals(Tools.joinedPlayers.get(Tools.nextPlayer))){
-                                testCounter ++;
-                                Toast.makeText(Tools.game, "player: " + player + " joinedPlayers.get(nextPlayer):" + Tools.joinedPlayers.get(nextPlayer), Toast.LENGTH_LONG).show();
-                                Tools.game.setYourTurn(true);
-                                if (Tools.nextPlayer < Tools.joinedPlayers.size() - 1){
-                                    Tools.nextPlayer++;
-                                } else {
-                                    Tools.nextPlayer = 0;
-                                }
-
-                                if (Tools.currPlayer < Tools.joinedPlayers.size() - 1){
-                                    Tools.currPlayer++;
-                                } else {
-                                    Tools.currPlayer = 0;
-                                }
-                            break;
-                            }
-                        }
-                        Toast.makeText(Tools.game, "testCounter:" + testCounter, Toast.LENGTH_SHORT).show();
-                    }
-                });*/
                 break;
             case Constants.PREP_TO_PLAY:
                 Tools.startGameCountDown();
@@ -241,7 +210,7 @@ public class Tools {
                             // For now, admin will be the first player
                             //Tools.game.setYourTurn(false);
 
-                            Tools.shakeCardDeckHint= new TextView(Tools.game.getApplicationContext());
+                            /*Tools.shakeCardDeckHint= new TextView(Tools.game.getApplicationContext());
                             Typeface font = Typeface.createFromAsset(Tools.game.getAssets(), "Comic Book Bold.ttf");
                             Tools.shakeCardDeckHint.setTypeface(font);
                             Tools.shakeCardDeckHint.setGravity(Gravity.CENTER);
@@ -252,7 +221,7 @@ public class Tools {
                             ViewGroup.LayoutParams p = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
                             Tools.game.addContentView(Tools.shakeCardDeckHint, p);
 
-                            Tools.shakeCardDeckHint.invalidate();
+                            Tools.shakeCardDeckHint.invalidate();*/
                         }
                     });
                 else
