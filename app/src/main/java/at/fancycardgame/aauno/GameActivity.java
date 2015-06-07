@@ -57,6 +57,7 @@ public class GameActivity extends Activity {
     private String chosenColor = "";
     private int cardsToDraw = 0;
 
+    private boolean madeTurn = false;
     private boolean yourTurn = false;
 
     private static int nextPlayer;
@@ -102,7 +103,14 @@ public class GameActivity extends Activity {
         drawBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                drawCards(1);
+                if (!madeTurn && yourTurn){
+                    madeTurn = true;
+                    drawCards(1);
+                } else if (!yourTurn){
+                    Toast.makeText(context, "It's not your turn!", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(context, "Your turn is over!", Toast.LENGTH_SHORT).show();
+                }
             }
         });
 
@@ -113,9 +121,15 @@ public class GameActivity extends Activity {
                 // TODO: Implement end turn logic
                 //String msg = "TEST";
                 //Tools.wClient.sendUpdatePeers(msg.getBytes());
-                String msg = "NEXT";
-                Tools.wClient.sendUpdatePeers(msg.getBytes());
-
+                if (madeTurn && yourTurn){
+                    Toast.makeText(context, "Switching to next player ...", Toast.LENGTH_SHORT).show();
+                    String msg = "NEXT#" + chosenColor;
+                    Tools.wClient.sendUpdatePeers(msg.getBytes());
+                } else if (!yourTurn) {
+                    Toast.makeText(context, "It's not your turn!", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(context, "You have to play or draw a card!", Toast.LENGTH_SHORT).show();
+                }
             }
         });
 
@@ -125,7 +139,8 @@ public class GameActivity extends Activity {
             @Override
             public void onClick(View v) {
                 Toast.makeText(context, "yourTurn: " + isYourTurn(), Toast.LENGTH_SHORT).show();
-                Toast.makeText(context, Tools.joinedPlayers.toString(), Toast.LENGTH_SHORT).show();
+                //Toast.makeText(context, Tools.joinedPlayers.toString(), Toast.LENGTH_SHORT).show();
+                //Toast.makeText(context, "played cards: " + playedCards.toString(), Toast.LENGTH_SHORT).show();
 
             }
         });
@@ -184,7 +199,7 @@ public class GameActivity extends Activity {
                         break;
                     case DragEvent.ACTION_DROP:
                         //if (playedCards.size() > 0 && (playedCards.get(playedCards.size() - 1).getColor() != cardToBePlayed(view).getColor())){
-                        if ((yourTurn && playedCards.size() > 0 && validPlay(playedCards.get(playedCards.size() - 1), cardToBePlayed(view))) || (playedCards.size() == 0 && yourTurn)) {
+                        if ((!madeTurn && yourTurn && playedCards.size() > 0 && validPlay(playedCards.get(playedCards.size() - 1), cardToBePlayed(view))) || (playedCards.size() == 0 && yourTurn && !madeTurn)) {
                             // remove from current owner
                             ViewGroup owner = (ViewGroup) view.getParent();
                             // owner.removeView(view);
@@ -225,6 +240,8 @@ public class GameActivity extends Activity {
                             break;
                         } else if (!yourTurn) {
                             Toast.makeText(context, "It's not your turn!", Toast.LENGTH_SHORT).show();
+                        } else if (madeTurn){
+                            Toast.makeText(context, "Your turn is over!", Toast.LENGTH_SHORT).show();
                         } else {
                             // not a valid play
                         }
@@ -264,7 +281,7 @@ public class GameActivity extends Activity {
             @Override
             public void run() {
                 UnoCard cardFromOtherPlayer = cardDeck.getCardByName(cardName);
-                cardFromOtherPlayer.setLocation(200, 200);
+                cardFromOtherPlayer.setLocation(res.x / 2 - (cardFromOtherPlayer.getImageView().getWidth() + 50), res.y / 2 - cardFromOtherPlayer.getImageView().getHeight() / 2);
                 cardFromOtherPlayer.viewFront();
                 cardFromOtherPlayer.setContainer((FrameLayout) findViewById(R.id.container));
                 playedCards.add(cardFromOtherPlayer);
@@ -274,6 +291,7 @@ public class GameActivity extends Activity {
     }
 
     public void playCard(View playedCard) {
+        madeTurn = true;
         String sendCard = findCardByView(playedCard);
         if (cardToBePlayed(playedCard) != null) {
             cardToBePlayed(playedCard).setLocation(res.x / 2 - (playedCard.getWidth() + 50), res.y / 2 - playedCard.getHeight() / 2);
@@ -468,6 +486,18 @@ public class GameActivity extends Activity {
 
     public void setNextPlayer(int next){
         nextPlayer = next;
+    }
+
+    public int getCurrPlayer(){
+        return currPlayer;
+    }
+
+    public void setCurrPlayer(int curr){
+        currPlayer = curr;
+    }
+
+    public void setMadeTurn(boolean madeTurn){
+        this.madeTurn = madeTurn;
     }
 
     public void sendUpdateEvent(String msg, String card, String chosenColor, int cardsToDraw){

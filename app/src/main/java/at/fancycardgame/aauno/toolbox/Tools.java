@@ -157,7 +157,8 @@ public class Tools {
                 Tools.game.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        Toast.makeText(Tools.game, "nextPLayer: " + Tools.game.getNextPlayer(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(Tools.game, "nextPlayer: " + Tools.game.getNextPlayer(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(Tools.game, "currPlayer: " + Tools.game.getCurrPlayer(), Toast.LENGTH_SHORT).show();
                     }
                 });
                 /*Tools.game.runOnUiThread(new Runnable() {

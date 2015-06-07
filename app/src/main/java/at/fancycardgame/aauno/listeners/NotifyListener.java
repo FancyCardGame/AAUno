@@ -108,9 +108,10 @@ public class NotifyListener implements com.shephertz.app42.gaming.multiplayer.cl
 
         if (message.startsWith("TEST#")){
             String sender = message.substring(message.indexOf("#")+1, message.indexOf("@")).trim();
+            String card =  message.substring(message.indexOf("@") + 1, message.indexOf("_"));
             if (!sender.equals(Util.userName)){
                 String test = message.substring(0, message.indexOf("#")).trim();
-                String card =  message.substring(message.indexOf("@")+1, message.indexOf("_"));
+                //String card =  message.substring(message.indexOf("@")+1, message.indexOf("_"));
                 String chosenColor =  message.substring(message.indexOf("_")+1, message.indexOf("*"));
                 String cardsToDraw =  message.substring(message.indexOf("*")+1, message.length());
                 Log.d("updateEvent Sender", sender);
@@ -120,20 +121,58 @@ public class NotifyListener implements com.shephertz.app42.gaming.multiplayer.cl
 
                 //Tools.game.playCard((View) card);
                 //Tools.game.playSomeCard();
+
                 Tools.game.setChosenColor(chosenColor);
                 Tools.game.setCardsToDraw(cardsToDraw);
                 Tools.game.playCardByName(card);
+            }
+/*            if (card.contains("Skip")){
+                if (Tools.game.getCurrPlayer() == Tools.joinedPlayers.size() - 1){
+                    // If last player in turn order has played a skip card
+                    Tools.game.setNextPlayer(1);
+                } else if (Tools.game.getCurrPlayer() == Tools.joinedPlayers.size() - 2){
+                    // If second to last player in turn order has played a skip card
+                    Tools.game.setNextPlayer(0);
+                } else {
+                    // If first or second player in turn order has played a skip card
+                    Tools.game.setNextPlayer(Tools.game.getNextPlayer() + 1);
+                }
+            }*/
+
+            // currPlayer == Tools.joinedPlayers.indexOf(sender)
+
+            if (card.contains("Skip")){
+                if (Tools.joinedPlayers.indexOf(sender) == Tools.joinedPlayers.size() - 1){
+                    // If last player in turn order has played a skip card
+                    Tools.game.setNextPlayer(1);
+                } else if (Tools.joinedPlayers.indexOf(sender) == Tools.joinedPlayers.size() - 2){
+                    // If second to last player in turn order has played a skip card
+                    Tools.game.setNextPlayer(0);
+                } else {
+                    // If first or second player in turn order has played a skip card
+                    Tools.game.setNextPlayer(Tools.game.getNextPlayer() + 1);
+                }
             }
         }
 
         if (message.startsWith("NEXT")){
             //Tools.playersInRoom
             //Tools.game.setYourTurn(true);
+
             Tools.game.setYourTurn(false);
+
+            String chosenColor = message.substring(message.indexOf("#") + 1, message.length()).trim();
+            Tools.game.setChosenColor(chosenColor);
+
+            //String currPlayer = "";
 
             if (Util.userName.equals(Tools.joinedPlayers.get(Tools.game.getNextPlayer()))) {
                 Tools.game.setYourTurn(true);
+                //currPlayer = Util.userName;
+                //Tools.game.setCurrPlayer(Tools.joinedPlayers.indexOf(Util.userName));
             }
+
+            //Tools.game.setCurrPlayer(Tools.joinedPlayers.indexOf(currPlayer));
 
             if (Tools.game.getNextPlayer() < Tools.joinedPlayers.size() - 1){
                 //Tools.nextPlayer++;
@@ -143,12 +182,15 @@ public class NotifyListener implements com.shephertz.app42.gaming.multiplayer.cl
                 Tools.game.setNextPlayer(0);
             }
 
+            Tools.game.setMadeTurn(false);
             // TODO: Implement currPlayer stuff (current player, is this needed?)
-            if (Tools.currPlayer < Tools.joinedPlayers.size() - 1){
-                //Tools.currPlayer++;
+            /*if (Tools.game.getCurrPlayer() < Tools.joinedPlayers.size() - 1){
+                //Tools.CurrPlayer++;
+                Tools.game.setCurrPlayer(Tools.game.getNextPlayer() - 1);
             } else {
-                //Tools.currPlayer = 0;
-            }
+                //Tools.CurrPlayer = 0;
+                Tools.game.setCurrPlayer(0);
+            }*/
 
         }
 
