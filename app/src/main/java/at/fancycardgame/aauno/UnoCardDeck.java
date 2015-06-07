@@ -290,6 +290,7 @@ public class UnoCardDeck {
     public void removeCard(UnoCard cardToRemove){
         // remove a given card from the the card deck
         // e.g. because it has been drawn by a player
+        // TODO: re-enable removal after testing
         for (UnoCard c : this.cards){
             if (c.getName() == cardToRemove.getName()){
                 Log.d("Removed Card:", c.getName());

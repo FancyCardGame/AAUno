@@ -110,13 +110,46 @@ public class NotifyListener implements com.shephertz.app42.gaming.multiplayer.cl
             String sender = message.substring(message.indexOf("#")+1, message.indexOf("@")).trim();
             if (!sender.equals(Util.userName)){
                 String test = message.substring(0, message.indexOf("#")).trim();
-                String card =  message.substring(message.indexOf('@')+1, message.length());
-                Log.d("updateEvent User", "" + sender);
-                Log.d("updateEvent Message", "dreck" + card);
+                String card =  message.substring(message.indexOf("@")+1, message.indexOf("_"));
+                String chosenColor =  message.substring(message.indexOf("_")+1, message.indexOf("*"));
+                String cardsToDraw =  message.substring(message.indexOf("*")+1, message.length());
+                Log.d("updateEvent Sender", sender);
+                Log.d("updateEvent Card", card);
+                Log.d("updateEvent chosenColor", chosenColor);
+                Log.d("updateEvent cardsToDraw", cardsToDraw);
+
                 //Tools.game.playCard((View) card);
                 //Tools.game.playSomeCard();
+                Tools.game.setChosenColor(chosenColor);
+                Tools.game.setCardsToDraw(cardsToDraw);
                 Tools.game.playCardByName(card);
             }
+        }
+
+        if (message.startsWith("NEXT")){
+            //Tools.playersInRoom
+            //Tools.game.setYourTurn(true);
+            Tools.game.setYourTurn(false);
+
+            if (Util.userName.equals(Tools.joinedPlayers.get(Tools.game.getNextPlayer()))) {
+                Tools.game.setYourTurn(true);
+            }
+
+            if (Tools.game.getNextPlayer() < Tools.joinedPlayers.size() - 1){
+                //Tools.nextPlayer++;
+                Tools.game.setNextPlayer(Tools.game.getNextPlayer() + 1);
+            } else {
+                //Tools.nextPlayer = 0;
+                Tools.game.setNextPlayer(0);
+            }
+
+            // TODO: Implement currPlayer stuff (current player, is this needed?)
+            if (Tools.currPlayer < Tools.joinedPlayers.size() - 1){
+                //Tools.currPlayer++;
+            } else {
+                //Tools.currPlayer = 0;
+            }
+
         }
 
         /*if (message.startsWith("TEST#")){

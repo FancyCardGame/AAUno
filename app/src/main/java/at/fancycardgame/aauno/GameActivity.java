@@ -7,7 +7,6 @@ import android.content.DialogInterface;
 import android.graphics.Point;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Message;
 import android.util.Log;
 import android.view.Display;
 import android.view.DragEvent;
@@ -22,16 +21,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 // import com.app.appwarplisterner.WarpListener;
-import com.shephertz.app42.gaming.multiplayer.client.WarpClient;
-import com.shephertz.app42.gaming.multiplayer.client.events.UpdateEvent;
-import com.shephertz.app42.gaming.multiplayer.client.listener.NotifyListener;
-import com.shephertz.app42.gaming.multiplayer.client.listener.RoomRequestListener;
 import com.shephertz.app42.gaming.multiplayer.client.util.Util;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import at.fancycardgame.aauno.adapters.JoinedPlayersAdapter;
-import at.fancycardgame.aauno.listeners.WarpListener;
 import at.fancycardgame.aauno.toolbox.GameState;
 import at.fancycardgame.aauno.toolbox.Tools;
 
@@ -41,41 +36,33 @@ import at.fancycardgame.aauno.toolbox.Tools;
 
 public class GameActivity extends Activity {
 
-    // Multiplayer Stuff
-    private WarpClient theClient;
-    private WarpListener eventHandler = new WarpListener(this);
+    private final Context context = this;
 
-
-    public ViewGroup gameBoard;
-    // the card deck
-    private UnoCardDeck cardDeck;
     // the logical density of the display
     private static float density;
 
-    //test button
-    private Button drawBtn;
-
-    private ViewGroup game_activity_start;
+    public ViewGroup gameBoard;
+    public ViewGroup game_activity_start;
     public ViewGroup game_activity_creategame;
-    public  ViewGroup game_activity_joingame;
+    public ViewGroup game_activity_joingame;
     public ViewGroup game_activity_startedGameLobby;
+    private ViewGroup deckPosition;
 
-    private final Context context = this;
-
-    private String chosenColor;
-    private int cardsToDraw;
-
+    private UnoCardDeck cardDeck;
     //List of lists of player cards
     //private ArrayList<ArrayList<UnoCard>> playerCards
     private ArrayList<UnoCard> playerCards;
     private ArrayList<UnoCard> playedCards;
 
-    private Display display;
+    private String chosenColor = "";
+    private int cardsToDraw = 0;
+
+    private boolean yourTurn = false;
+
+    private static int nextPlayer;
+    private static int currPlayer;
+
     private Point res;
-
-    private ViewGroup deckPosition;
-    private Button testBtn;
-
 
     protected void onCreate(Bundle savedInstanceState) {
       super.onCreate(savedInstanceState);
@@ -83,12 +70,8 @@ public class GameActivity extends Activity {
         this.game_activity_start = (ViewGroup)getLayoutInflater().inflate(R.layout.game_activity_start, null);
         setContentView(this.game_activity_start);
 
-
-
         findViewById(R.id.createGameMP).setOnClickListener(Tools.gameOnClickListner);
         findViewById(R.id.joinGameMP).setOnClickListener(Tools.gameOnClickListner);
-
-
 
         //preparing views
         this.game_activity_creategame = (ViewGroup)getLayoutInflater().inflate(R.layout.game_activity_creategame, null);
@@ -98,9 +81,6 @@ public class GameActivity extends Activity {
         Tools.init(this.getApplicationContext());
         Tools.game = this;
 
-
-
-
         // Toast.makeText(getApplicationContext(), "before room creation", Toast.LENGTH_SHORT).show();
         //if(at.fancycardgame.aauno.User.getUsername()!=null)
             //theClient.connectWithUserName(at.fancycardgame.aauno.User.getUsername());
@@ -109,8 +89,6 @@ public class GameActivity extends Activity {
        // ArrayAdapter<CharSequence> spnAdapter = ArrayAdapter.createFromResource(getApplicationContext(), R.array.maxPlayersSelection, android.R.layout.simple_spinner_dropdown_item);
        // spnAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
        // maxUsers.setAdapter(spnAdapter);
-
-
         //old
         //setContentView(R.layout.game_field);
         //this.gameBoard = (ViewGroup)getLayoutInflater().inflate(R.layout.game_field, null);
@@ -119,53 +97,55 @@ public class GameActivity extends Activity {
 
     public void startGame() {
 
-        // Multiplayer Stuff
-        try {
-            theClient = WarpClient.getInstance();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        theClient.addRoomRequestListener(eventHandler);
-        theClient.addNotificationListener(eventHandler);
 
-
-
-
-        // test button
-        this.drawBtn = (Button) findViewById(R.id.drawBtn);
-
+        Button drawBtn = (Button) findViewById(R.id.drawBtn);
         drawBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 drawCards(1);
             }
         });
-        
-        this.testBtn = (Button) findViewById(R.id.testBtn);
 
+        Button endTurnButton = (Button) findViewById(R.id.endTurnBtn);
+        endTurnButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // TODO: Implement end turn logic
+                //String msg = "TEST";
+                //Tools.wClient.sendUpdatePeers(msg.getBytes());
+                String msg = "NEXT";
+                Tools.wClient.sendUpdatePeers(msg.getBytes());
+
+            }
+        });
+
+        // Button for testing
+        Button testBtn = (Button) findViewById(R.id.testBtn);
         testBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String msg = "TEST";
-                Tools.wClient.sendUpdatePeers(msg.getBytes());
-                //updateMove("Helloooo");
+                Toast.makeText(context, "yourTurn: " + isYourTurn(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, Tools.joinedPlayers.toString(), Toast.LENGTH_SHORT).show();
+
             }
         });
-        
 
-        this.display = getWindowManager().getDefaultDisplay();
+        Display display = getWindowManager().getDefaultDisplay();
         this.res = new Point();
         display.getSize(res);
-
-        this.playedCards = new ArrayList<>();
-        this.playerCards = new ArrayList<>();
 
         // Create a card deck and set it's position
         this.deckPosition = ((ViewGroup) findViewById(R.id.cardDeckPosition));
         this.cardDeck = new UnoCardDeck(this.getApplicationContext(), (FrameLayout) deckPosition);
 
+        // Cards that have been played
+        this.playedCards = new ArrayList<>();
+        // Cards of the player
+        this.playerCards = new ArrayList<>();
+
         for (int i = 0; i < 8; i++) {
             // Give cards to the player, remove given cards from draw stack
+            // TODO: Distribution of cards (i.e. cards are limited, e.g. there are no more than 4 color choosers)
             playerCards.add(i, cardDeck.getCard());
             playerCards.get(i).setLocation(res.x / 8 + (i * 50), res.y - 130);
             playerCards.get(i).viewFront();
@@ -204,16 +184,17 @@ public class GameActivity extends Activity {
                         break;
                     case DragEvent.ACTION_DROP:
                         //if (playedCards.size() > 0 && (playedCards.get(playedCards.size() - 1).getColor() != cardToBePlayed(view).getColor())){
-                        if ((playedCards.size() > 0 && validPlay(playedCards.get(playedCards.size() - 1), cardToBePlayed(view))) || playedCards.size() == 0) {
+                        if ((yourTurn && playedCards.size() > 0 && validPlay(playedCards.get(playedCards.size() - 1), cardToBePlayed(view))) || (playedCards.size() == 0 && yourTurn)) {
                             // remove from current owner
                             ViewGroup owner = (ViewGroup) view.getParent();
                             // owner.removeView(view);
                             // get current X and Y coordinates from drop event
                             // view.setX(event.getX() - (view.getWidth() / 2));
                             //view.setY(event.getY() - (view.getHeight() / 2));
-                            String sendCard = findCardByView(view);
-                            sendUpdateEvent("TEST", sendCard);
+                            //String sendCard = findCardByView(view);
                             playCard(view);
+                            //sendUpdateEvent("TEST", sendCard);
+
                             /*if (cardToBePlayed(view) != null) {
                                 cardToBePlayed(view).setLocation(res.x / 2 - (view.getWidth() + 50), res.y / 2 - view.getHeight() / 2);
                                 cardToBePlayed(view).viewFront();
@@ -242,8 +223,10 @@ public class GameActivity extends Activity {
 
 
                             break;
+                        } else if (!yourTurn) {
+                            Toast.makeText(context, "It's not your turn!", Toast.LENGTH_SHORT).show();
                         } else {
-                            //not a valid play
+                            // not a valid play
                         }
                     default:
                         // nothing
@@ -280,17 +263,18 @@ public class GameActivity extends Activity {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                UnoCard dreck = cardDeck.getCardByName(cardName);
-                dreck.setLocation(200, 200);
-                dreck.viewFront();
-                dreck.setContainer((FrameLayout) findViewById(R.id.container));
-                playedCards.add(dreck);
+                UnoCard cardFromOtherPlayer = cardDeck.getCardByName(cardName);
+                cardFromOtherPlayer.setLocation(200, 200);
+                cardFromOtherPlayer.viewFront();
+                cardFromOtherPlayer.setContainer((FrameLayout) findViewById(R.id.container));
+                playedCards.add(cardFromOtherPlayer);
             }
         });
 
     }
 
     public void playCard(View playedCard) {
+        String sendCard = findCardByView(playedCard);
         if (cardToBePlayed(playedCard) != null) {
             cardToBePlayed(playedCard).setLocation(res.x / 2 - (playedCard.getWidth() + 50), res.y / 2 - playedCard.getHeight() / 2);
             cardToBePlayed(playedCard).viewFront();
@@ -302,12 +286,12 @@ public class GameActivity extends Activity {
                 switch (playerCards.get(i).getValue()) {
                     case "COLOR CHANGE":
                         // Player played a color chooser, let him choose a color
-                        chosenColor = chooseColor();
+                        this.chosenColor = chooseColor();
                         break;
                     case "COLOR CHANGE PLUS 4":
                         //Player played a color chooser + 4, let him choose a color and increase draw stack
                         cardsToDraw += 4;
-                        chosenColor = chooseColor();
+                        this.chosenColor = chooseColor();
                         break;
                     case "SKIP":
                         // Next player has to skip his turn
@@ -326,6 +310,7 @@ public class GameActivity extends Activity {
                         break;
                 }
                 playerCards.remove(i);
+                sendUpdateEvent("TEST", sendCard, this.chosenColor, this.cardsToDraw);
                 break;
             }
         }
@@ -402,11 +387,11 @@ public class GameActivity extends Activity {
             return true;
         } else if (played.getValue().equals("COLOR CHANGE")) {
             // Enforce chosen color
-            if (toBePlayed.getColor().equals(chosenColor)){
-                chosenColor = "";
+            if (toBePlayed.getColor().equals(this.chosenColor)){
+                this.chosenColor = "";
                 return true;
             } else if (toBePlayed.getValue().equals("COLOR CHANGE PLUS 4")){
-                chosenColor = "";
+                this.chosenColor = "";
                 return true;
             } else {
                 return false;
@@ -414,7 +399,7 @@ public class GameActivity extends Activity {
         } else if (toBePlayed.getValue().equals("COLOR CHANGE PLUS 4")) {
             return true;
         } else if (played.getValue().equals("COLOR CHANGE PLUS 4")){
-            if (toBePlayed.getColor().equals(chosenColor)){
+            if (toBePlayed.getColor().equals(this.chosenColor)){
                 switch (toBePlayed.getValue()) {
                     case "PLUS 2":
                         //cardsToDraw += 2;
@@ -427,7 +412,7 @@ public class GameActivity extends Activity {
                         cardsToDraw = 0;
                         break;
                 }
-                chosenColor = "";
+                this.chosenColor = "";
                 return true;
             } else {
                 return false;
@@ -453,6 +438,46 @@ public class GameActivity extends Activity {
         return chosenColor;
     }
 
+    public void setChosenColor(String color){
+        this.chosenColor = color;
+    }
+
+    public String getChosenColor(){
+        return this.chosenColor;
+    }
+
+    public void setCardsToDraw(String count){
+        this.cardsToDraw = Integer.parseInt(count);
+    }
+
+    public int getCardsToDraw(){
+        return this.cardsToDraw;
+    }
+
+    public boolean isYourTurn() {
+        return yourTurn;
+    }
+
+    public void setYourTurn(boolean yourTurn) {
+        this.yourTurn = yourTurn;
+    }
+
+    public int getNextPlayer(){
+        return nextPlayer;
+    }
+
+    public void setNextPlayer(int next){
+        nextPlayer = next;
+    }
+
+    public void sendUpdateEvent(String msg, String card, String chosenColor, int cardsToDraw){
+        try{
+            String message = msg + "#" + Util.userName + "@" + card + "_" + chosenColor + "*" + cardsToDraw;
+            Tools.wClient.sendUpdatePeers(message.getBytes());
+        } catch (Exception e){
+            Log.d("Exc: sendUpdateEvent", e.getMessage());
+        }
+    }
 
     public static int scale(int v) {
         return (int) GameActivity.density * v;
@@ -496,18 +521,18 @@ public class GameActivity extends Activity {
                 @Override
                 public void run() {
                     //Tools.getUsersInRoom(Tools.currentRoom);
-                    ((TextView)Tools.game.findViewById(R.id.lobbyInfo)).setText("Players online (" + Tools.joinedPlayers.size() + "/"+ Tools.maxPlayersInRoom +") in Lobby \"" + Tools.currentRoomName + "\"");
+                    ((TextView) Tools.game.findViewById(R.id.lobbyInfo)).setText("Players online (" + Tools.joinedPlayers.size() + "/" + Tools.maxPlayersInRoom + ") in Lobby \"" + Tools.currentRoomName + "\"");
 
                     Tools.game.findViewById(R.id.btnPlay).setOnClickListener(Tools.gameOnClickListner);
 
-                    ListView listViewConPlayers = ((ListView)findViewById(R.id.listViewConnectedPlayers));
+                    ListView listViewConPlayers = ((ListView) findViewById(R.id.listViewConnectedPlayers));
 
                     JoinedPlayersAdapter customAdpt = new JoinedPlayersAdapter(Tools.appContext, Tools.joinedPlayers);
 
                     listViewConPlayers.setAdapter(customAdpt);
                     customAdpt.notifyDataSetChanged();
 
-                   //ArrayAdapter<String> adapter = new ArrayAdapter<>(Tools.appContext, android.R.layout.simple_list_item_1, Tools.joinedPlayers);
+                    //ArrayAdapter<String> adapter = new ArrayAdapter<>(Tools.appContext, android.R.layout.simple_list_item_1, Tools.joinedPlayers);
 
                 }
             });
@@ -518,7 +543,7 @@ public class GameActivity extends Activity {
             Tools.game.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    ListView chat = ((ListView)findViewById(R.id.listViewChatMsgs));
+                    ListView chat = ((ListView) findViewById(R.id.listViewChatMsgs));
                     JoinedPlayersAdapter adp = new JoinedPlayersAdapter(Tools.appContext, Tools.chatQueue);
                     chat.setAdapter(adp);
                     adp.notifyDataSetChanged();
@@ -572,37 +597,10 @@ public class GameActivity extends Activity {
 
             }
         });
+
         ArrayAdapter<String> adapter = new ArrayAdapter<>(Tools.appContext, android.R.layout.simple_list_item_1, Tools.allRoomNamesList);
         ((ListView)findViewById(R.id.listViewAvailGame)).setAdapter(adapter);
         ((ListView)findViewById(R.id.listViewAvailGame)).setDivider(null);
         adapter.notifyDataSetChanged();
     }
-
-    public void sendUpdateEvent(String msg, String card){
-        try{
-
-
-            String message = msg + "#" + Util.userName + "@" + card;
-            theClient.sendUpdatePeers(message.getBytes());
-        } catch (Exception e){
-            Log.d("Exc: sendUpdateEvent", e.getMessage());
-        }
-    }
-
-    /*public void updateMove(String msg){
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                sendUpdateEvent("Hi there!");
-            }
-        });
-    }*/
-
-    /*public void onUpdatePeersRecieved(UpdateEvent event){
-        if (event.isUDP()){
-            String message = new String(event.getUpdate());
-            Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
-        }
-    }*/
-
 }

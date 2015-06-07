@@ -52,19 +52,30 @@
                     android:id="@+id/drawBtn"
                     android:layout_alignParentTop="true"
                     android:layout_alignParentLeft="true"
-                    android:layout_alignParentStart="true" />
+                    android:layout_alignParentStart="true"
+                    android:layout_alignBottom="@+id/testBtn"/>
 
                 <Button
                     style="?android:attr/buttonStyleSmall"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:text="End Turn"
+                    android:id="@+id/endTurnBtn"
+                    android:layout_alignParentTop="true"
+                    android:layout_toRightOf="@+id/drawBtn"
+                    android:layout_toEndOf="@+id/drawBtn"
+                    android:layout_alignBottom="@+id/drawBtn"
+                    android:layout_alignParentEnd="false"
+                    android:layout_alignParentStart="false"/>
+
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:text="Test"
                     android:id="@+id/testBtn"
-                    android:layout_below="@+id/drawBtn"
-                    android:layout_alignRight="@+id/drawBtn"
-                    android:layout_alignEnd="@+id/drawBtn"
-                    android:layout_alignParentLeft="true"
-                    android:layout_alignParentStart="true"/>
+                    android:layout_alignParentTop="true"
+                    android:layout_toRightOf="@+id/endTurnBtn"
+                    android:layout_toEndOf="@+id/endTurnBtn"/>
             </RelativeLayout>
 
         </FrameLayout>

@@ -22,6 +22,7 @@ import com.shephertz.app42.gaming.multiplayer.client.WarpClient;
 import com.shephertz.app42.paas.sdk.android.App42API;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import at.fancycardgame.aauno.GameActivity;
 import at.fancycardgame.aauno.MainActivity;
@@ -75,6 +76,10 @@ public class Tools {
     public static ZoneRequestListener zrl = new ZoneRequestListener();
 
     //public static boolean isSender = false;
+    public static int nextPlayer = 1;
+    public static int currPlayer = 0;
+
+    public static int testCounter = 0;
 
 
     public static void init(Context ac) {
@@ -129,7 +134,8 @@ public class Tools {
     public static void playerArrayToList() {
         for(String s : Tools.playersInRoom)
             if(s.equals(User.getUsername()))
-                Tools.joinedPlayers.add(s + " (You)");
+                //Tools.joinedPlayers.add(s + " (You)");
+                Tools.joinedPlayers.add(s);
             else
                 Tools.joinedPlayers.add(s);
     }
@@ -146,6 +152,45 @@ public class Tools {
                         Toast.makeText(Tools.game, "TEST", Toast.LENGTH_SHORT).show();
                     }
                 });
+                break;
+            case "NEXT":
+                Tools.game.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(Tools.game, "nextPLayer: " + Tools.game.getNextPlayer(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+                /*Tools.game.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(Tools.game, "Players: " + Tools.joinedPlayers.toString(), Toast.LENGTH_SHORT).show();
+                        Tools.game.setYourTurn(false);
+                        for (String player : Tools.joinedPlayers){
+                            Tools.game.setYourTurn(false);
+                        }
+                        for (String player : Tools.joinedPlayers){
+                            //Tools.game.setYourTurn(false);
+                            if (player.equals(Tools.joinedPlayers.get(Tools.nextPlayer))){
+                                testCounter ++;
+                                Toast.makeText(Tools.game, "player: " + player + " joinedPlayers.get(nextPlayer):" + Tools.joinedPlayers.get(nextPlayer), Toast.LENGTH_LONG).show();
+                                Tools.game.setYourTurn(true);
+                                if (Tools.nextPlayer < Tools.joinedPlayers.size() - 1){
+                                    Tools.nextPlayer++;
+                                } else {
+                                    Tools.nextPlayer = 0;
+                                }
+
+                                if (Tools.currPlayer < Tools.joinedPlayers.size() - 1){
+                                    Tools.currPlayer++;
+                                } else {
+                                    Tools.currPlayer = 0;
+                                }
+                            break;
+                            }
+                        }
+                        Toast.makeText(Tools.game, "testCounter:" + testCounter, Toast.LENGTH_SHORT).show();
+                    }
+                });*/
                 break;
             case Constants.PREP_TO_PLAY:
                 Tools.startGameCountDown();
@@ -171,6 +216,12 @@ public class Tools {
                         // not working --> Tools.game.getWindow().getDecorView().findViewById(mixText.getId()).setVisibility(View.GONE);
                         //((FrameLayout)mixText.getParent()).invalidate();
                         //((FrameLayout)mixText.getParent()).removeView(mixText);
+                        if (!Tools.roomOwner.equals(User.getUsername())){
+                            Tools.game.setYourTurn(false);
+                        } else {
+                            Tools.game.setYourTurn(true);
+                        }
+                        Tools.game.setNextPlayer(1);
                         Tools.game.startGame();
                     }
                 });
@@ -186,6 +237,8 @@ public class Tools {
                     Tools.game.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
+                            // For now, admin will be the first player
+                            //Tools.game.setYourTurn(false);
 
                             Tools.shakeCardDeckHint= new TextView(Tools.game.getApplicationContext());
                             Typeface font = Typeface.createFromAsset(Tools.game.getAssets(), "Comic Book Bold.ttf");
@@ -204,10 +257,12 @@ public class Tools {
                 else
                 // if you're the admin
                 // Put the STARTGAME command outside of the Shake Listener to start it in the emulator
+                    //Tools.game.setYourTurn(true);
                     Tools.wClient.sendUpdatePeers(Constants.STARTGAME.getBytes());
                     Tools.game.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
+
                             Tools.shakeCardDeckHint= new TextView(Tools.game.getApplicationContext());
                             Typeface font = Typeface.createFromAsset(Tools.game.getAssets(), "Comic Book Bold.ttf");
                             Tools.shakeCardDeckHint.setTypeface(font);
