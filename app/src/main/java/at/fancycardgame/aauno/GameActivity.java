@@ -123,7 +123,7 @@ public class GameActivity extends Activity {
                 //Tools.wClient.sendUpdatePeers(msg.getBytes());
                 if (madeTurn && yourTurn){
                     Toast.makeText(context, "Switching to next player ...", Toast.LENGTH_SHORT).show();
-                    String msg = "NEXT#" + chosenColor;
+                    String msg = "NEXT#" + chosenColor + "@" + cardsToDraw;
                     Tools.wClient.sendUpdatePeers(msg.getBytes());
                 } else if (!yourTurn) {
                     Toast.makeText(context, "It's not your turn!", Toast.LENGTH_SHORT).show();
@@ -316,7 +316,7 @@ public class GameActivity extends Activity {
                         break;
                 }
                 playerCards.remove(i);
-                sendUpdateEvent("TEST", sendCard, this.chosenColor, this.cardsToDraw);
+                sendUpdateEvent("PLAY", sendCard);
                 break;
             }
         }
@@ -333,7 +333,7 @@ public class GameActivity extends Activity {
     }
 
     private void drawCards(int count){
-        Toast.makeText(context, "Drawing " + count + " cards", Toast.LENGTH_SHORT).show();
+        Toast.makeText(context, "Drawing " + count + " card(s)", Toast.LENGTH_SHORT).show();
         for (int i=0;i<count;i++){
             if (cardDeck.getSize() > 0){
                 playerCards.add(cardDeck.getCard());
@@ -488,9 +488,9 @@ public class GameActivity extends Activity {
         this.madeTurn = madeTurn;
     }
 
-    public void sendUpdateEvent(String msg, String card, String chosenColor, int cardsToDraw){
+    public void sendUpdateEvent(String msg, String card){
         try{
-            String message = msg + "#" + Util.userName + "@" + card + "_" + chosenColor + "*" + cardsToDraw;
+            String message = msg + "#" + Util.userName + "@" + card;
             Tools.wClient.sendUpdatePeers(message.getBytes());
         } catch (Exception e){
             Log.d("Exc: sendUpdateEvent", e.getMessage());

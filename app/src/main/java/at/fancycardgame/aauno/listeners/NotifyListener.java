@@ -107,18 +107,13 @@ public class NotifyListener implements com.shephertz.app42.gaming.multiplayer.cl
         String message = new String(updateEvent.getUpdate());
 
         // Action if current player play a card
-        if (message.startsWith("TEST#")){
+        if (message.startsWith("PLAY#")){
             String sender = message.substring(message.indexOf("#")+1, message.indexOf("@")).trim();
-            String card =  message.substring(message.indexOf("@") + 1, message.indexOf("_"));
+            String card =  message.substring(message.indexOf("@") + 1, message.length()).trim();
             if (!sender.equals(Util.userName)){
-                String chosenColor =  message.substring(message.indexOf("_")+1, message.indexOf("*"));
-                String cardsToDraw =  message.substring(message.indexOf("*")+1, message.length());
+
                 Log.d("updateEvent Sender", sender);
                 Log.d("updateEvent Card", card);
-                Log.d("updateEvent chosenColor", chosenColor);
-                Log.d("updateEvent cardsToDraw", cardsToDraw);
-
-                Tools.game.setCardsToDraw(cardsToDraw);
                 Tools.game.playCardByName(card);
             }
 
@@ -153,8 +148,10 @@ public class NotifyListener implements com.shephertz.app42.gaming.multiplayer.cl
             }
 
             // Chosen color has to be set here to ensure that there is input from the color chooser dialog
-            String chosenColor = message.substring(message.indexOf("#") + 1, message.length()).trim();
+            String chosenColor = message.substring(message.indexOf("#") + 1, message.indexOf("@")).trim();
             Tools.game.setChosenColor(chosenColor);
+            String cardsToDraw = message.substring(message.indexOf("@") + 1, message.length()).trim();
+            Tools.game.setCardsToDraw(cardsToDraw);
 
             // Allow players to make a turn again
             Tools.game.setMadeTurn(false);
