@@ -48,6 +48,22 @@
             </intent-filter>
         </activity>
 
+        <activity android:name=".CreateUserActivity"
+            android:label="@string/app_name"
+            android:screenOrientation="landscape">
+            <intent-filter>
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+
+        <activity android:name=".ChangePwActivity"
+            android:label="@string/app_name"
+            android:screenOrientation="landscape">
+            <intent-filter>
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
 
 
     </application>
