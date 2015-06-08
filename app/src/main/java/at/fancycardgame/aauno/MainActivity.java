@@ -2,16 +2,24 @@ package at.fancycardgame.aauno;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.graphics.Point;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
+import android.view.Display;
+import android.view.DragEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -26,13 +34,15 @@ import at.fancycardgame.aauno.toolbox.Tools;
 
 public class MainActivity extends FragmentActivity implements View.OnClickListener {
 
+    public static  final String PREFS_NAME = "My Preferences";
+    Context savePrefs;
 
     // define font name, can be changed later on here
     private static final String menu_font = "Comic Book Bold.ttf";
     // the whole display container where the content is shown
     private ViewGroup screen_container;
-    // the whole container where the game takes place
-    private ViewGroup gameBoard;
+
+
     // the viewgroups for the different options
     private ViewGroup optionsMenu;
     private ViewGroup userMgmtMenu;
@@ -43,37 +53,73 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
 
     private View.OnClickListener mainOnClickListener = this;
 
+    // the card deck
+    private UnoCardDeck cardDeck;
+
     // the logical density of the display
     private static float density;
 
+    //test button
+    private Button testBtn;
+    private View playedCard;
+
+    private Display display;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+
+
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+
+
+
+        if (!at.fancycardgame.aauno.User.isLoggedIn()) {
+            DialogFragment loginDialog = new LoginDialogFragment();
+
+            loginDialog.show(getSupportFragmentManager(), "login");
+
+        }
+
+        //SharedPrefernces: Save Login data
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
         Tools.init(this.getApplicationContext());
-        Tools.mainActivity = this;
+                    Tools.mainActivity = this;
 
-        // set menu typeface
-        this.setMenuTypeface();
+                    // set menu typeface
+                    this.setMenuTypeface();
 
-        // get density of display (to scale images later)
-        MainActivity.density = getResources().getDisplayMetrics().density;
-        // get container where game content is shown later
-        this.screen_container = (ViewGroup)findViewById(R.id.screens);
+                    // get density of display (to scale images later)
+                    MainActivity.density = getResources().getDisplayMetrics().density;
+                    // get container where game content is shown later
+                    this.screen_container = (ViewGroup) findViewById(R.id.screens);
 
-        this.userMgmtMenu = (ViewGroup)getLayoutInflater().inflate(R.layout.menu_usermgmt_page, null);
-        this.optionsMenu = (ViewGroup)getLayoutInflater().inflate(R.layout.menu_options_page, null);
-        this.gameBoard = (ViewGroup)getLayoutInflater().inflate(R.layout.game_field, null);
-        this.createUserMenu = (ViewGroup)getLayoutInflater().inflate(R.layout.menu_createuser_page, null);
-        this.changePwdMenu = (ViewGroup)getLayoutInflater().inflate(R.layout.menu_changepwd_page, null);
+                    this.userMgmtMenu = (ViewGroup) getLayoutInflater().inflate(R.layout.menu_usermgmt_page, null);
+                    this.optionsMenu = (ViewGroup) getLayoutInflater().inflate(R.layout.menu_options_page, null);
 
-        // ***** PREPARE WHOLE MENU *******
-        // startpage
-        findViewById(R.id.startGameMP).setOnClickListener(this.mainOnClickListener);
-        findViewById(R.id.optionsMP).setOnClickListener(this.mainOnClickListener);
-        findViewById(R.id.helpMP).setOnClickListener(this.mainOnClickListener);
-        findViewById(R.id.quitMP).setOnClickListener(this.mainOnClickListener);
+                    this.createUserMenu = (ViewGroup) getLayoutInflater().inflate(R.layout.menu_createuser_page, null);
+                    this.changePwdMenu = (ViewGroup) getLayoutInflater().inflate(R.layout.menu_changepwd_page, null);
+
+                    // get current display
+                    this.display = ((WindowManager) getBaseContext().getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
+
+
+                    // ***** PREPARE WHOLE MENU *******
+                    // startpage
+                    findViewById(R.id.startGameMP).setOnClickListener(this.mainOnClickListener);
+                    findViewById(R.id.optionsMP).setOnClickListener(this.mainOnClickListener);
+                    findViewById(R.id.helpMP).setOnClickListener(this.mainOnClickListener);
+                    findViewById(R.id.quitMP).setOnClickListener(this.mainOnClickListener);
+
+
 
     }
 
@@ -128,7 +174,7 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
                      @Override
                      public void onAnimationEnd(Animation animation) {
                          // remove everything that is in screen_container
-                         if (!at.fancycardgame.aauno.User.isLoggedIn()) {
+                        if (!at.fancycardgame.aauno.User.isLoggedIn()) {
                              DialogFragment loginDialog = new LoginDialogFragment();
                              loginDialog.show(getSupportFragmentManager(), "login");
                          } else if (at.fancycardgame.aauno.User.isLoggedIn()) {
@@ -158,14 +204,15 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
                     startActivity(new Intent(MainActivity.this,OptionsActivity.class));
 
                     // remove everything that is in screen_container
-                    screen_container.removeAllViews();
+                    //screen_container.removeAllViews();
                     // create options menue from layout ...
 
 
                     // ... and add it to the screen_container
-                    screen_container.addView(optionsMenu);
+                    //screen_container.addView(optionsMenu);
 
-                    setStringTypeface(R.id.userMgmtMP);
+                    //setStringTypeface(R.id.userMgmtMP);
+                    /*
                     setStringTypeface(R.id.musicOnOffMP);
                     setStringTypeface(R.id.effectsOnOffMP);
 
@@ -173,11 +220,21 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
                     findViewById(R.id.userMgmtMP).setOnClickListener(mainOnClickListener);
                     findViewById(R.id.musicOnOffMP).setOnClickListener(mainOnClickListener);
                     findViewById(R.id.effectsOnOffMP).setOnClickListener(mainOnClickListener);
+                    */
                 }
             } );
             clickedView.startAnimation(a);
 
         } else if(clickedID==R.id.helpMP) {
+
+            Context context = getApplicationContext();
+            SharedPreferences settings = context.getSharedPreferences(PREFS_NAME,0);
+            CharSequence text = settings.getString("name"," ") + settings.getString("password"," ");
+            int duration = Toast.LENGTH_SHORT;
+
+            Toast toast = Toast.makeText(context, text, duration);
+            toast.show();
+
             a.setAnimationListener(new AbstractAnimationListener() {
                 @Override
                 public void onAnimationEnd(Animation animation) {
@@ -362,6 +419,88 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
                 Tools.showToast("Exception Message : "+ ex.getMessage(), Toast.LENGTH_SHORT);
             }
         });
+    }
+
+    private void startGame() {
+
+        ViewGroup deckPosition = ((ViewGroup)findViewById(R.id.cardDeckPosition));
+        // create card deck and set where to put it
+        this.cardDeck = new UnoCardDeck(this.getApplicationContext(), (FrameLayout)deckPosition);
+
+        // add OnDragListener to playCardsPosition where player can drag&drop their cards
+        findViewById(R.id.playCardsPosition).setOnDragListener(new View.OnDragListener() {
+            //Drawable enterShape = getResources().getDrawable(entershape);
+            //Drawable normalShape = getResources().getDrawable(normalshape);
+            @Override
+            public boolean onDrag(View v, DragEvent event) {
+                int action = event.getAction();
+                final View view = (View)event.getLocalState();
+
+                // switch user action
+                switch(action) {
+                    case DragEvent.ACTION_DRAG_STARTED:
+                        // show user where to put the card
+                        //v.setBackgroundDrawable(enterShape);
+                        break;
+                    case DragEvent.ACTION_DRAG_ENDED:
+                        view.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                view.setVisibility(View.VISIBLE);
+                            }
+                        });
+                        //view.setBackgroundDrawable(normalShape);
+                        break;
+                    case DragEvent.ACTION_DRAG_ENTERED:
+                        // show user where to put the card
+                        //v.setBackgroundDrawable(enterShape);
+                        break;
+                    case DragEvent.ACTION_DROP:
+                        // remove from current owner
+                        ViewGroup owner = (ViewGroup) view.getParent();
+                        owner.removeView(view);
+                        // get current X and Y coordinates from drop event
+                        view.setX(event.getX() - (view.getWidth() / 2));
+                        view.setY(event.getY()-(view.getHeight()/2));
+
+                        // add dropped view to new parent (playCardsPosition)
+                        ((ViewGroup)findViewById(R.id.playCardsPosition)).addView(view);
+                        // make original view visible again
+                        view.setVisibility(View.VISIBLE);
+                        // delete touchlistener
+                        view.setOnTouchListener(null);
+                        break;
+                    default:
+                        // nothing
+                        break;
+                }
+                return true;
+            }
+        });
+
+
+        // mix deck
+        //this.mixDeck();
+
+        // deal out cards to user (each user gets 7 from the mixed deck)
+        // set on drag listener to null when creating deck
+
+        // TEST STUFF ******************************************************
+        // *****************************************************************
+           // Display display = getWindowManager().getDefaultDisplay();
+           // Point res = new Point();
+           // display.getSize(res);
+
+
+           // UnoCard test2 = new UnoCard(getApplicationContext(), (FrameLayout)((ViewGroup)findViewById(R.id.container)), new Point(res.x/2-50, res.y-130), getResources().getDrawable(R.drawable.blue_2), getResources().getDrawable(R.drawable.card_back), "Blue 2", "", "2", "Blue");
+           // UnoCard test3 = new UnoCard(getApplicationContext(), (FrameLayout)((ViewGroup)findViewById(R.id.container)), new Point(res.x/2-100, res.y-130), getResources().getDrawable(R.drawable.red_6), getResources().getDrawable(R.drawable.card_back),"Red 6", "", "6", "Red");
+           // UnoCard test4 = new UnoCard(getApplicationContext(), (FrameLayout)((ViewGroup)findViewById(R.id.container)), new Point(res.x/2-150, res.y-130), getResources().getDrawable(R.drawable.green_9), getResources().getDrawable(R.drawable.card_back),"Green 9", "", "9", "Green");
+
+           //test2.viewFront();
+           //test3.viewFront();
+           //test4.viewFront();
+        // TEST STUFF ******************************************************
+        // *****************************************************************
     }
 
     // method that sets a view invisible which is specified with a parameter
