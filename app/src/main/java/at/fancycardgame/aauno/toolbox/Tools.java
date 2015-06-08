@@ -22,6 +22,7 @@ import com.shephertz.app42.gaming.multiplayer.client.WarpClient;
 import com.shephertz.app42.paas.sdk.android.App42API;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import at.fancycardgame.aauno.GameActivity;
 import at.fancycardgame.aauno.MainActivity;
@@ -32,6 +33,7 @@ import at.fancycardgame.aauno.listeners.GameOnClickListener;
 import at.fancycardgame.aauno.listeners.NotifyListener;
 import at.fancycardgame.aauno.listeners.RoomRequestListener;
 import at.fancycardgame.aauno.listeners.ShakeEventListener;
+import at.fancycardgame.aauno.listeners.WarpListener;
 import at.fancycardgame.aauno.listeners.ZoneRequestListener;
 
 /**
@@ -73,6 +75,12 @@ public class Tools {
     public static RoomRequestListener rrl = new RoomRequestListener();
     public static ZoneRequestListener zrl = new ZoneRequestListener();
 
+    //public static boolean isSender = false;
+    public static int nextPlayer = 1;
+    public static int currPlayer = 0;
+
+    public static int testCounter = 0;
+
 
     public static void init(Context ac) {
             Tools.appContext = ac;
@@ -91,6 +99,11 @@ public class Tools {
             Tools.wClient.addNotificationListener(Tools.nl);
             Tools.wClient.addRoomRequestListener(Tools.rrl);
             Tools.wClient.addZoneRequestListener(Tools.zrl);
+
+           // Tools.wClient.addNotificationListener(eventHandler);
+            //Tools.wClient.addRoomRequestListener(eventHandler);
+
+
     }
 
 
@@ -121,7 +134,8 @@ public class Tools {
     public static void playerArrayToList() {
         for(String s : Tools.playersInRoom)
             if(s.equals(User.getUsername()))
-                Tools.joinedPlayers.add(s + " (You)");
+                //Tools.joinedPlayers.add(s + " (You)");
+                Tools.joinedPlayers.add(s);
             else
                 Tools.joinedPlayers.add(s);
     }
@@ -130,6 +144,24 @@ public class Tools {
 
 
         switch(command) {
+            //Multiplayer Test
+            case "TEST":
+                Tools.game.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(Tools.game, "TEST", Toast.LENGTH_SHORT).show();
+                    }
+                });
+                break;
+            case "NEXT":
+                Tools.game.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(Tools.game, "nextPlayer: " + Tools.game.getNextPlayer(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(Tools.game, "currPlayer: " + Tools.game.getCurrPlayer(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+                break;
             case Constants.PREP_TO_PLAY:
                 Tools.startGameCountDown();
                 break;
@@ -154,6 +186,12 @@ public class Tools {
                         // not working --> Tools.game.getWindow().getDecorView().findViewById(mixText.getId()).setVisibility(View.GONE);
                         //((FrameLayout)mixText.getParent()).invalidate();
                         //((FrameLayout)mixText.getParent()).removeView(mixText);
+                        if (!Tools.roomOwner.equals(User.getUsername())){
+                            Tools.game.setYourTurn(false);
+                        } else {
+                            Tools.game.setYourTurn(true);
+                        }
+                        Tools.game.setNextPlayer(1);
                         Tools.game.startGame();
                     }
                 });
@@ -166,11 +204,14 @@ public class Tools {
 
                 if(!Tools.roomOwner.equals(User.getUsername()))
                 // if you're not the admin
+                // TODO: Re-enable this after testing
                     Tools.game.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
+                            // For now, admin will be the first player
+                            //Tools.game.setYourTurn(false);
 
-                            Tools.shakeCardDeckHint= new TextView(Tools.game.getApplicationContext());
+                            /*Tools.shakeCardDeckHint= new TextView(Tools.game.getApplicationContext());
                             Typeface font = Typeface.createFromAsset(Tools.game.getAssets(), "Comic Book Bold.ttf");
                             Tools.shakeCardDeckHint.setTypeface(font);
                             Tools.shakeCardDeckHint.setGravity(Gravity.CENTER);
@@ -181,14 +222,18 @@ public class Tools {
                             ViewGroup.LayoutParams p = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
                             Tools.game.addContentView(Tools.shakeCardDeckHint, p);
 
-                            Tools.shakeCardDeckHint.invalidate();
+                            Tools.shakeCardDeckHint.invalidate();*/
                         }
                     });
                 else
                 // if you're the admin
+                // Put the STARTGAME command outside of the Shake Listener to start it in the emulator
+                    // TODO: Re-enable mixing by shaking after testing
+                    Tools.wClient.sendUpdatePeers(Constants.STARTGAME.getBytes());
                     Tools.game.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
+
                             Tools.shakeCardDeckHint= new TextView(Tools.game.getApplicationContext());
                             Typeface font = Typeface.createFromAsset(Tools.game.getAssets(), "Comic Book Bold.ttf");
                             Tools.shakeCardDeckHint.setTypeface(font);

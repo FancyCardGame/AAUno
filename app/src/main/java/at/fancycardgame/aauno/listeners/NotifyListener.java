@@ -1,6 +1,8 @@
 package at.fancycardgame.aauno.listeners;
 
 import android.os.Handler;
+import android.util.Log;
+import android.view.View;
 import android.widget.Toast;
 
 import com.shephertz.app42.gaming.multiplayer.client.events.ChatEvent;
@@ -8,6 +10,7 @@ import com.shephertz.app42.gaming.multiplayer.client.events.LobbyData;
 import com.shephertz.app42.gaming.multiplayer.client.events.MoveEvent;
 import com.shephertz.app42.gaming.multiplayer.client.events.RoomData;
 import com.shephertz.app42.gaming.multiplayer.client.events.UpdateEvent;
+import com.shephertz.app42.gaming.multiplayer.client.util.Util;
 
 import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
@@ -100,11 +103,71 @@ public class NotifyListener implements com.shephertz.app42.gaming.multiplayer.cl
     @Override
     public void onUpdatePeersReceived(UpdateEvent updateEvent) {
         String s = "";
+
+        String message = new String(updateEvent.getUpdate());
+
+        // Action if current player play a card
+        if (message.startsWith("TEST#")){
+            String sender = message.substring(message.indexOf("#")+1, message.indexOf("@")).trim();
+            String card =  message.substring(message.indexOf("@") + 1, message.indexOf("_"));
+            if (!sender.equals(Util.userName)){
+                String chosenColor =  message.substring(message.indexOf("_")+1, message.indexOf("*"));
+                String cardsToDraw =  message.substring(message.indexOf("*")+1, message.length());
+                Log.d("updateEvent Sender", sender);
+                Log.d("updateEvent Card", card);
+                Log.d("updateEvent chosenColor", chosenColor);
+                Log.d("updateEvent cardsToDraw", cardsToDraw);
+
+                Tools.game.setCardsToDraw(cardsToDraw);
+                Tools.game.playCardByName(card);
+            }
+
+            if (card.contains("Skip")){
+                if (Tools.joinedPlayers.indexOf(sender) == Tools.joinedPlayers.size() - 1){
+                    // If last player in turn order has played a skip card
+                    Tools.game.setNextPlayer(1);
+                } else if (Tools.joinedPlayers.indexOf(sender) == Tools.joinedPlayers.size() - 2){
+                    // If second to last player in turn order has played a skip card
+                    Tools.game.setNextPlayer(0);
+                } else {
+                    // If first or second player in turn order has played a skip card
+                    Tools.game.setNextPlayer(Tools.game.getNextPlayer() + 1);
+                }
+            }
+        }
+
+        // Action if end turn button is pressed
+        if (message.startsWith("NEXT")){
+            // Allow the next player to make his turn, disable actions of other players
+            Tools.game.setYourTurn(false);
+
+            if (Util.userName.equals(Tools.joinedPlayers.get(Tools.game.getNextPlayer()))) {
+                Tools.game.setYourTurn(true);
+            }
+
+            // Set the "next" next player
+            if (Tools.game.getNextPlayer() < Tools.joinedPlayers.size() - 1){
+                Tools.game.setNextPlayer(Tools.game.getNextPlayer() + 1);
+            } else {
+                Tools.game.setNextPlayer(0);
+            }
+
+            // Chosen color has to be set here to ensure that there is input from the color chooser dialog
+            String chosenColor = message.substring(message.indexOf("#") + 1, message.length()).trim();
+            Tools.game.setChosenColor(chosenColor);
+
+            // Allow players to make a turn again
+            Tools.game.setMadeTurn(false);
+        }
+
         try {
             s = new String(updateEvent.getUpdate(), "UTF-8");
+            Log.d("updateEvent", "" + s);
+
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
+       //Tools.executeFromRemote("TEST")
        Tools.executeFromRemote(s);
     }
 

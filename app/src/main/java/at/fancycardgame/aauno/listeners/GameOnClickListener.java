@@ -94,7 +94,8 @@ public class GameOnClickListener implements View.OnClickListener {
             // only admin sees the play button
 
 
-            Tools.joinedPlayers.add(User.getUsername() + " (You)");
+            //Tools.joinedPlayers.add(User.getUsername() + " (You)");
+            Tools.joinedPlayers.add(User.getUsername());
 
             // worked with waiting 2 seconds after room was created
             Handler h = new Handler();

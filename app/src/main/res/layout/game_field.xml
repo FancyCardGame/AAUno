@@ -4,11 +4,13 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@drawable/background_gameboardv2">
+
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/blue">
+        >
 
         <FrameLayout
             android:layout_width="match_parent"
@@ -16,8 +18,8 @@
             android:id="@+id/container">
 
             <RelativeLayout
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
                 android:layout_gravity="center">
 
                 <FrameLayout
@@ -30,30 +32,55 @@
                     android:layout_marginStart="202dp"
                     android:layout_centerVertical="true"
                     android:layout_alignParentLeft="true"
-                    android:layout_alignParentStart="true"></FrameLayout>
+                    android:layout_alignParentStart="true"
+                    android:alpha="0"></FrameLayout>
 
                 <FrameLayout
                     android:layout_width="100sp"
                     android:layout_height="130sp"
                     android:id="@+id/cardDeckPosition"
-                    android:background="@color/background_material_light"
                     android:layout_gravity="center"
                     android:layout_alignTop="@+id/playCardsPosition"
                     android:layout_toRightOf="@+id/playCardsPosition"
-                    android:layout_toEndOf="@+id/playCardsPosition" />
+                    android:layout_toEndOf="@+id/playCardsPosition"
+                    />
 
                 <Button
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Draw"
-                    android:id="@+id/testBtn"
+                    android:id="@+id/drawBtn"
                     android:layout_alignParentTop="true"
                     android:layout_alignParentLeft="true"
-                    android:layout_alignParentStart="true" />
+                    android:layout_alignParentStart="true"
+                    android:layout_alignBottom="@+id/testBtn"/>
+
+                <Button
+                    style="?android:attr/buttonStyleSmall"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="End Turn"
+                    android:id="@+id/endTurnBtn"
+                    android:layout_alignParentTop="true"
+                    android:layout_toRightOf="@+id/drawBtn"
+                    android:layout_toEndOf="@+id/drawBtn"
+                    android:layout_alignBottom="@+id/drawBtn"
+                    android:layout_alignParentEnd="false"
+                    android:layout_alignParentStart="false"/>
+
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Test"
+                    android:id="@+id/testBtn"
+                    android:layout_alignParentTop="true"
+                    android:layout_toRightOf="@+id/endTurnBtn"
+                    android:layout_toEndOf="@+id/endTurnBtn"/>
             </RelativeLayout>
 
         </FrameLayout>
 
     </RelativeLayout>
+
 </FrameLayout>
 
