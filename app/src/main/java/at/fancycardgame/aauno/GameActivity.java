@@ -527,6 +527,7 @@ public class GameActivity extends Activity {
             if(GameState.gameCondition.equals(GameState.LOBBY)) {
                 Tools.wClient.joinRoom(Tools.currentRoom);
                 updateJoinedPlayersListView();
+
             }
     }
 
