@@ -135,9 +135,11 @@ public class NotifyListener implements com.shephertz.app42.gaming.multiplayer.cl
         if (message.startsWith("NEXT")){
             // Allow the next player to make his turn, disable actions of other players
             Tools.game.setYourTurn(false);
+            Tools.game.setCurrPlayerTxt(Tools.joinedPlayers.get(Tools.game.getNextPlayer()));
 
             if (Util.userName.equals(Tools.joinedPlayers.get(Tools.game.getNextPlayer()))) {
                 Tools.game.setYourTurn(true);
+
             }
 
             // Set the "next" next player
@@ -150,6 +152,7 @@ public class NotifyListener implements com.shephertz.app42.gaming.multiplayer.cl
             // Chosen color has to be set here to ensure that there is input from the color chooser dialog
             String chosenColor = message.substring(message.indexOf("#") + 1, message.indexOf("@")).trim();
             Tools.game.setChosenColor(chosenColor);
+            Tools.game.setColorTxt(chosenColor);
             String cardsToDraw = message.substring(message.indexOf("@") + 1, message.length()).trim();
             Tools.game.setCardsToDraw(cardsToDraw);
 

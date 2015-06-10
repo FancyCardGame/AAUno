@@ -191,8 +191,11 @@ public class Tools {
                         } else {
                             Tools.game.setYourTurn(true);
                         }
+
                         Tools.game.setNextPlayer(1);
                         Tools.game.startGame();
+                        Tools.game.setColorTxt("-");
+                        Tools.game.setCurrPlayerTxt(Tools.roomOwner);
                     }
                 });
                 break;

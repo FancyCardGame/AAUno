@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Point;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -22,6 +23,8 @@ import android.widget.Toast;
 
 // import com.app.appwarplisterner.WarpListener;
 import com.shephertz.app42.gaming.multiplayer.client.util.Util;
+
+import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -63,6 +66,9 @@ public class GameActivity extends Activity {
     private static int nextPlayer;
     private static int currPlayer;
 
+    private static TextView colorTxt;
+    private static TextView currPlayerTxt;
+
     private Point res;
 
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,6 +106,7 @@ public class GameActivity extends Activity {
 
 
         Button drawBtn = (Button) findViewById(R.id.drawBtn);
+        drawBtn.setTypeface(Typeface.createFromAsset(Tools.game.getAssets(), "Comic Book.ttf"));
         drawBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -115,6 +122,7 @@ public class GameActivity extends Activity {
         });
 
         Button endTurnButton = (Button) findViewById(R.id.endTurnBtn);
+        endTurnButton.setTypeface(Typeface.createFromAsset(Tools.game.getAssets(), "Comic Book.ttf"));
         endTurnButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -144,6 +152,13 @@ public class GameActivity extends Activity {
 
             }
         });
+
+        // Textviews for chosen color and current player
+        colorTxt = (TextView) findViewById(R.id.colorTxt);
+        colorTxt.setTypeface(Typeface.createFromAsset(Tools.game.getAssets(), "Comic Book.ttf"));
+        currPlayerTxt = (TextView) findViewById(R.id.currPlayerTxt);
+        currPlayerTxt.setTypeface(Typeface.createFromAsset(Tools.game.getAssets(), "Comic Book.ttf"));
+
 
         Display display = getWindowManager().getDefaultDisplay();
         this.res = new Point();
@@ -486,6 +501,30 @@ public class GameActivity extends Activity {
 
     public void setMadeTurn(boolean madeTurn){
         this.madeTurn = madeTurn;
+    }
+
+    public void setColorTxt(final String color){
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (color.equals("")) {
+                    colorTxt.setText("Chosen Color: -");
+                } else {
+                    colorTxt.setText("Chosen Color: " + color);
+                }
+
+            }
+        });
+
+    }
+
+    public void setCurrPlayerTxt(final String currPlayer){
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                currPlayerTxt.setText("Current Player: " + currPlayer);
+            }
+        });
     }
 
     public void sendUpdateEvent(String msg, String card){
