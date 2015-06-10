@@ -139,7 +139,7 @@ public class NotifyListener implements com.shephertz.app42.gaming.multiplayer.cl
 
             if (Util.userName.equals(Tools.joinedPlayers.get(Tools.game.getNextPlayer()))) {
                 Tools.game.setYourTurn(true);
-
+                Tools.showToast("It's your turn!", Toast.LENGTH_SHORT);
             }
 
             // Set the "next" next player
