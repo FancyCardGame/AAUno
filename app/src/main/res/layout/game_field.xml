@@ -52,8 +52,7 @@
                     android:id="@+id/drawBtn"
                     android:layout_alignParentTop="true"
                     android:layout_alignParentLeft="true"
-                    android:layout_alignParentStart="true"
-                    android:layout_alignBottom="@+id/testBtn"/>
+                    android:layout_alignParentStart="true"/>
 
                 <Button
                     style="?android:attr/buttonStyleSmall"
@@ -61,12 +60,29 @@
                     android:layout_height="wrap_content"
                     android:text="End Turn"
                     android:id="@+id/endTurnBtn"
-                    android:layout_alignParentTop="true"
-                    android:layout_toRightOf="@+id/drawBtn"
-                    android:layout_toEndOf="@+id/drawBtn"
-                    android:layout_alignBottom="@+id/drawBtn"
-                    android:layout_alignParentEnd="false"
-                    android:layout_alignParentStart="false"/>
+                    android:layout_below="@+id/playCardsPosition"
+                    android:layout_centerHorizontal="true"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Chosen Color:"
+                    android:id="@+id/colorTxt"
+                    android:textSize="12sp"
+                    android:textColor="#ffffffff"
+                    android:layout_above="@+id/currPlayerTxt"
+                    android:layout_alignLeft="@+id/currPlayerTxt"
+                    android:layout_alignStart="@+id/currPlayerTxt"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Current Player: "
+                    android:id="@+id/currPlayerTxt"
+                    android:textSize="12sp"
+                    android:textColor="#ffffffff"
+                    android:layout_above="@+id/playCardsPosition"
+                    android:layout_centerHorizontal="true"/>
 
                 <Button
                     android:layout_width="wrap_content"
@@ -74,8 +90,9 @@
                     android:text="Test"
                     android:id="@+id/testBtn"
                     android:layout_alignParentTop="true"
-                    android:layout_toRightOf="@+id/endTurnBtn"
-                    android:layout_toEndOf="@+id/endTurnBtn"/>
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentEnd="true"/>
+
             </RelativeLayout>
 
         </FrameLayout>

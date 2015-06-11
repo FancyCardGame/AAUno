@@ -83,7 +83,7 @@ public class Usermanager extends Activity implements View.OnClickListener {
                 @Override
                 public void onAnimationEnd(Animation animation) {
                     //access change password
-                    startActivity(new Intent(Usermanager.this, ChangePwActivity.class));
+                    //startActivity(new Intent(Usermanager.this, ChangePwActivity.class));
 
                 }
             });

@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Point;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -22,6 +23,8 @@ import android.widget.Toast;
 
 // import com.app.appwarplisterner.WarpListener;
 import com.shephertz.app42.gaming.multiplayer.client.util.Util;
+
+import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -63,6 +66,9 @@ public class GameActivity extends Activity {
     private static int nextPlayer;
     private static int currPlayer;
 
+    private static TextView colorTxt;
+    private static TextView currPlayerTxt;
+
     private Point res;
 
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,6 +106,7 @@ public class GameActivity extends Activity {
 
 
         Button drawBtn = (Button) findViewById(R.id.drawBtn);
+        drawBtn.setTypeface(Typeface.createFromAsset(Tools.game.getAssets(), "Comic Book.ttf"));
         drawBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -107,14 +114,17 @@ public class GameActivity extends Activity {
                     madeTurn = true;
                     drawCards(1);
                 } else if (!yourTurn){
-                    Toast.makeText(context, "It's not your turn!", Toast.LENGTH_SHORT).show();
+                    Tools.showToast("It's not your turn!", Toast.LENGTH_SHORT);
+                    //Toast.makeText(context, "It's not your turn!", Toast.LENGTH_SHORT).show();
                 } else {
-                    Toast.makeText(context, "Your turn is over!", Toast.LENGTH_SHORT).show();
+                    Tools.showToast("Your turn is over!", Toast.LENGTH_SHORT);
+                    //Toast.makeText(context, "Your turn is over!", Toast.LENGTH_SHORT).show();
                 }
             }
         });
 
         Button endTurnButton = (Button) findViewById(R.id.endTurnBtn);
+        endTurnButton.setTypeface(Typeface.createFromAsset(Tools.game.getAssets(), "Comic Book.ttf"));
         endTurnButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -122,13 +132,17 @@ public class GameActivity extends Activity {
                 //String msg = "TEST";
                 //Tools.wClient.sendUpdatePeers(msg.getBytes());
                 if (madeTurn && yourTurn){
-                    Toast.makeText(context, "Switching to next player ...", Toast.LENGTH_SHORT).show();
+                    Tools.showToast("Ending turn ...", Toast.LENGTH_SHORT);
+                    //Toast.makeText(context, "Switching to next player ...", Toast.LENGTH_SHORT).show();
                     String msg = "NEXT#" + chosenColor + "@" + cardsToDraw;
+                    //TODO: Use sendUpdate of GameActivity for this?
                     Tools.wClient.sendUpdatePeers(msg.getBytes());
                 } else if (!yourTurn) {
-                    Toast.makeText(context, "It's not your turn!", Toast.LENGTH_SHORT).show();
+                    Tools.showToast("It's not your turn!", Toast.LENGTH_SHORT);
+                    //Toast.makeText(context, "It's not your turn!", Toast.LENGTH_SHORT).show();
                 } else {
-                    Toast.makeText(context, "You have to play or draw a card!", Toast.LENGTH_SHORT).show();
+                    Tools.showToast("You have to play or draw a card!", Toast.LENGTH_SHORT);
+                    //Toast.makeText(context, "You have to play or draw a card!", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -144,6 +158,12 @@ public class GameActivity extends Activity {
 
             }
         });
+
+        // Textviews for chosen color and current player
+        colorTxt = (TextView) findViewById(R.id.colorTxt);
+        colorTxt.setTypeface(Typeface.createFromAsset(Tools.game.getAssets(), "Comic Book.ttf"));
+        currPlayerTxt = (TextView) findViewById(R.id.currPlayerTxt);
+        currPlayerTxt.setTypeface(Typeface.createFromAsset(Tools.game.getAssets(), "Comic Book.ttf"));
 
         Display display = getWindowManager().getDefaultDisplay();
         this.res = new Point();
@@ -239,9 +259,11 @@ public class GameActivity extends Activity {
 
                             break;
                         } else if (!yourTurn) {
-                            Toast.makeText(context, "It's not your turn!", Toast.LENGTH_SHORT).show();
+                            Tools.showToast("It's not your turn!", Toast.LENGTH_SHORT);
+                            //Toast.makeText(context, "It's not your turn!", Toast.LENGTH_SHORT).show();
                         } else if (madeTurn){
-                            Toast.makeText(context, "Your turn is over!", Toast.LENGTH_SHORT).show();
+                            Tools.showToast("Your turn is over!", Toast.LENGTH_SHORT);
+                            //Toast.makeText(context, "Your turn is over!", Toast.LENGTH_SHORT).show();
                         } else {
                             // not a valid play
                         }
@@ -301,11 +323,13 @@ public class GameActivity extends Activity {
                         break;
                     case "SKIP":
                         // Next player has to skip his turn
-                        Toast.makeText(context, "Next player has to skip his turn!", Toast.LENGTH_SHORT).show();
+                        Tools.showToast("Next player has to skip his turn!", Toast.LENGTH_SHORT);
+                        //Toast.makeText(context, "Next player has to skip his turn!", Toast.LENGTH_SHORT).show();
                         break;
                     case "TURN":
                         // Turn order has to be reversed
-                        Toast.makeText(context, "Turn order has been reversed!", Toast.LENGTH_SHORT).show();
+                        Tools.showToast("Turn order has been reversed!", Toast.LENGTH_SHORT);
+                        //Toast.makeText(context, "Turn order has been reversed!", Toast.LENGTH_SHORT).show();
                         break;
                     case "PLUS 2":
                         // Increase draw stack
@@ -333,7 +357,8 @@ public class GameActivity extends Activity {
     }
 
     private void drawCards(int count){
-        Toast.makeText(context, "Drawing " + count + " card(s)", Toast.LENGTH_SHORT).show();
+        Tools.showToast("Drawing " + count + " card(s)", Toast.LENGTH_SHORT);
+        //Toast.makeText(context, "Drawing " + count + " card(s)", Toast.LENGTH_SHORT).show();
         for (int i=0;i<count;i++){
             if (cardDeck.getSize() > 0){
                 playerCards.add(cardDeck.getCard());
@@ -488,6 +513,42 @@ public class GameActivity extends Activity {
         this.madeTurn = madeTurn;
     }
 
+    public void setColorTxt(final String color){
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (color.equals("")) {
+                    colorTxt.setText("Chosen Color: -");
+                } else {
+                    colorTxt.setText("Chosen Color: " + color);
+                }
+
+            }
+        });
+
+    }
+
+    public void setCurrPlayerTxt(final String currPlayer){
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                currPlayerTxt.setText("Current Player: " + currPlayer);
+            }
+        });
+    }
+
+    public void dealCards(){
+        for (int i = 0; i < 8; i++) {
+            // Give cards to the player, remove given cards from draw stack
+            // TODO: Distribution of cards (i.e. cards are limited, e.g. there are no more than 4 color choosers)
+            playerCards.add(i, cardDeck.getCard());
+            playerCards.get(i).setLocation(res.x / 8 + (i * 50), res.y - 130);
+            playerCards.get(i).viewFront();
+            playerCards.get(i).setContainer((FrameLayout) findViewById(R.id.container));
+            cardDeck.removeCard(playerCards.get(i));
+        }
+    }
+
     public void sendUpdateEvent(String msg, String card){
         try{
             String message = msg + "#" + Util.userName + "@" + card;
@@ -527,6 +588,7 @@ public class GameActivity extends Activity {
             if(GameState.gameCondition.equals(GameState.LOBBY)) {
                 Tools.wClient.joinRoom(Tools.currentRoom);
                 updateJoinedPlayersListView();
+
             }
     }
 
