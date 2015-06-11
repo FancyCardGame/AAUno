@@ -11,11 +11,13 @@ import android.widget.Toast;
 
 import com.shephertz.app42.paas.sdk.android.App42API;
 import com.shephertz.app42.paas.sdk.android.App42CallBack;
+import com.shephertz.app42.paas.sdk.android.session.SessionService;
 import com.shephertz.app42.paas.sdk.android.user.User;
 import com.shephertz.app42.paas.sdk.android.user.UserService;
 
 import at.fancycardgame.aauno.GameActivity;
 import at.fancycardgame.aauno.LoginDialogFragment;
+import at.fancycardgame.aauno.MainActivity;
 import at.fancycardgame.aauno.R;
 import at.fancycardgame.aauno.toolbox.Tools;
 
@@ -23,7 +25,7 @@ import at.fancycardgame.aauno.toolbox.Tools;
  * Created by Thomas on 30.05.2015.
  */
 public class AuthenticateToGameCloudTask extends AsyncTask<Void, Void, Void> {
-    private ConnectivityManager conM;
+    public ConnectivityManager conM;
 
     private String username;
     private String pwd;
@@ -31,6 +33,8 @@ public class AuthenticateToGameCloudTask extends AsyncTask<Void, Void, Void> {
     public static boolean isConnectedToCloud = false;
 
     public AuthenticateToGameCloudTask(String username, String pwd) {
+
+
         this.conM = (ConnectivityManager)Tools.mainActivity.getSystemService(Context.CONNECTIVITY_SERVICE);
 
         this.username = username;
@@ -42,11 +46,23 @@ public class AuthenticateToGameCloudTask extends AsyncTask<Void, Void, Void> {
         Tools.mainActivity.findViewById(R.id.loadingPanel).setVisibility(View.VISIBLE);
     }
 
+
+    public ConnectivityManager getConnection(){
+        return conM;
+    }
+
     @Override
     protected Void doInBackground(Void... params) {
 
         UserService userService = App42API.buildUserService();
+
+
+
+
         // 1) authenticate
+
+
+
         userService.authenticate(this.username, this.pwd, new App42CallBack() {
             @Override
             public void onSuccess(Object response) {
@@ -57,12 +73,18 @@ public class AuthenticateToGameCloudTask extends AsyncTask<Void, Void, Void> {
                 at.fancycardgame.aauno.User.setEmail(user.getEmail());
                 at.fancycardgame.aauno.User.login();
 
+
                 // 2) connect to cloud
                 Tools.wClient.connectWithUserName(at.fancycardgame.aauno.User.getUsername());
+
+
+
 
                 // not needed show Toast only when connected to the cloud
                 //Tools.showToast("User successfully logged in.", Toast.LENGTH_SHORT);
             }
+
+
 
             @Override
             public void onException(Exception ex) {                                                 //TODO: add ex. msg or not?
@@ -82,6 +104,9 @@ public class AuthenticateToGameCloudTask extends AsyncTask<Void, Void, Void> {
         return null;
     }
 
+
+
+
     @Override
     protected void onPostExecute(Void result) {
         Runnable r = new Runnable() {
@@ -96,11 +121,11 @@ public class AuthenticateToGameCloudTask extends AsyncTask<Void, Void, Void> {
                                 Tools.mainActivity.findViewById(R.id.loadingPanel).setVisibility(View.INVISIBLE);
 
                                 // start new gameActivity
-                                Tools.mainActivity.startActivity(new Intent(Tools.mainActivity, GameActivity.class));
+                               // Tools.mainActivity.startActivity(new Intent(Tools.mainActivity, MainActivity.class));
 
                                 // "cleanup"
                                 //Tools.mainActivity = null;
-                                Tools.mainActivity.finish();
+                                //Tools.mainActivity.isFinishing();
                             }
                         });
                         AuthenticateToGameCloudTask.isConnectedToCloud = false;

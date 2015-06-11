@@ -9,6 +9,10 @@ public class User {
     private static String email;
     private static String pwd;
     private static Boolean loggedIn = false;
+    private static int id;
+
+
+
 
     public static String getEmail() {
         return email;
@@ -17,6 +21,8 @@ public class User {
     public static void setEmail(String email) {
         User.email = email;
     }
+
+    public static int getID(){return id;}
 
     public static void login() {
         User.loggedIn = true;

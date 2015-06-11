@@ -54,7 +54,7 @@ public class Tools {
     private static ShakeEventListener mShakeDetector;
     private static SensorManager mSensorManager;
     private static Sensor mAccelerometer;
-
+    public static String sessionID;
 
     public static View.OnClickListener gameOnClickListner = new GameOnClickListener();
 

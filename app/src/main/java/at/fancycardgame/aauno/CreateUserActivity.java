@@ -1,6 +1,8 @@
 package at.fancycardgame.aauno;
 
 import android.app.Activity;
+import android.app.DialogFragment;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
@@ -29,14 +31,17 @@ public class CreateUserActivity extends Activity implements View.OnClickListener
     public void onClick(View clickedView){
         int clickedID = clickedView.getId();
 
-        if(clickedID == R.id.btnCreateUser){
+        if(clickedID == R.id.btnCreateUser) {
 
-            String username = ((TextView)findViewById(R.id.txtBoxUsername)).getText().toString();
-            String password = ((TextView)findViewById(R.id.txtBoxPwd)).getText().toString();
-            String email = ((TextView)findViewById(R.id.txtBoxMail)).getText().toString();
-            this.createUser(username, password, email);
+                String username = ((TextView) findViewById(R.id.txtBoxUsername)).getText().toString();
+                String password = ((TextView) findViewById(R.id.txtBoxPwd)).getText().toString();
+                String email = ((TextView) findViewById(R.id.txtBoxMail)).getText().toString();
+                this.createUser(username, password, email);
+                startActivity(new Intent(getApplicationContext(), MainActivity.class));
+
+
+
         }
-
 
     }
 
