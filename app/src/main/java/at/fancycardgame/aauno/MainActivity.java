@@ -227,19 +227,12 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
 
         } else if(clickedID==R.id.helpMP) {
 
-            Context context = getApplicationContext();
-            SharedPreferences settings = context.getSharedPreferences(PREFS_NAME,0);
-            CharSequence text = settings.getString("name"," ") + settings.getString("password"," ");
-            int duration = Toast.LENGTH_SHORT;
-
-            Toast toast = Toast.makeText(context, text, duration);
-            toast.show();
-
-            a.setAnimationListener(new AbstractAnimationListener() {
+        a.setAnimationListener(new AbstractAnimationListener() {
                 @Override
                 public void onAnimationEnd(Animation animation) {
                     // hide menu
-                    hideView(R.id.menu);
+                    //StartHelp/rules
+                    startActivity(new Intent(getApplicationContext(), HelpActivity.class));
 
                     //
                     // VIEW HELP MENU?/DIALOG?/TUTORIAL?
