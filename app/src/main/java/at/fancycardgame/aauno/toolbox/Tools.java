@@ -192,10 +192,11 @@ public class Tools {
                             Tools.game.setYourTurn(true);
                         }
 
-                        Tools.game.setNextPlayer(1);
                         Tools.game.startGame();
+                        Tools.game.setNextPlayer(1);
                         Tools.game.setColorTxt("-");
                         Tools.game.setCurrPlayerTxt(Tools.roomOwner);
+                        Tools.game.setTurnOrder(true);
                         /*for (String player : joinedPlayers){
                             Tools.game.dealCards();
                         }*/
@@ -218,7 +219,7 @@ public class Tools {
                             // For now, admin will be the first player
                             //Tools.game.setYourTurn(false);
 
-                            Tools.shakeCardDeckHint= new TextView(Tools.game.getApplicationContext());
+                            /*Tools.shakeCardDeckHint= new TextView(Tools.game.getApplicationContext());
                             Typeface font = Typeface.createFromAsset(Tools.game.getAssets(), "Comic Book Bold.ttf");
                             Tools.shakeCardDeckHint.setTypeface(font);
                             Tools.shakeCardDeckHint.setGravity(Gravity.CENTER);
@@ -229,14 +230,14 @@ public class Tools {
                             ViewGroup.LayoutParams p = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
                             Tools.game.addContentView(Tools.shakeCardDeckHint, p);
 
-                            Tools.shakeCardDeckHint.invalidate();
+                            Tools.shakeCardDeckHint.invalidate();*/
                         }
                     });
                 else
                 // if you're the admin
                 // Put the STARTGAME command outside of the Shake Listener to start it in the emulator
                     // TODO: Re-enable mixing by shaking after testing
-                    //Tools.wClient.sendUpdatePeers(Constants.STARTGAME.getBytes());
+                    Tools.wClient.sendUpdatePeers(Constants.STARTGAME.getBytes());
                     Tools.game.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {

@@ -69,6 +69,9 @@ public class GameActivity extends Activity {
     private static TextView colorTxt;
     private static TextView currPlayerTxt;
 
+    // true = normal, false = reversed
+    private boolean turnOrder;
+
     private Point res;
 
     protected void onCreate(Bundle savedInstanceState) {
@@ -110,10 +113,10 @@ public class GameActivity extends Activity {
         drawBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (!madeTurn && yourTurn){
+                if (!madeTurn && yourTurn) {
                     madeTurn = true;
                     drawCards(1);
-                } else if (!yourTurn){
+                } else if (!yourTurn) {
                     Tools.showToast("It's not your turn!", Toast.LENGTH_SHORT);
                     //Toast.makeText(context, "It's not your turn!", Toast.LENGTH_SHORT).show();
                 } else {
@@ -131,10 +134,10 @@ public class GameActivity extends Activity {
                 // TODO: Implement end turn logic
                 //String msg = "TEST";
                 //Tools.wClient.sendUpdatePeers(msg.getBytes());
-                if (madeTurn && yourTurn){
+                if (madeTurn && yourTurn) {
                     Tools.showToast("Ending turn ...", Toast.LENGTH_SHORT);
                     //Toast.makeText(context, "Switching to next player ...", Toast.LENGTH_SHORT).show();
-                    String msg = "NEXT#" + chosenColor + "@" + cardsToDraw;
+                    String msg = "NEXT" + Util.userName + "#" + chosenColor + "@" + cardsToDraw + "_" + turnOrder;
                     //TODO: Use sendUpdate of GameActivity for this?
                     Tools.wClient.sendUpdatePeers(msg.getBytes());
                 } else if (!yourTurn) {
@@ -152,8 +155,8 @@ public class GameActivity extends Activity {
         testBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(context, "yourTurn: " + isYourTurn(), Toast.LENGTH_SHORT).show();
-                //Toast.makeText(context, Tools.joinedPlayers.toString(), Toast.LENGTH_SHORT).show();
+                //Toast.makeText(context, "yourTurn: " + isYourTurn(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, Tools.joinedPlayers.toString(), Toast.LENGTH_SHORT).show();
                 //Toast.makeText(context, "played cards: " + playedCards.toString(), Toast.LENGTH_SHORT).show();
 
             }
@@ -329,6 +332,8 @@ public class GameActivity extends Activity {
                     case "TURN":
                         // Turn order has to be reversed
                         Tools.showToast("Turn order has been reversed!", Toast.LENGTH_SHORT);
+                        this.turnOrder = !this.turnOrder;
+
                         //Toast.makeText(context, "Turn order has been reversed!", Toast.LENGTH_SHORT).show();
                         break;
                     case "PLUS 2":
@@ -551,11 +556,23 @@ public class GameActivity extends Activity {
 
     public void sendUpdateEvent(String msg, String card){
         try{
-            String message = msg + "#" + Util.userName + "@" + card;
+            String message = msg + "#" + Util.userName + "@" + card + "_" + turnOrder;
             Tools.wClient.sendUpdatePeers(message.getBytes());
         } catch (Exception e){
             Log.d("Exc: sendUpdateEvent", e.getMessage());
         }
+    }
+
+    public boolean getTurnOrder() {
+        return this.turnOrder;
+    }
+
+    public void setTurnOrder(boolean turnOrder) {
+        this.turnOrder = turnOrder;
+    }
+
+    public ArrayList<UnoCard> getPlayedCards(){
+        return this.playedCards;
     }
 
     public static int scale(int v) {
