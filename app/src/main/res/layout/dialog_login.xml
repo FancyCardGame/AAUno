@@ -2,15 +2,18 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="wrap_content"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:weightSum="1">
 
     <ImageView
         android:src="@drawable/background_menu"
-        android:layout_width="match_parent"
+        android:layout_width="389dp"
         android:layout_height="64dp"
         android:scaleType="centerCrop"
         android:background="#FFFFBB33"
-        android:contentDescription="@string/app_name" />
+        android:contentDescription="@string/app_name"
+        android:layout_weight="1.71" />
+
     <EditText
         android:id="@+id/username_dialog"
         android:inputType="textEmailAddress"
@@ -34,5 +37,6 @@
         android:fontFamily="sans-serif"
         android:hint="@string/password"
         android:text="1234"/>
+
 
 </LinearLayout>

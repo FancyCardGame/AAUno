@@ -45,6 +45,15 @@
                 android:shadowRadius="20"
                 android:shadowDx="10"
                 android:shadowDy="-10"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:text="Logout"
+                android:id="@+id/logoutMP"
+                android:layout_gravity="center_horizontal" />
+
         </LinearLayout>
     </FrameLayout>
 </FrameLayout>

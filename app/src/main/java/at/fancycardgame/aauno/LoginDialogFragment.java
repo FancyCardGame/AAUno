@@ -14,9 +14,14 @@ import android.widget.AdapterView;
 import android.widget.TextView;
 
 
+import com.shephertz.app42.paas.sdk.android.App42API;
+import com.shephertz.app42.paas.sdk.android.App42CallBack;
+import com.shephertz.app42.paas.sdk.android.session.SessionService;
+
 import java.util.ArrayList;
 
 import at.fancycardgame.aauno.tasks.AuthenticateToGameCloudTask;
+import at.fancycardgame.aauno.tasks.SessionServiceManager;
 import at.fancycardgame.aauno.toolbox.Tools;
 
 /**
@@ -63,8 +68,12 @@ public class LoginDialogFragment extends DialogFragment {
 
 
 
+
+
                         AuthenticateToGameCloudTask auth = new AuthenticateToGameCloudTask(username, pwd);
                         auth.execute();
+                        SessionServiceManager sessionManager = new SessionServiceManager(User.getUsername());
+                        sessionManager.execute();
                         //MainActivity.login(,);
 
 
