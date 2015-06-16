@@ -196,6 +196,7 @@ public class Tools {
                         Tools.game.setNextPlayer(1);
                         Tools.game.setColorTxt("-");
                         Tools.game.setCurrPlayerTxt(Tools.roomOwner);
+                        Tools.game.setTurnOrderTxt("Normal");
                         Tools.game.setTurnOrder(true);
                         /*for (String player : joinedPlayers){
                             Tools.game.dealCards();

@@ -63,14 +63,17 @@ public class GameActivity extends Activity {
     private boolean madeTurn = false;
     private boolean yourTurn = false;
 
+
     private static int nextPlayer;
     private static int currPlayer;
 
     private static TextView colorTxt;
     private static TextView currPlayerTxt;
+    private static TextView turnOrderTxt;
 
     // true = normal, false = reversed
-    private boolean turnOrder;
+    private static boolean turnOrder;
+    private static boolean skip = false;
 
     private Point res;
 
@@ -115,7 +118,13 @@ public class GameActivity extends Activity {
             public void onClick(View v) {
                 if (!madeTurn && yourTurn) {
                     madeTurn = true;
-                    drawCards(1);
+                    if (cardsToDraw == 0){
+                        drawCards(1);
+                    } else {
+                        drawCards(cardsToDraw);
+                        cardsToDraw = 0;
+                    }
+
                 } else if (!yourTurn) {
                     Tools.showToast("It's not your turn!", Toast.LENGTH_SHORT);
                     //Toast.makeText(context, "It's not your turn!", Toast.LENGTH_SHORT).show();
@@ -137,7 +146,7 @@ public class GameActivity extends Activity {
                 if (madeTurn && yourTurn) {
                     Tools.showToast("Ending turn ...", Toast.LENGTH_SHORT);
                     //Toast.makeText(context, "Switching to next player ...", Toast.LENGTH_SHORT).show();
-                    String msg = "NEXT" + Util.userName + "#" + chosenColor + "@" + cardsToDraw + "_" + turnOrder;
+                    String msg = "NEXT" + Util.userName + "#" + chosenColor + "@" + cardsToDraw + "_" + turnOrder + "+" + skip;
                     //TODO: Use sendUpdate of GameActivity for this?
                     Tools.wClient.sendUpdatePeers(msg.getBytes());
                 } else if (!yourTurn) {
@@ -167,6 +176,9 @@ public class GameActivity extends Activity {
         colorTxt.setTypeface(Typeface.createFromAsset(Tools.game.getAssets(), "Comic Book.ttf"));
         currPlayerTxt = (TextView) findViewById(R.id.currPlayerTxt);
         currPlayerTxt.setTypeface(Typeface.createFromAsset(Tools.game.getAssets(), "Comic Book.ttf"));
+        turnOrderTxt = (TextView) findViewById(R.id.turnOrderTxt);
+        turnOrderTxt.setTypeface(Typeface.createFromAsset(Tools.game.getAssets(), "Comic Book.ttf"));
+
 
         Display display = getWindowManager().getDefaultDisplay();
         this.res = new Point();
@@ -181,7 +193,7 @@ public class GameActivity extends Activity {
         // Cards of the player
         this.playerCards = new ArrayList<>();
 
-        for (int i = 0; i < 8; i++) {
+        for (int i = 0; i < 7; i++) {
             // Give cards to the player, remove given cards from draw stack
             // TODO: Distribution of cards (i.e. cards are limited, e.g. there are no more than 4 color choosers)
             playerCards.add(i, cardDeck.getCard());
@@ -327,12 +339,13 @@ public class GameActivity extends Activity {
                     case "SKIP":
                         // Next player has to skip his turn
                         Tools.showToast("Next player has to skip his turn!", Toast.LENGTH_SHORT);
+                        skip = true;
                         //Toast.makeText(context, "Next player has to skip his turn!", Toast.LENGTH_SHORT).show();
                         break;
                     case "TURN":
                         // Turn order has to be reversed
                         Tools.showToast("Turn order has been reversed!", Toast.LENGTH_SHORT);
-                        this.turnOrder = !this.turnOrder;
+                        turnOrder = !turnOrder;
 
                         //Toast.makeText(context, "Turn order has been reversed!", Toast.LENGTH_SHORT).show();
                         break;
@@ -542,8 +555,17 @@ public class GameActivity extends Activity {
         });
     }
 
+    public void setTurnOrderTxt(final String turnOrder){
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                turnOrderTxt.setText("Turn Order: " + turnOrder);
+            }
+        });
+    }
+
     public void dealCards(){
-        for (int i = 0; i < 8; i++) {
+        for (int i = 0; i < 7; i++) {
             // Give cards to the player, remove given cards from draw stack
             // TODO: Distribution of cards (i.e. cards are limited, e.g. there are no more than 4 color choosers)
             playerCards.add(i, cardDeck.getCard());
@@ -564,15 +586,23 @@ public class GameActivity extends Activity {
     }
 
     public boolean getTurnOrder() {
-        return this.turnOrder;
+        return turnOrder;
     }
 
     public void setTurnOrder(boolean turnOrder) {
-        this.turnOrder = turnOrder;
+        GameActivity.turnOrder = turnOrder;
     }
 
     public ArrayList<UnoCard> getPlayedCards(){
         return this.playedCards;
+    }
+
+    public boolean isSkip(){
+        return skip;
+    }
+
+    public void setSkip(boolean skip) {
+        GameActivity.skip = skip;
     }
 
     public static int scale(int v) {
@@ -700,4 +730,6 @@ public class GameActivity extends Activity {
         ((ListView)findViewById(R.id.listViewAvailGame)).setDivider(null);
         adapter.notifyDataSetChanged();
     }
+
+
 }

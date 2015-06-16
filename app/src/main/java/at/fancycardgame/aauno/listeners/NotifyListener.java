@@ -110,7 +110,7 @@ public class NotifyListener implements com.shephertz.app42.gaming.multiplayer.cl
 
         // Action if current player play a card
         if (message.startsWith("PLAY#")){
-            boolean turnOrder = Boolean.parseBoolean(message.substring(message.indexOf("_") + 1, message.length()).trim());
+            boolean turnOrder = Boolean.parseBoolean(message.substring(message.indexOf("_") + 1, message.length()));
             String sender = message.substring(message.indexOf("#")+1, message.indexOf("@")).trim();
             String card =  message.substring(message.indexOf("@") + 1, message.indexOf("_")).trim();
             if (!sender.equals(Util.userName)){
@@ -121,52 +121,20 @@ public class NotifyListener implements com.shephertz.app42.gaming.multiplayer.cl
                 Tools.game.setTurnOrder(turnOrder);
                 Tools.game.playCardByName(card);
             }
-
-            /*if (card.contains("Skip")){
-                if (turnOrder){
-                    if (Tools.joinedPlayers.indexOf(sender) == Tools.joinedPlayers.size() - 1){
-                        // If last player in turn order has played a skip card
-                        Tools.game.setNextPlayer(1);
-                    } else if (Tools.joinedPlayers.indexOf(sender) == Tools.joinedPlayers.size() - 2){
-                        // If second to last player in turn order has played a skip card
-                        Tools.game.setNextPlayer(0);
-                    } else {
-                        // If first or second player in turn order has played a skip card
-                        Tools.game.setNextPlayer(Tools.game.getNextPlayer() + 1);
-                    }
-                } else {
-                    if (Tools.joinedPlayers.indexOf(sender) == 0){
-                        // If last player in reversed turn order has played a skip card
-                        Tools.game.setNextPlayer(Tools.joinedPlayers.size() - 2);
-                    } else if (Tools.joinedPlayers.indexOf(sender) == 1){
-                        // If second to last player in reversed turn order has played a skip card
-                        Tools.game.setNextPlayer(Tools.joinedPlayers.size() - 1);
-                    } else {
-                        // If first or second player in reversed turn order has played a skip card
-                        Tools.game.setNextPlayer(Tools.game.getNextPlayer() - 1);
-                    }
-                }
-                /*if (Tools.joinedPlayers.indexOf(sender) == Tools.joinedPlayers.size() - 1){
-                    // If last player in turn order has played a skip card
-                    Tools.game.setNextPlayer(1);
-                } else if (Tools.joinedPlayers.indexOf(sender) == Tools.joinedPlayers.size() - 2){
-                    // If second to last player in turn order has played a skip card
-                    Tools.game.setNextPlayer(0);
-                } else {
-                    // If first or second player in turn order has played a skip card
-                    Tools.game.setNextPlayer(Tools.game.getNextPlayer() + 1);
-                }*/
-            /*}*/
         }
 
         // Action if end turn button is pressed
         if (message.startsWith("NEXT")){
 
-            boolean turnOrder = Boolean.parseBoolean(message.substring(message.indexOf("_") + 1, message.length()).trim());
+            boolean turnOrder = Tools.game.getTurnOrder();
             String sender = message.substring(message.indexOf("T") + 1, message.indexOf("#")).trim();
+            boolean skip = Boolean.parseBoolean(message.substring(message.indexOf("+") + 1, message.length()).trim());
 
-            if (Tools.game.getPlayedCards().size() > 0 && Tools.game.getPlayedCards().get(Tools.game.getPlayedCards().size() - 1).getValue().contains("SKIP")){
-                if (turnOrder){
+
+            if (turnOrder){
+                // normal turn order
+                Tools.game.setTurnOrderTxt("Normal");
+                if (skip){
                     if (Tools.joinedPlayers.indexOf(sender) == Tools.joinedPlayers.size() - 1){
                         // If last player in turn order has played a skip card
                         Tools.game.setNextPlayer(1);
@@ -175,9 +143,20 @@ public class NotifyListener implements com.shephertz.app42.gaming.multiplayer.cl
                         Tools.game.setNextPlayer(0);
                     } else {
                         // If first or second player in turn order has played a skip card
-                        Tools.game.setNextPlayer(Tools.game.getNextPlayer() + 1);
+                        Tools.game.setNextPlayer(Tools.joinedPlayers.indexOf(sender) + 2);
                     }
+                    Tools.game.setSkip(false);
                 } else {
+                    if (Tools.joinedPlayers.indexOf(sender) < Tools.joinedPlayers.size() - 1){
+                        Tools.game.setNextPlayer(Tools.joinedPlayers.indexOf(sender) + 1);
+                    } else {
+                        Tools.game.setNextPlayer(0);
+                    }
+                }
+            } else {
+                // reversed turn order
+                Tools.game.setTurnOrderTxt("Reversed");
+                if (skip){
                     if (Tools.joinedPlayers.indexOf(sender) == 0){
                         // If last player in reversed turn order has played a skip card
                         Tools.game.setNextPlayer(Tools.joinedPlayers.size() - 2);
@@ -188,37 +167,24 @@ public class NotifyListener implements com.shephertz.app42.gaming.multiplayer.cl
                         // If first or second player in reversed turn order has played a skip card
                         Tools.game.setNextPlayer(Tools.game.getNextPlayer() - 1);
                     }
+                    Tools.game.setSkip(false);
+                } else {
+                    if (Tools.joinedPlayers.indexOf(sender) > 0){
+                        Tools.game.setNextPlayer(Tools.joinedPlayers.indexOf(sender) - 1);
+                    } else {
+                        Tools.game.setNextPlayer(Tools.joinedPlayers.size() - 1);
+                    }
                 }
             }
 
-            // Allow the next player to make his turn, disable actions of other players
+            // Allow next player to make his turn, disable actions for other players
             Tools.game.setYourTurn(false);
             Tools.game.setCurrPlayerTxt(Tools.joinedPlayers.get(Tools.game.getNextPlayer()));
 
-            if (Util.userName.equals(Tools.joinedPlayers.get(Tools.game.getNextPlayer()))) {
+            if (Util.userName.equals(Tools.joinedPlayers.get(Tools.game.getNextPlayer()))){
                 Tools.game.setYourTurn(true);
                 Tools.showToast("It's your turn!", Toast.LENGTH_SHORT);
             }
-
-            if (turnOrder){
-                if (Tools.game.getNextPlayer() < Tools.joinedPlayers.size() - 1){
-                    Tools.game.setNextPlayer(Tools.game.getNextPlayer() + 1);
-                } else {
-                    Tools.game.setNextPlayer(0);
-                }
-            } else {
-                if (Tools.game.getNextPlayer() > 0){
-                    Tools.game.setNextPlayer(Tools.game.getNextPlayer() - 1);
-                } else {
-                    Tools.game.setNextPlayer(Tools.joinedPlayers.size() - 1);
-                }
-            }
-            // Set the "next" next player
-            /*if (Tools.game.getNextPlayer() < Tools.joinedPlayers.size() - 1){
-                Tools.game.setNextPlayer(Tools.game.getNextPlayer() + 1);
-            } else {
-                Tools.game.setNextPlayer(0);
-            }*/
 
             // Chosen color has to be set here to ensure that there is input from the color chooser dialog
             String chosenColor = message.substring(message.indexOf("#") + 1, message.indexOf("@")).trim();
