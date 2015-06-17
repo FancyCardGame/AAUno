@@ -10,6 +10,7 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 import at.fancycardgame.aauno.R;
+import at.fancycardgame.aauno.toolbox.Tools;
 
 /**
  * Created by Thomas on 30.05.2015.

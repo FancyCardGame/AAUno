@@ -9,7 +9,7 @@ public class Constants {
     public static final String SECRET_KEY = "02fd16bc09eb0b836d3794b3d6dfcac6c010e12e08ef454c0fc91f6a77ec1249";
 
     // define font name, can be changed later on here
-    public static final String menu_font = "Comic Book Bold.ttf";
+    public static final String app_font = "Comic Book Bold.ttf";
 
     // game commands constants
     public static final String STARTGAME = "START";

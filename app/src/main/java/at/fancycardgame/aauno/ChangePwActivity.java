@@ -24,6 +24,10 @@ View.OnClickListener mainOnClickListener = this;
         setContentView(R.layout.menu_changepwd_page);
         findViewById(R.id.btnChangePWD).setOnClickListener(mainOnClickListener);
 
+        Tools.setStringTypeface(this, R.id.changePwdHeadline);
+        Tools.setStringTypeface(this, R.id.oldPwdStr);
+        Tools.setStringTypeface(this, R.id.newPwdStr);
+        Tools.setStringTypeface(this, R.id.btnChangePWD);
     }
 
 
@@ -31,16 +35,11 @@ View.OnClickListener mainOnClickListener = this;
         int clickedID = clickedView.getId();
 
         if(clickedID == R.id.btnChangePWD){
-
                 String oldPwd = ((TextView) findViewById(R.id.txtBoxOldPwd)).getText().toString();
                 String newPwd = ((TextView) findViewById(R.id.txtBoxNewPwd)).getText().toString();
                 changePassword(User.getUsername(), oldPwd, newPwd);
                 Tools.showToast("Password successfully Changed", Toast.LENGTH_SHORT);
                 ChangePwActivity.this.finish();
-
-
-
-
         }
     }
 

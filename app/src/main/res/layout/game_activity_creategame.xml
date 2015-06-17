@@ -15,7 +15,9 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_gravity="center"
-            android:paddingTop="35dp">
+            android:paddingTop="35dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp">
 
 
             <LinearLayout
@@ -28,48 +30,53 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:id="@+id/textView"
-                    android:text="Game Name"/>
+                    android:id="@+id/textViewGameName"
+                    android:text="Game Name"
+                    android:layout_weight="1" />
 
                 <EditText
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:id="@+id/txtBoxGameName"
-                    android:layout_weight="1" />
+                    android:layout_weight="2" />
 
             </LinearLayout>
 
             <LinearLayout
                 android:orientation="horizontal"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal">
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:id="@+id/textView2"
-                    android:text="Max. Users" />
+                    android:id="@+id/textViewMaxUsers"
+                    android:text="@string/max_users"
+                    android:layout_weight="1" />
 
                 <Spinner
-                    android:layout_width="wrap_content"
+                    android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:id="@+id/spinnerMaxUsers"
-                    android:layout_weight="1"
-                    android:spinnerMode="dropdown" />
-
+                    android:spinnerMode="dropdown"
+                    android:background="#ffffe725"
+                    android:alpha="0.9"
+                    android:layout_marginLeft="50dp"
+                    android:layout_weight="2" />
             </LinearLayout>
-
-            <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/openGame"
-                android:id="@+id/btnStartGameLobby"
-                android:layout_gravity="center_horizontal" />
 
         </LinearLayout>
 
     </FrameLayout>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/openGame"
+        android:id="@+id/btnStartGameLobby"
+        android:layout_gravity="center_horizontal|bottom"
+        android:layout_marginBottom="20dp" />
+
 </FrameLayout>
 

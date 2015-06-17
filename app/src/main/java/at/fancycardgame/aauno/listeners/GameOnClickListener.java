@@ -18,8 +18,6 @@ import at.fancycardgame.aauno.toolbox.Tools;
  * Created by Thomas on 28.05.2015.
  */
 public class GameOnClickListener implements View.OnClickListener {
-
-
     @Override
     public void onClick(View v) {
         //OnClickListener that determines which TextView has been clicked by ID
@@ -34,6 +32,10 @@ public class GameOnClickListener implements View.OnClickListener {
                     public void onAnimationEnd(Animation animation) {
                         Tools.game.setContentView(Tools.game.game_activity_creategame);
 
+                        Tools.setStringTypeface(Tools.game, R.id.textViewGameName);
+                        Tools.setStringTypeface(Tools.game, R.id.textViewMaxUsers);
+                        //Tools.setStringTypeface(Tools.game, R.id.spinnerMaxUsers); <-- custom spinner needed
+                        Tools.setStringTypeface(Tools.game, R.id.btnStartGameLobby);
 
                         Tools.game.findViewById(R.id.btnStartGameLobby).setOnClickListener(Tools.gameOnClickListner);
 
@@ -42,7 +44,6 @@ public class GameOnClickListener implements View.OnClickListener {
                         ArrayAdapter<CharSequence> spnAdapter = ArrayAdapter.createFromResource(Tools.appContext, R.array.maxPlayersSelection, android.R.layout.simple_spinner_dropdown_item);
                         spnAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                         maxUsers.setAdapter(spnAdapter);
-
                     }
                 });
                 v.startAnimation(a);
@@ -51,6 +52,8 @@ public class GameOnClickListener implements View.OnClickListener {
                     @Override
                     public void onAnimationEnd(Animation animation) {
                         Tools.game.setContentView(Tools.game.game_activity_joingame);
+
+                        Tools.setStringTypeface(Tools.game, R.id.textViewSelectGame);
 
                         // clearing roomList because it's being refilled
                         Tools.allRoomNamesList.clear();
@@ -72,22 +75,16 @@ public class GameOnClickListener implements View.OnClickListener {
                 }, 5000);
 
         } else if(clickedID==R.id.btnStartGameLobby) {
-
             // getting entered info & create room in cloud
             String gamename = ((TextView)Tools.game.findViewById(R.id.txtBoxGameName)).getText().toString();
             int maxUsers = Integer.parseInt(((Spinner)Tools.game.findViewById(R.id.spinnerMaxUsers)).getSelectedItem().toString());
 
             Tools.wClient.createRoom(gamename, User.getUsername(), maxUsers, null);
-
             Tools.game.setContentView(Tools.game.game_activity_startedGameLobby);
-
-
-
-
             Tools.game.findViewById(R.id.btnSendChatMsg).setOnClickListener(Tools.gameOnClickListner);
 
-            // only admin sees the play button
-
+            Tools.setStringTypeface(Tools.game, R.id.textViewGameLobby);
+            Tools.setStringTypeface(Tools.game, R.id.btnPlay);
 
             //Tools.joinedPlayers.add(User.getUsername() + " (You)");
             Tools.joinedPlayers.add(User.getUsername());
@@ -114,9 +111,7 @@ public class GameOnClickListener implements View.OnClickListener {
                     Tools.game.updateJoinedPlayersListView();
                 }
             }, 3000);
-
         } else if(clickedID==R.id.btnPlay) {
-
             Tools.showToast("game should start!", Toast.LENGTH_SHORT);
             // check if e.g. 2 of 2 users are connected, 4 of 4 ...
 

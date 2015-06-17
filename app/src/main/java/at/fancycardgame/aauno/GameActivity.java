@@ -88,7 +88,8 @@ public class GameActivity extends Activity {
         findViewById(R.id.createGameMP).setOnClickListener(Tools.gameOnClickListner);
         findViewById(R.id.joinGameMP).setOnClickListener(Tools.gameOnClickListner);
 
-
+        Tools.setStringTypeface(this, R.id.createGameMP);
+        Tools.setStringTypeface(this, R.id.joinGameMP);
 
         //preparing views
         this.game_activity_creategame = (ViewGroup)getLayoutInflater().inflate(R.layout.game_activity_creategame, null);
@@ -155,7 +156,7 @@ public class GameActivity extends Activity {
             }
         });
 
-        final MediaPlayer mediaPlayer = MediaPlayer.create(context, R.raw.shuffle);
+      //  final MediaPlayer mediaPlayer = MediaPlayer.create(context, R.raw.shuffle);
 
         // Button for testing
         Button testBtn = (Button) findViewById(R.id.testBtn);
@@ -165,7 +166,7 @@ public class GameActivity extends Activity {
                 //Toast.makeText(context, "yourTurn: " + isYourTurn(), Toast.LENGTH_SHORT).show();
                 Toast.makeText(context, Tools.joinedPlayers.toString(), Toast.LENGTH_SHORT).show();
                 //Toast.makeText(context, "played cards: " + playedCards.toString(), Toast.LENGTH_SHORT).show();
-                mediaPlayer.start();
+               //mediaPlayer.start();
             }
         });
 
@@ -656,6 +657,9 @@ public class GameActivity extends Activity {
                 Tools.currentRoom = ((TextView) view).getText().toString().split("ID:")[1];
 
                 setContentView(game_activity_startedGameLobby);
+
+                Tools.setStringTypeface(Tools.game, R.id.textViewGameLobby);
+                Tools.setStringTypeface(Tools.game, R.id.btnPlay);
 
                 // now it should work no matter what
                 Tools.game.findViewById(R.id.btnSendChatMsg).setOnClickListener(Tools.gameOnClickListner);

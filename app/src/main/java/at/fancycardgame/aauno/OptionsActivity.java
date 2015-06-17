@@ -23,9 +23,6 @@ public class OptionsActivity extends Activity implements View.OnClickListener  {
 
     private View.OnClickListener mainOnClickListener = this;
 
-    // define font name, can be changed later on here
-    private static final String menu_font = "Comic Book Bold.ttf";
-
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
