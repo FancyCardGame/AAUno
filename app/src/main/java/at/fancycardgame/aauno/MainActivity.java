@@ -202,25 +202,6 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
                 public void onAnimationEnd(Animation animation) {
                     //startOptionsMenu
                     startActivity(new Intent(MainActivity.this,OptionsActivity.class));
-
-                    // remove everything that is in screen_container
-                    //screen_container.removeAllViews();
-                    // create options menue from layout ...
-
-
-                    // ... and add it to the screen_container
-                    //screen_container.addView(optionsMenu);
-
-                    //setStringTypeface(R.id.userMgmtMP);
-                    /*
-                    setStringTypeface(R.id.musicOnOffMP);
-                    setStringTypeface(R.id.effectsOnOffMP);
-
-
-                    findViewById(R.id.userMgmtMP).setOnClickListener(mainOnClickListener);
-                    findViewById(R.id.musicOnOffMP).setOnClickListener(mainOnClickListener);
-                    findViewById(R.id.effectsOnOffMP).setOnClickListener(mainOnClickListener);
-                    */
                 }
             } );
             clickedView.startAnimation(a);
@@ -230,7 +211,6 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
         a.setAnimationListener(new AbstractAnimationListener() {
                 @Override
                 public void onAnimationEnd(Animation animation) {
-                    // hide menu
                     //StartHelp/rules
                     startActivity(new Intent(getApplicationContext(), HelpActivity.class));
 
@@ -366,108 +346,6 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
             @Override
             public void onException(Exception ex) {
                 Tools.showToast("Error creating user. ERROR: " + ex.getMessage(), Toast.LENGTH_SHORT);
-            }
-        });
-    }
-
-    private void changePassword(String username, String oldPwd, String newPwd) {
-
-        UserService userService = App42API.buildUserService();
-        userService.changeUserPassword(username, oldPwd, newPwd, new App42CallBack() {
-
-            @Override
-            public void onSuccess(Object o) {
-
-                //show User a message that password has changed successfully
-            }
-
-            @Override
-            public void onException(Exception e) {
-
-                //show User a message that password has not changed
-            }
-        });
-    }
-
-    public static void login(String username, String password) {
-
-        UserService userService = App42API.buildUserService();
-        userService.authenticate(username, password, new App42CallBack() {
-            @Override
-            public void onSuccess(Object response) {
-                User user = (User)response;
-
-                at.fancycardgame.aauno.User.setUsername(user.getUserName());
-                at.fancycardgame.aauno.User.setPwd(user.getPassword());
-                at.fancycardgame.aauno.User.setEmail(user.getEmail());
-                at.fancycardgame.aauno.User.login();
-
-                Tools.wClient.connectWithUserName(at.fancycardgame.aauno.User.getUsername());
-
-                Tools.showToast("User successfully logged in.", Toast.LENGTH_SHORT);
-            }
-
-            @Override
-            public void onException(Exception ex) {
-                Tools.showToast("Exception Message : "+ ex.getMessage(), Toast.LENGTH_SHORT);
-            }
-        });
-    }
-
-    private void startGame() {
-
-        ViewGroup deckPosition = ((ViewGroup)findViewById(R.id.cardDeckPosition));
-        // create card deck and set where to put it
-        this.cardDeck = new UnoCardDeck(this.getApplicationContext(), (FrameLayout)deckPosition);
-
-        // add OnDragListener to playCardsPosition where player can drag&drop their cards
-        findViewById(R.id.playCardsPosition).setOnDragListener(new View.OnDragListener() {
-            //Drawable enterShape = getResources().getDrawable(entershape);
-            //Drawable normalShape = getResources().getDrawable(normalshape);
-            @Override
-            public boolean onDrag(View v, DragEvent event) {
-                int action = event.getAction();
-                final View view = (View)event.getLocalState();
-
-                // switch user action
-                switch(action) {
-                    case DragEvent.ACTION_DRAG_STARTED:
-                        // show user where to put the card
-                        //v.setBackgroundDrawable(enterShape);
-                        break;
-                    case DragEvent.ACTION_DRAG_ENDED:
-                        view.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                view.setVisibility(View.VISIBLE);
-                            }
-                        });
-                        //view.setBackgroundDrawable(normalShape);
-                        break;
-                    case DragEvent.ACTION_DRAG_ENTERED:
-                        // show user where to put the card
-                        //v.setBackgroundDrawable(enterShape);
-                        break;
-                    case DragEvent.ACTION_DROP:
-                        // remove from current owner
-                        ViewGroup owner = (ViewGroup) view.getParent();
-                        owner.removeView(view);
-                        // get current X and Y coordinates from drop event
-                        view.setX(event.getX() - (view.getWidth() / 2));
-                        view.setY(event.getY()-(view.getHeight()/2));
-
-                        // add dropped view to new parent (playCardsPosition)
-                        ((ViewGroup)findViewById(R.id.playCardsPosition)).addView(view);
-                        // make original view visible again
-                        view.setVisibility(View.VISIBLE);
-                        // delete touchlistener
-                        view.setOnTouchListener(null);
-                        break;
-                    default:
-                        // nothing
-                        break;
-                }
-                return true;
             }
         });
     }
