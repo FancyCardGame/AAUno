@@ -104,6 +104,16 @@
                     android:textSize="12sp"
                     android:textColor="#ffffffff"/>
 
+                <Button
+                    style="?android:attr/buttonStyleSmall"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Uno!"
+                    android:id="@+id/unoBtn"
+                    android:layout_alignParentBottom="true"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true" />
+
             </RelativeLayout>
 
         </FrameLayout>

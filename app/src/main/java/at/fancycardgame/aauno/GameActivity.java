@@ -61,6 +61,7 @@ public class GameActivity extends Activity {
     private boolean madeTurn = false;
     private boolean hasDrawnCard = false;
     private boolean yourTurn = false;
+    private boolean uno = false;
 
     private static int nextPlayer;
     private static int currPlayer;
@@ -138,6 +139,19 @@ public class GameActivity extends Activity {
             }
         });
 
+        Button unoBtn = (Button) findViewById(R.id.unoBtn);
+        unoBtn.setTypeface(Typeface.createFromAsset(Tools.game.getAssets(), "Comic Book.ttf"));
+        unoBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (yourTurn){
+                    Tools.showToast("UNO!", Toast.LENGTH_SHORT);
+                    uno = true;
+                }
+
+            }
+        });
+
         // Button for testing
         Button testBtn = (Button) findViewById(R.id.testBtn);
         testBtn.setOnClickListener(new View.OnClickListener() {
@@ -146,7 +160,6 @@ public class GameActivity extends Activity {
                 //Toast.makeText(context, "yourTurn: " + isYourTurn(), Toast.LENGTH_SHORT).show();
                 Toast.makeText(context, Tools.joinedPlayers.toString(), Toast.LENGTH_SHORT).show();
                 //Toast.makeText(context, "played cards: " + playedCards.toString(), Toast.LENGTH_SHORT).show();
-
             }
         });
 
@@ -318,7 +331,7 @@ public class GameActivity extends Activity {
         return null;
     }
 
-    private void drawCards(int count){
+    public void drawCards(int count){
         Tools.showToast("Drawing " + count + " card(s)", Toast.LENGTH_SHORT);
         //Toast.makeText(context, "Drawing " + count + " card(s)", Toast.LENGTH_SHORT).show();
         for (int i=0;i<count;i++){
@@ -513,7 +526,7 @@ public class GameActivity extends Activity {
     }
 
     public void dealCards(){
-        for (int i = 0; i < 7; i++) {
+        for (int i = 0; i < 3; i++) {
             // Give cards to the player, remove given cards from draw stack
             // TODO: Distribution of cards (i.e. cards are limited, e.g. there are no more than 4 color choosers)
             playerCards.add(i, cardDeck.getCard());
@@ -557,6 +570,14 @@ public class GameActivity extends Activity {
         return this.playerCards;
     }
 
+    public boolean isUno(){
+        return this.uno;
+    }
+
+    public void setUno(boolean uno){
+        this.uno = uno;
+    }
+
     public static int scale(int v) {
         return (int) GameActivity.density * v;
     }
@@ -581,7 +602,12 @@ public class GameActivity extends Activity {
                 @Override
                 public void run() {
                     //Tools.getUsersInRoom(Tools.currentRoom);
-                    ((TextView) Tools.game.findViewById(R.id.lobbyInfo)).setText("Players online (" + Tools.joinedPlayers.size() + "/" + Tools.maxPlayersInRoom + ") in Lobby \"" + Tools.currentRoomName + "\"");
+                    try {
+                        ((TextView) Tools.game.findViewById(R.id.lobbyInfo)).setText("Players online (" + Tools.joinedPlayers.size() + "/" + Tools.maxPlayersInRoom + ") in Lobby \"" + Tools.currentRoomName + "\"");
+                    } catch (Exception e){
+                        Log.e("Error", e.getMessage());
+                    }
+
 
                     Tools.game.findViewById(R.id.btnPlay).setOnClickListener(Tools.gameOnClickListner);
 

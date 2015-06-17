@@ -181,6 +181,15 @@ public class NotifyListener implements com.shephertz.app42.gaming.multiplayer.cl
                 }
             }
 
+            // Check if player has pressed "UNO!"
+            if (Util.userName.equals(sender)){
+                if (Tools.game.getPlayerCards().size() == 1 && !Tools.game.isUno()){
+                    Tools.showToast("DU HOST NET UNO GSOGT!", Toast.LENGTH_SHORT);
+                    Tools.executeFromRemote("DRAW");
+                }
+            }
+
+
             // Allow next player to make his turn, disable actions for other players
             Tools.game.setYourTurn(false);
             Tools.game.setCurrPlayerTxt(Tools.joinedPlayers.get(Tools.game.getNextPlayer()));
@@ -200,6 +209,7 @@ public class NotifyListener implements com.shephertz.app42.gaming.multiplayer.cl
             // Allow players to make a turn again
             Tools.game.setMadeTurn(false);
             Tools.game.setHasDrawnCard(false);
+            Tools.game.setUno(false);
         }
 
         try {
