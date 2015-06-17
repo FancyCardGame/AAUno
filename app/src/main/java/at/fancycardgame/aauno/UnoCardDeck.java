@@ -31,11 +31,6 @@ public class UnoCardDeck {
     // the position of the deck
     private FrameLayout deckPos;
 
-
-
-
-
-
     // constructor
     public UnoCardDeck(Context appcon, FrameLayout deckPos) {
         this.appContext = appcon;
@@ -54,7 +49,7 @@ public class UnoCardDeck {
      */
     private void createCardDeck(FrameLayout deckPos) {
         // create drawables for  normal cards BLUE
-        Drawable blue_0 = this.appContext.getResources().getDrawable(R.drawable.blue_0);
+        /*Drawable blue_0 = this.appContext.getResources().getDrawable(R.drawable.blue_0);
         Drawable blue_1 = this.appContext.getResources().getDrawable(R.drawable.blue_1);
         Drawable blue_2 = this.appContext.getResources().getDrawable(R.drawable.blue_2);
         Drawable blue_3 = this.appContext.getResources().getDrawable(R.drawable.blue_3);
@@ -119,7 +114,7 @@ public class UnoCardDeck {
 
         // create drawables for  special cards & backside
         Drawable color_change = this.appContext.getResources().getDrawable(R.drawable.color_change);
-        Drawable color_change_plus4 = this.appContext.getResources().getDrawable(R.drawable.color_change_plus4);
+        Drawable color_change_plus4 = this.appContext.getResources().getDrawable(R.drawable.color_change_plus4);*/
         Drawable card_back = this.appContext.getResources().getDrawable(R.drawable.card_back);
 
 
@@ -182,8 +177,8 @@ public class UnoCardDeck {
         this.cards.add(new UnoCard(this.appContext, deckPos, new Point(20, 20), this.appContext.getResources().getDrawable(R.drawable.yellow_0), card_back, "Yellow 0", "", "0", "Yellow"));
         for (int twice = 0; twice < 2; twice++) {
             this.cards.add(new UnoCard(this.appContext, deckPos, new Point(20, 20), this.appContext.getResources().getDrawable(R.drawable.yellow_1), card_back, "Yellow 1", "", "1", "Yellow"));
-            this.cards.add(new UnoCard(this.appContext, deckPos, new Point(20, 20), this.appContext.getResources().getDrawable(R.drawable.yellow_2), card_back, "Yellow 3", "", "3", "Yellow"));
-            this.cards.add(new UnoCard(this.appContext, deckPos, new Point(20, 20), this.appContext.getResources().getDrawable(R.drawable.yellow_3), card_back, "Yellow 2", "", "2", "Yellow"));
+            this.cards.add(new UnoCard(this.appContext, deckPos, new Point(20, 20), this.appContext.getResources().getDrawable(R.drawable.yellow_2), card_back, "Yellow 2", "", "2", "Yellow"));
+            this.cards.add(new UnoCard(this.appContext, deckPos, new Point(20, 20), this.appContext.getResources().getDrawable(R.drawable.yellow_3), card_back, "Yellow 3", "", "3", "Yellow"));
             this.cards.add(new UnoCard(this.appContext, deckPos, new Point(20, 20), this.appContext.getResources().getDrawable(R.drawable.yellow_4), card_back, "Yellow 4", "", "4", "Yellow"));
             this.cards.add(new UnoCard(this.appContext, deckPos, new Point(20, 20), this.appContext.getResources().getDrawable(R.drawable.yellow_5), card_back, "Yellow 5", "", "5", "Yellow"));
             this.cards.add(new UnoCard(this.appContext, deckPos, new Point(20, 20), this.appContext.getResources().getDrawable(R.drawable.yellow_6), card_back, "Yellow 6", "", "6", "Yellow"));
@@ -262,37 +257,24 @@ public class UnoCardDeck {
     }
 
     public UnoCard getCardByName(String cardName){
+        // Return Color Change +4 as standard card if card has not been found
         Drawable color_change_plus4 = this.appContext.getResources().getDrawable(R.drawable.color_change_plus4);
         Drawable card_back = this.appContext.getResources().getDrawable(R.drawable.card_back);
         UnoCard card = new UnoCard(this.appContext, deckPos, new Point(20, 20), color_change_plus4, card_back, "Color Change Plus 4", "", "COLOR CHANGE PLUS 4", "COLOR CHANGE PLUS 4");
-
-        /*for(int i=0;i<this.cards.size();i++){
-            if (this.cards.get(i).getName().equals(cardName)){
-                card = this.cards.get(i);
-                break;
-            }
-        }*/
-
         for (UnoCard c : this.cards){
-            Log.d("c.getName()", "" + c.getName());
-            Log.d("cardName", "" + cardName);
             if (c.getName().equals(cardName)){
-
                 card = c;
                 break;
-
             }
         }
-
         return card;
     }
 
     public void removeCard(UnoCard cardToRemove){
         // remove a given card from the the card deck
         // e.g. because it has been drawn by a player
-        // TODO: re-enable removal after testing
         for (UnoCard c : this.cards){
-            if (c.getName() == cardToRemove.getName()){
+            if (c.getName().equals(cardToRemove.getName())){
                 Log.d("Removed Card:", c.getName());
                 this.cards.remove(c);
                 break;

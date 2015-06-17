@@ -120,6 +120,10 @@ public class NotifyListener implements com.shephertz.app42.gaming.multiplayer.cl
                 Log.d("updateEvent TO", "" + turnOrder);
                 Tools.game.setTurnOrder(turnOrder);
                 Tools.game.playCardByName(card);
+            } else {
+                if (Tools.game.getPlayerCards().size() == 0){
+                    Tools.executeFromRemote("WIN");
+                }
             }
         }
 
@@ -165,7 +169,7 @@ public class NotifyListener implements com.shephertz.app42.gaming.multiplayer.cl
                         Tools.game.setNextPlayer(Tools.joinedPlayers.size() - 1);
                     } else {
                         // If first or second player in reversed turn order has played a skip card
-                        Tools.game.setNextPlayer(Tools.game.getNextPlayer() - 1);
+                        Tools.game.setNextPlayer(Tools.joinedPlayers.indexOf(sender) - 2);
                     }
                     Tools.game.setSkip(false);
                 } else {
@@ -195,6 +199,7 @@ public class NotifyListener implements com.shephertz.app42.gaming.multiplayer.cl
 
             // Allow players to make a turn again
             Tools.game.setMadeTurn(false);
+            Tools.game.setHasDrawnCard(false);
         }
 
         try {

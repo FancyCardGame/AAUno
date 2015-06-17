@@ -50,6 +50,7 @@ public class Tools {
 
     public static GameActivity game;
     public static TextView shakeCardDeckHint;
+    public static TextView winText;
 
     private static ShakeEventListener mShakeDetector;
     private static SensorManager mSensorManager;
@@ -153,12 +154,24 @@ public class Tools {
                     }
                 });
                 break;
-            case "NEXT":
+            case "WIN":
                 Tools.game.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        Toast.makeText(Tools.game, "nextPlayer: " + Tools.game.getNextPlayer(), Toast.LENGTH_SHORT).show();
-                        Toast.makeText(Tools.game, "currPlayer: " + Tools.game.getCurrPlayer(), Toast.LENGTH_SHORT).show();
+                        Tools.winText = new TextView(Tools.game.getApplicationContext());
+                        Tools.winText.setTextAppearance(appContext, R.style.WinText);
+                        Typeface font = Typeface.createFromAsset(Tools.game.getAssets(), "Comic Book Bold.ttf");
+                        Tools.winText.setTypeface(font);
+                        Tools.winText.setGravity(Gravity.CENTER);
+                        Tools.winText.setTextSize(50);
+                        Tools.winText.setTextColor(Color.YELLOW);
+                        Tools.winText.setText("You win!");
+
+
+                        ViewGroup.LayoutParams p = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+                        Tools.game.addContentView(Tools.winText, p);
+
+                        Tools.winText.invalidate();
                     }
                 });
                 break;
@@ -186,6 +199,7 @@ public class Tools {
                         // not working --> Tools.game.getWindow().getDecorView().findViewById(mixText.getId()).setVisibility(View.GONE);
                         //((FrameLayout)mixText.getParent()).invalidate();
                         //((FrameLayout)mixText.getParent()).removeView(mixText);
+                        // Game creator is first player
                         if (!Tools.roomOwner.equals(User.getUsername())){
                             Tools.game.setYourTurn(false);
                         } else {
@@ -217,9 +231,6 @@ public class Tools {
                     Tools.game.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            // For now, admin will be the first player
-                            //Tools.game.setYourTurn(false);
-
                             /*Tools.shakeCardDeckHint= new TextView(Tools.game.getApplicationContext());
                             Typeface font = Typeface.createFromAsset(Tools.game.getAssets(), "Comic Book Bold.ttf");
                             Tools.shakeCardDeckHint.setTypeface(font);

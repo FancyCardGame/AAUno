@@ -52,6 +52,8 @@ public class GameActivity extends Activity {
     private ViewGroup deckPosition;
 
     private UnoCardDeck cardDeck;
+    // Workaround for disappearing player cards, use another card deck for cards from others
+    private UnoCardDeck opCardDeck;
     //List of lists of player cards
     //private ArrayList<ArrayList<UnoCard>> playerCards
     private ArrayList<UnoCard> playerCards;
@@ -61,8 +63,8 @@ public class GameActivity extends Activity {
     private int cardsToDraw = 0;
 
     private boolean madeTurn = false;
+    private boolean hasDrawnCard = false;
     private boolean yourTurn = false;
-
 
     private static int nextPlayer;
     private static int currPlayer;
@@ -93,44 +95,29 @@ public class GameActivity extends Activity {
 
         Tools.init(this.getApplicationContext());
         Tools.game = this;
-
-        // Toast.makeText(getApplicationContext(), "before room creation", Toast.LENGTH_SHORT).show();
-        //if(at.fancycardgame.aauno.User.getUsername()!=null)
-            //theClient.connectWithUserName(at.fancycardgame.aauno.User.getUsername());
-        //prepare spinner in creategame view
-       // Spinner maxUsers = (Spinner)findViewById(R.id.spinnerMaxUsers);
-       // ArrayAdapter<CharSequence> spnAdapter = ArrayAdapter.createFromResource(getApplicationContext(), R.array.maxPlayersSelection, android.R.layout.simple_spinner_dropdown_item);
-       // spnAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-       // maxUsers.setAdapter(spnAdapter);
-        //old
-        //setContentView(R.layout.game_field);
-        //this.gameBoard = (ViewGroup)getLayoutInflater().inflate(R.layout.game_field, null);
-        //startGame();
     }
 
     public void startGame() {
-
 
         Button drawBtn = (Button) findViewById(R.id.drawBtn);
         drawBtn.setTypeface(Typeface.createFromAsset(Tools.game.getAssets(), "Comic Book.ttf"));
         drawBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (!madeTurn && yourTurn) {
-                    madeTurn = true;
-                    if (cardsToDraw == 0){
+                if (!hasDrawnCard && !madeTurn && yourTurn) {
+                    hasDrawnCard = true;
+                    if (cardsToDraw == 0) {
                         drawCards(1);
                     } else {
                         drawCards(cardsToDraw);
                         cardsToDraw = 0;
                     }
-
                 } else if (!yourTurn) {
                     Tools.showToast("It's not your turn!", Toast.LENGTH_SHORT);
-                    //Toast.makeText(context, "It's not your turn!", Toast.LENGTH_SHORT).show();
-                } else {
+                } else if(madeTurn) {
                     Tools.showToast("Your turn is over!", Toast.LENGTH_SHORT);
-                    //Toast.makeText(context, "Your turn is over!", Toast.LENGTH_SHORT).show();
+                } else {
+                    Tools.showToast("You already drew a card!", Toast.LENGTH_SHORT);
                 }
             }
         });
@@ -140,21 +127,15 @@ public class GameActivity extends Activity {
         endTurnButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // TODO: Implement end turn logic
-                //String msg = "TEST";
-                //Tools.wClient.sendUpdatePeers(msg.getBytes());
-                if (madeTurn && yourTurn) {
+                if ((hasDrawnCard || madeTurn) && yourTurn) {
                     Tools.showToast("Ending turn ...", Toast.LENGTH_SHORT);
-                    //Toast.makeText(context, "Switching to next player ...", Toast.LENGTH_SHORT).show();
                     String msg = "NEXT" + Util.userName + "#" + chosenColor + "@" + cardsToDraw + "_" + turnOrder + "+" + skip;
                     //TODO: Use sendUpdate of GameActivity for this?
                     Tools.wClient.sendUpdatePeers(msg.getBytes());
                 } else if (!yourTurn) {
                     Tools.showToast("It's not your turn!", Toast.LENGTH_SHORT);
-                    //Toast.makeText(context, "It's not your turn!", Toast.LENGTH_SHORT).show();
                 } else {
                     Tools.showToast("You have to play or draw a card!", Toast.LENGTH_SHORT);
-                    //Toast.makeText(context, "You have to play or draw a card!", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -171,14 +152,13 @@ public class GameActivity extends Activity {
             }
         });
 
-        // Textviews for chosen color and current player
+        // TextViews for chosen color and current player
         colorTxt = (TextView) findViewById(R.id.colorTxt);
         colorTxt.setTypeface(Typeface.createFromAsset(Tools.game.getAssets(), "Comic Book.ttf"));
         currPlayerTxt = (TextView) findViewById(R.id.currPlayerTxt);
         currPlayerTxt.setTypeface(Typeface.createFromAsset(Tools.game.getAssets(), "Comic Book.ttf"));
         turnOrderTxt = (TextView) findViewById(R.id.turnOrderTxt);
         turnOrderTxt.setTypeface(Typeface.createFromAsset(Tools.game.getAssets(), "Comic Book.ttf"));
-
 
         Display display = getWindowManager().getDefaultDisplay();
         this.res = new Point();
@@ -187,21 +167,15 @@ public class GameActivity extends Activity {
         // Create a card deck and set it's position
         this.deckPosition = ((ViewGroup) findViewById(R.id.cardDeckPosition));
         this.cardDeck = new UnoCardDeck(this.getApplicationContext(), (FrameLayout) deckPosition);
+        // Workaround card deck for cards from other players
+        this.opCardDeck = new UnoCardDeck(this.getApplicationContext(), (FrameLayout) deckPosition);
 
         // Cards that have been played
         this.playedCards = new ArrayList<>();
         // Cards of the player
         this.playerCards = new ArrayList<>();
 
-        for (int i = 0; i < 7; i++) {
-            // Give cards to the player, remove given cards from draw stack
-            // TODO: Distribution of cards (i.e. cards are limited, e.g. there are no more than 4 color choosers)
-            playerCards.add(i, cardDeck.getCard());
-            playerCards.get(i).setLocation(res.x / 8 + (i * 50), res.y - 130);
-            playerCards.get(i).viewFront();
-            playerCards.get(i).setContainer((FrameLayout) findViewById(R.id.container));
-            cardDeck.removeCard(playerCards.get(i));
-        }
+        dealCards();
 
         // TODO: Draw cards by dragging from the stack to the player card position
         // Add OnDragListener to playerCardsPosition for this
@@ -236,42 +210,14 @@ public class GameActivity extends Activity {
                         //if (playedCards.size() > 0 && (playedCards.get(playedCards.size() - 1).getColor() != cardToBePlayed(view).getColor())){
                         if ((!madeTurn && yourTurn && playedCards.size() > 0 && validPlay(playedCards.get(playedCards.size() - 1), cardToBePlayed(view))) || (playedCards.size() == 0 && yourTurn && !madeTurn)) {
                             // remove from current owner
-                            ViewGroup owner = (ViewGroup) view.getParent();
+                            //ViewGroup owner = (ViewGroup) view.getParent();
                             // owner.removeView(view);
-                            // get current X and Y coordinates from drop event
-                            // view.setX(event.getX() - (view.getWidth() / 2));
-                            //view.setY(event.getY() - (view.getHeight() / 2));
-                            //String sendCard = findCardByView(view);
                             playCard(view);
-                            //sendUpdateEvent("TEST", sendCard);
-
-                            /*if (cardToBePlayed(view) != null) {
-                                cardToBePlayed(view).setLocation(res.x / 2 - (view.getWidth() + 50), res.y / 2 - view.getHeight() / 2);
-                                cardToBePlayed(view).viewFront();
-                            }*/
-                            // add dropped view to new parent (playCardsPosition)
-                            //((ViewGroup) findViewById(R.id.playCardsPosition)).addView(view);
-                            // make original view visible again
                             view.setVisibility(View.VISIBLE);
                             // delete touchlistener
-                            // Problem with deleting Touch Listener:
-                            // same cards use same view, if you have played one card you cannot touch the next card if you draw it
-                            // add a view for each card?
+                            // Problem with deleting Touch Listener: cards use same view, if you have played one card you cannot touch the next card if you draw it
                             //view.setOnTouchListener(null);
                             Log.d("ImgView dropped:", "" + view);
-
-                            //String sendCard = cardDeck.getCardByView(view);
-
-                            //String msg = "TEST#" + findCardByView(view);
-                            //Tools.wClient.sendUpdatePeers(msg.getBytes());
-                            /*for (int i=0;i<playerCards.size();i++) {
-                                if (playerCards.get(i).getImageView() == view) {
-                                    sendCard = playerCards.get(i).getName();
-                                }
-                            }*/
-
-
-
                             break;
                         } else if (!yourTurn) {
                             Tools.showToast("It's not your turn!", Toast.LENGTH_SHORT);
@@ -305,7 +251,7 @@ public class GameActivity extends Activity {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                UnoCard cardFromOtherPlayer = cardDeck.getCardByName(cardName);
+                UnoCard cardFromOtherPlayer = opCardDeck.getCardByName(cardName);
                 cardFromOtherPlayer.setLocation(res.x / 2 - (cardFromOtherPlayer.getImageView().getWidth() + 50), res.y / 2 - cardFromOtherPlayer.getImageView().getHeight() / 2);
                 cardFromOtherPlayer.viewFront();
                 cardFromOtherPlayer.setContainer((FrameLayout) findViewById(R.id.container));
@@ -531,6 +477,10 @@ public class GameActivity extends Activity {
         this.madeTurn = madeTurn;
     }
 
+    public void setHasDrawnCard(boolean hasDrawnCard){
+        this.hasDrawnCard = hasDrawnCard;
+    }
+
     public void setColorTxt(final String color){
         runOnUiThread(new Runnable() {
             @Override
@@ -603,6 +553,10 @@ public class GameActivity extends Activity {
 
     public void setSkip(boolean skip) {
         GameActivity.skip = skip;
+    }
+
+    public ArrayList<UnoCard> getPlayerCards(){
+        return this.playerCards;
     }
 
     public static int scale(int v) {
@@ -730,6 +684,4 @@ public class GameActivity extends Activity {
         ((ListView)findViewById(R.id.listViewAvailGame)).setDivider(null);
         adapter.notifyDataSetChanged();
     }
-
-
 }
