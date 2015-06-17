@@ -31,8 +31,6 @@ public class SessionServiceManager extends AsyncTask<Void, Void, Void> {
     private ConnectivityManager conM;
     boolean  isCreate = true;
 
-
-
     String username; //= at.fancycardgame.aauno.User.getUsername();
 
     public SessionServiceManager(String username) {
@@ -41,33 +39,18 @@ public class SessionServiceManager extends AsyncTask<Void, Void, Void> {
     }
 
     protected Void doInBackground(Void... params) {
-
         SessionService sessionService = App42API.buildSessionManager();
         sessionService.getSession(username,isCreate, new App42CallBack() {
             @Override
-
             public void onSuccess(Object response) {
-               Session session = (Session)response;
+              Session session = (Session)response;
               Tools.sessionID = session.getSessionId();
-
-
-
             }
-
             @Override
-            public void onException(Exception e) {
-
-            }
-
-
+            public void onException(Exception e) {      }
         });
         return null;
-
     }
-
-
-
-
 }
 
 

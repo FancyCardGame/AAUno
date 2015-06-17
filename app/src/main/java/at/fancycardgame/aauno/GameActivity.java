@@ -84,6 +84,8 @@ public class GameActivity extends Activity {
         findViewById(R.id.createGameMP).setOnClickListener(Tools.gameOnClickListner);
         findViewById(R.id.joinGameMP).setOnClickListener(Tools.gameOnClickListner);
 
+
+
         //preparing views
         this.game_activity_creategame = (ViewGroup)getLayoutInflater().inflate(R.layout.game_activity_creategame, null);
         this.game_activity_joingame = (ViewGroup)getLayoutInflater().inflate(R.layout.game_activity_joingame, null);

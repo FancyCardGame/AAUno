@@ -6,29 +6,21 @@
     android:layout_height="fill_parent"
     tools:context=".HelpActivity"
     android:background="@drawable/background_help">
-
-  <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceSmall"
-        android:scrollbars="vertical"
-        android:id="@+id/infoTextID"
-        android:textColor="@color/white"
-
-        android:layout_gravity="center_horizontal"/>
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/title"
-        android:textAppearance="?android:attr/textAppearanceSmall"
-        android:textColor="@color/white"
-        android:autoLink="all"
-        android:clickable="true"
-        android:id="@+id/weblinkID"
-        android:layout_gravity="center_horizontal"/>
-
-
+    <ScrollView
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:id="@+id/scrollView"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp">
+        <TextView
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:textSize="30dp"
+              android:scrollbars="vertical"
+              android:id="@+id/infoTextID"
+              android:textColor="@color/white"
+              android:layout_gravity="center_horizontal" />
+    </ScrollView>
 </FrameLayout>
 
 

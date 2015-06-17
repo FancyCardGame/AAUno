@@ -16,11 +16,8 @@ public class ChangePwActivity extends Activity {
 
 
     public void onCreate(Bundle savedInstanceState){
-
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.menu_changepwd_page);
-
     }
 
 
@@ -32,30 +29,17 @@ public class ChangePwActivity extends Activity {
             String newPwd = ((TextView)findViewById(R.id.txtBoxNewPwd)).getText().toString();
             changePassword(User.getUsername(), oldPwd, newPwd);
         }
-
-
     }
 
     private void changePassword(String username, String oldPwd, String newPwd) {
-
-
         UserService userService = App42API.buildUserService();
-
         userService.changeUserPassword(username, oldPwd, newPwd, new App42CallBack() {
-
-
-
-
-
            @Override
             public void onSuccess(Object o) {
-
                 //show User a message that password has changed successfully
             }
-
             @Override
             public void onException(Exception e) {
-
                 //show User a message that password has not changed
             }
         });
