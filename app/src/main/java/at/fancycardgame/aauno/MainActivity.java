@@ -470,30 +470,6 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
                 return true;
             }
         });
-
-
-        // mix deck
-        //this.mixDeck();
-
-        // deal out cards to user (each user gets 7 from the mixed deck)
-        // set on drag listener to null when creating deck
-
-        // TEST STUFF ******************************************************
-        // *****************************************************************
-           // Display display = getWindowManager().getDefaultDisplay();
-           // Point res = new Point();
-           // display.getSize(res);
-
-
-           // UnoCard test2 = new UnoCard(getApplicationContext(), (FrameLayout)((ViewGroup)findViewById(R.id.container)), new Point(res.x/2-50, res.y-130), getResources().getDrawable(R.drawable.blue_2), getResources().getDrawable(R.drawable.card_back), "Blue 2", "", "2", "Blue");
-           // UnoCard test3 = new UnoCard(getApplicationContext(), (FrameLayout)((ViewGroup)findViewById(R.id.container)), new Point(res.x/2-100, res.y-130), getResources().getDrawable(R.drawable.red_6), getResources().getDrawable(R.drawable.card_back),"Red 6", "", "6", "Red");
-           // UnoCard test4 = new UnoCard(getApplicationContext(), (FrameLayout)((ViewGroup)findViewById(R.id.container)), new Point(res.x/2-150, res.y-130), getResources().getDrawable(R.drawable.green_9), getResources().getDrawable(R.drawable.card_back),"Green 9", "", "9", "Green");
-
-           //test2.viewFront();
-           //test3.viewFront();
-           //test4.viewFront();
-        // TEST STUFF ******************************************************
-        // *****************************************************************
     }
 
     // method that sets a view invisible which is specified with a parameter
@@ -509,61 +485,4 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
     public static int scale(int v) {
         return (int)MainActivity.density * v;
     }
-
-    //List available Bluetooth devices
-    /*public void showPlayers() {
-
-        Set<BluetoothDevice> pairedDevices = bluetoothAdapter.getBondedDevices();
-        final ArrayList<String> list = new ArrayList<String>();
-        final ListView playersList = (ListView) findViewById(R.id.listPlayers);
-
-
-        If there are paired devices
-        if (pairedDevices.size() > 0) {
-            // Loop through paired devices
-            for (BluetoothDevice device : pairedDevices) {
-                // Add the name and address to an array adapter to show in a ListView
-                adapter.add(device.getName() + "\n" + device.getAddress());
-                playersList.setAdapter(adapter);
-            }
-        }
-
-        bluetoothAdapter.startDiscovery();
-
-        // Create a BroadcastReceiver for ACTION_FOUND
-        BroadcastReceiver mReceiver = new BroadcastReceiver() {
-            public void onReceive(Context context, Intent intent) {
-                String action = intent.getAction();
-                // When discovery finds a device
-                if (BluetoothDevice.ACTION_FOUND.equals(action)) {
-                    // Get the BluetoothDevice object from the Intent
-                    BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-                    // Add the name and address to an array adapter to show in a ListView
-                    list.add(device.getName() + "\n" + device.getAddress());
-                    ArrayAdapter adapter = new ArrayAdapter(getApplication(), android.R.layout.simple_list_item_1, list);
-                    playersList.setAdapter(adapter);
-                }
-            }
-        };
-        // Register the BroadcastReceiver
-        IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
-        registerReceiver(mReceiver, filter); // Don't forget to unregister during onDestroy
-
-    }*/
-/*
-    public void loadFragment(){
-
-       final Fragment f = new Fragment();
-         getSupportFragmentManager().beginTransaction()
-                .add(R.id.screens, f,"screens")
-                .addToBackStack("tag")
-                .commit();
-
-    }
-
-    public void onBackPressed(){
-
-}
-  */
-
 }

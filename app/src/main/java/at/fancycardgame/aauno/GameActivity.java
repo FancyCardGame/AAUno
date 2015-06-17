@@ -24,13 +24,9 @@ import android.widget.Toast;
 // import com.app.appwarplisterner.WarpListener;
 import com.shephertz.app42.gaming.multiplayer.client.util.Util;
 
-import org.w3c.dom.Text;
-
 import java.util.ArrayList;
-import java.util.Arrays;
 
 import at.fancycardgame.aauno.adapters.JoinedPlayersAdapter;
-import at.fancycardgame.aauno.toolbox.GameState;
 import at.fancycardgame.aauno.toolbox.Tools;
 
 /**
@@ -566,31 +562,12 @@ public class GameActivity extends Activity {
 
     @Override
     protected void onPause() {
-
-        // unregister if needed(to save battery)
-        //
-
-        // HINT: with savedInstanceState, currently not working
-        if(GameState.gameCondition!=null)
-            if(GameState.gameCondition.equals(GameState.LOBBY)) {
-                Tools.wClient.leaveRoom(Tools.currentRoom);
-                updateJoinedPlayersListView();
-            }
-
         super.onPause();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-
-        // HINT: maybe try with savedInstanceState, next codelines currently not working
-        if(GameState.gameCondition!=null)
-            if(GameState.gameCondition.equals(GameState.LOBBY)) {
-                Tools.wClient.joinRoom(Tools.currentRoom);
-                updateJoinedPlayersListView();
-
-            }
     }
 
     public void updateJoinedPlayersListView() {
@@ -639,7 +616,7 @@ public class GameActivity extends Activity {
 
         Tools.showToast("Update!", Toast.LENGTH_SHORT);
 
-        ((ListView)findViewById(R.id.listViewAvailGame)).setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        ((ListView) findViewById(R.id.listViewAvailGame)).setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Tools.currentRoom = ((TextView) view).getText().toString().split("ID:")[1];
@@ -670,7 +647,7 @@ public class GameActivity extends Activity {
                         updateJoinedPlayersListView();
 
                         // only admin sees the play button
-                        if(Tools.roomOwner.equals(User.getUsername()))
+                        if (Tools.roomOwner.equals(User.getUsername()))
                             (Tools.game.findViewById(R.id.btnPlay)).setVisibility(View.VISIBLE);
                     }
                 }, 3000);
@@ -680,8 +657,8 @@ public class GameActivity extends Activity {
         });
 
         ArrayAdapter<String> adapter = new ArrayAdapter<>(Tools.appContext, android.R.layout.simple_list_item_1, Tools.allRoomNamesList);
-        ((ListView)findViewById(R.id.listViewAvailGame)).setAdapter(adapter);
-        ((ListView)findViewById(R.id.listViewAvailGame)).setDivider(null);
+        ((ListView) findViewById(R.id.listViewAvailGame)).setAdapter(adapter);
+        ((ListView) findViewById(R.id.listViewAvailGame)).setDivider(null);
         adapter.notifyDataSetChanged();
     }
 }
