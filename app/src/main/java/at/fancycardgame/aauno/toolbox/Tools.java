@@ -146,11 +146,11 @@ public class Tools {
 
         switch(command) {
             //Multiplayer Test
-            case "TEST":
+            case "DRAW":
                 Tools.game.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        Toast.makeText(Tools.game, "TEST", Toast.LENGTH_SHORT).show();
+                        Tools.game.drawCards(1);
                     }
                 });
                 break;
