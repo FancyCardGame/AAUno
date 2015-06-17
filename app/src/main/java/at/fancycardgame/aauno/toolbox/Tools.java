@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
+import android.media.MediaPlayer;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.CountDownTimer;
@@ -82,6 +83,7 @@ public class Tools {
 
     public static int testCounter = 0;
 
+    //public static MediaPlayer mediaPlayer = MediaPlayer.create(this.app, R.raw.shuffle);
 
     public static void init(Context ac) {
             Tools.appContext = ac;
@@ -206,6 +208,7 @@ public class Tools {
                             Tools.game.setYourTurn(true);
                         }
 
+                        //mediaPlayer.start();
                         Tools.game.startGame();
                         Tools.game.setNextPlayer(1);
                         Tools.game.setColorTxt("-");

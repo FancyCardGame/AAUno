@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Point;
 import android.graphics.Typeface;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -79,6 +80,8 @@ public class GameActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
       super.onCreate(savedInstanceState);
 
+
+
         this.game_activity_start = (ViewGroup)getLayoutInflater().inflate(R.layout.game_activity_start, null);
         setContentView(this.game_activity_start);
 
@@ -150,6 +153,8 @@ public class GameActivity extends Activity {
             }
         });
 
+        final MediaPlayer mediaPlayer = MediaPlayer.create(context, R.raw.shuffle);
+
         // Button for testing
         Button testBtn = (Button) findViewById(R.id.testBtn);
         testBtn.setOnClickListener(new View.OnClickListener() {
@@ -158,6 +163,7 @@ public class GameActivity extends Activity {
                 //Toast.makeText(context, "yourTurn: " + isYourTurn(), Toast.LENGTH_SHORT).show();
                 Toast.makeText(context, Tools.joinedPlayers.toString(), Toast.LENGTH_SHORT).show();
                 //Toast.makeText(context, "played cards: " + playedCards.toString(), Toast.LENGTH_SHORT).show();
+                mediaPlayer.start();
             }
         });
 
