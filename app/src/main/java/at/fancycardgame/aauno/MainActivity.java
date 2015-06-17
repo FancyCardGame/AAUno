@@ -37,11 +37,8 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
     public static  final String PREFS_NAME = "My Preferences";
     Context savePrefs;
 
-    // define font name, can be changed later on here
-    private static final String menu_font = "Comic Book Bold.ttf";
     // the whole display container where the content is shown
     private ViewGroup screen_container;
-
 
     // the viewgroups for the different options
     private ViewGroup optionsMenu;
@@ -68,28 +65,16 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
-
-
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-
-
 
         if (!at.fancycardgame.aauno.User.isLoggedIn()) {
             DialogFragment loginDialog = new LoginDialogFragment();
 
             loginDialog.show(getSupportFragmentManager(), "login");
-
         }
 
         //SharedPrefernces: Save Login data
-
-/////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-
 
         Tools.init(this.getApplicationContext());
                     Tools.mainActivity = this;
@@ -118,23 +103,14 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
                     findViewById(R.id.optionsMP).setOnClickListener(this.mainOnClickListener);
                     findViewById(R.id.helpMP).setOnClickListener(this.mainOnClickListener);
                     findViewById(R.id.quitMP).setOnClickListener(this.mainOnClickListener);
-
-
-
     }
 
     // method that takes *.ttf file, creates a typeface and applies it to the menu TextViews
     private void setMenuTypeface() {
-        Typeface menu = Typeface.createFromAsset(getAssets(), menu_font);
-        setStringTypeface(R.id.startGameMP);
-        setStringTypeface(R.id.optionsMP);
-        setStringTypeface(R.id.helpMP);
-        setStringTypeface(R.id.quitMP);
-    }
-
-    private void setStringTypeface(int textview) {
-        Typeface menu = Typeface.createFromAsset(getAssets(), menu_font);
-        ((TextView)findViewById(textview)).setTypeface(menu);
+        Tools.setStringTypeface(this, R.id.startGameMP);
+        Tools.setStringTypeface(this, R.id.optionsMP);
+        Tools.setStringTypeface(this, R.id.helpMP);
+        Tools.setStringTypeface(this, R.id.quitMP);
     }
 
     // main onclick method
@@ -148,7 +124,6 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
 
         if(clickedID==R.id.startGameMP) {
               // first check internet connection
-
 
              // checking internet connection
              if(!Tools.checkInternetConnection(this)) {
@@ -194,9 +169,7 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
                  });
                  clickedView.startAnimation(a);
              }
-
         } else if(clickedID==R.id.optionsMP) {
-
            a.setAnimationListener(new AbstractAnimationListener() {
                 @Override
                 public void onAnimationEnd(Animation animation) {
@@ -205,22 +178,15 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
                 }
             } );
             clickedView.startAnimation(a);
-
         } else if(clickedID==R.id.helpMP) {
-
-        a.setAnimationListener(new AbstractAnimationListener() {
+            a.setAnimationListener(new AbstractAnimationListener() {
                 @Override
                 public void onAnimationEnd(Animation animation) {
                     //StartHelp/rules
                     startActivity(new Intent(getApplicationContext(), HelpActivity.class));
-
-                    //
-                    // VIEW HELP MENU?/DIALOG?/TUTORIAL?
-                    //
                 }
             } );
             clickedView.startAnimation(a);
-
         } else if(clickedID==R.id.quitMP) {
             a.setAnimationListener(new AbstractAnimationListener() {
                 @Override
@@ -234,120 +200,7 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
             } );
             clickedView.startAnimation(a);
         }
-        // ************************ USER MANAGEMENT MENU ****************************
-        else if (clickedID == R.id.userMgmtMP) {
-            a.setAnimationListener(new AbstractAnimationListener() {
-                @Override
-                public void onAnimationEnd(Animation animation) {
-                    // access user mgmt
-                    screen_container.removeAllViews();
-                    screen_container.addView(userMgmtMenu);
-
-                    setStringTypeface(R.id.createUserMP);
-                    setStringTypeface(R.id.changePwdMP);
-
-
-                    findViewById(R.id.createUserMP).setOnClickListener(mainOnClickListener);
-                    findViewById(R.id.changePwdMP).setOnClickListener(mainOnClickListener);
-                }
-            });
-            clickedView.startAnimation(a);
-
-        } else if (clickedID == R.id.musicOnOffMP) {
-            //music on/off
-        } else if (clickedID == R.id.effectsOnOffMP) {
-            // effects on/off
-        } // TODO: implement return arrow + add if(..) here
-        // ************************ CREATE USER MENU *******************************
-        else if(clickedID == R.id.createUserMP) {
-            // access user mgmt
-            screen_container.removeAllViews();
-            screen_container.addView(createUserMenu);
-
-            a.setAnimationListener(new AbstractAnimationListener() {
-                @Override
-                public void onAnimationEnd(Animation animation) {
-                    // access user mgmt
-                    screen_container.removeAllViews();
-                    screen_container.addView(createUserMenu);
-
-                    // changed diete remove
-                    setStringTypeface(R.id.createUserHeadline);
-                    setStringTypeface(R.id.createUserUsernameStr);
-                    setStringTypeface(R.id.createUserPasswordStr);
-                    setStringTypeface(R.id.createUserMailStr);
-
-                    findViewById(R.id.btnCreateUser).setOnClickListener(mainOnClickListener);
-
-                    // assign buttonlistener
-                    //findViewById(R.id.createUserMP).setOnClickListener(this.mainOnClickListener);
-                    //findViewById(R.id.changePwdMP).setOnClickListener(this.mainOnClickListener);
-                }
-            });
-            clickedView.startAnimation(a);
-        }
-        // ************************ CHANGE PWD MENU *****************************
-        else if(clickedID==R.id.changePwdMP) {
-
-            a.setAnimationListener(new AbstractAnimationListener() {
-                @Override
-                public void onAnimationEnd(Animation animation) {
-
-                    screen_container.removeAllViews();
-                    screen_container.addView(changePwdMenu);
-
-                    setStringTypeface(R.id.changePwdHeadline);
-                    setStringTypeface(R.id.oldPwdStr);
-                    setStringTypeface(R.id.newPwdStr);
-
-                    findViewById(R.id.btnChangePWD).setOnClickListener(mainOnClickListener);
-                }
-            });
-            clickedView.startAnimation(a);
-        }
-        // *********************** CREATE USER BTN CLICKED **********************
-        else if(clickedID == R.id.btnCreateUser) {
-
-            String username = ((TextView)findViewById(R.id.txtBoxUsername)).getText().toString();
-            String password = ((TextView)findViewById(R.id.txtBoxPwd)).getText().toString();
-            String email = ((TextView)findViewById(R.id.txtBoxMail)).getText().toString();
-            this.createUser(username, password, email);
-
-        }
-        else if(clickedID == R.id.btnChangePWD) {
-
-            String oldPwd = ((TextView)findViewById(R.id.txtBoxOldPwd)).getText().toString();
-            String newPwd = ((TextView)findViewById(R.id.txtBoxNewPwd)).getText().toString();
-
-            //Session needed for logged in User
-            //this.changePassword(Username, oldPwd, newPwd);
-        }
         // if the same OnClickListener is used continue here with else if(...)
-    }
-
-
-
-
-
-    private void createUser(String username, String password, String email) {
-
-        UserService userService = App42API.buildUserService();
-        userService.createUser(username, password, email, new App42CallBack() {
-            @Override
-            public void onSuccess(Object response) {
-
-                Tools.showToast("User successfully created.", Toast.LENGTH_SHORT);
-                //User user = (User)response;
-                //Toast.makeText(getApplicationContext(),"Successfully created User.", Toast.LENGTH_SHORT);
-
-                //
-            }
-
-            @Override
-            public void onException(Exception ex) {
-                Tools.showToast("Error creating user. ERROR: " + ex.getMessage(), Toast.LENGTH_SHORT);
-            }
-        });
     }
 
     // method that sets a view invisible which is specified with a parameter

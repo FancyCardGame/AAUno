@@ -10,6 +10,8 @@ import android.view.View;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
+import at.fancycardgame.aauno.toolbox.Tools;
+
 /**
  * Created by Christian on 11.06.2015.
  */
@@ -60,11 +62,6 @@ public class HelpActivity extends Activity {
         Linkify.addLinks(infoText, Linkify.WEB_URLS);
     }
     private void setOptionsMenuTypeface() {
-        Typeface menu_userm = Typeface.createFromAsset(getAssets(), menu_font);
-        setStringTypeface(R.id.infoTextID);
-    }
-    private void setStringTypeface(int textview) {
-        Typeface options_menu = Typeface.createFromAsset(getAssets(), menu_font);
-        ((TextView) findViewById(textview)).setTypeface(options_menu);
+        Tools.setStringTypeface(this, R.id.infoTextID);
     }
 }

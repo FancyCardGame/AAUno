@@ -69,7 +69,11 @@ public class Usermanager extends Activity implements View.OnClickListener {
                 @Override
                 public void onAnimationEnd(Animation animation) {
                     //access change password
-                    //startActivity(new Intent(Usermanager.this, ChangePwActivity.class));
+                    if(User.isLoggedIn()) {
+                        startActivity(new Intent(Usermanager.this, ChangePwActivity.class));
+                    }else{
+                        Tools.showToast("You have to login to change a password", Toast.LENGTH_SHORT);
+                    }
                 }
             });
             clickedView.startAnimation(a);
@@ -93,17 +97,9 @@ public class Usermanager extends Activity implements View.OnClickListener {
             //startActivity(new Intent(getApplicationContext(), MainActivity.class));
         }
     }
-
-
     private void setOptionsMenuTypeface() {
-        Typeface menu_userm = Typeface.createFromAsset(getAssets(), menu_font);
-        setStringTypeface(R.id.createUserMP);
-        setStringTypeface(R.id.changePwdMP);
-        setStringTypeface(R.id.logoutMP);
-    }
-
-    private void setStringTypeface(int textview) {
-        Typeface options_menu = Typeface.createFromAsset(getAssets(), menu_font);
-        ((TextView) findViewById(textview)).setTypeface(options_menu);
+        Tools.setStringTypeface(this, R.id.createUserMP);
+        Tools.setStringTypeface(this, R.id.changePwdMP);
+        Tools.setStringTypeface(this, R.id.logoutMP);
     }
 }

@@ -11,6 +11,7 @@ import android.view.animation.AnimationUtils;
 import android.widget.TextView;
 
 import at.fancycardgame.aauno.listeners.AbstractAnimationListener;
+import at.fancycardgame.aauno.toolbox.Tools;
 
 /**
  * Created by Christian on 26.05.2015.
@@ -25,7 +26,6 @@ public class OptionsActivity extends Activity implements View.OnClickListener  {
     // define font name, can be changed later on here
     private static final String menu_font = "Comic Book Bold.ttf";
 
-
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
@@ -38,16 +38,9 @@ public class OptionsActivity extends Activity implements View.OnClickListener  {
         findViewById(R.id.effectsOnOffMP).setOnClickListener(mainOnClickListener);
 
         setOptionsMenuTypeface();
-
-
-
     }
 
-
-
     public void onClick(View clickedView) {
-
-
         //OnClickListener that determines which TextView has been clicked by ID
         int clickedID = clickedView.getId();
 
@@ -59,31 +52,15 @@ public class OptionsActivity extends Activity implements View.OnClickListener  {
                 @Override
                 public void onAnimationEnd(Animation animation) {
                     // access user mgmt
-
                     startActivity(new Intent(OptionsActivity.this,Usermanager.class));
-
-
                 }
             });
             clickedView.startAnimation(a);
-
         }
-
-
     }
-    // method that takes *.ttf file, creates a typeface and applies it to the menu TextViews
-        private void setOptionsMenuTypeface() {
-        Typeface menu = Typeface.createFromAsset(getAssets(), menu_font);
-        setStringTypeface(R.id.userMgmtMP);
-        setStringTypeface(R.id.musicOnOffMP);
-        setStringTypeface(R.id.effectsOnOffMP);
-
+    private void setOptionsMenuTypeface() {
+        Tools.setStringTypeface(this, R.id.userMgmtMP);
+        Tools.setStringTypeface(this, R.id.musicOnOffMP);
+        Tools.setStringTypeface(this, R.id.effectsOnOffMP);
     }
-
-    private void setStringTypeface(int textview) {
-        Typeface options_menu = Typeface.createFromAsset(getAssets(), menu_font);
-        ((TextView) findViewById(textview)).setTypeface(options_menu);
-    }
-
-
 }

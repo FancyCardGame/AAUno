@@ -143,9 +143,12 @@ public class Tools {
                 Tools.joinedPlayers.add(s);
     }
 
+    public static void setStringTypeface(Activity act, int textview) {
+        Typeface menu = Typeface.createFromAsset(act.getAssets(), Constants.menu_font);
+        ((TextView)act.findViewById(textview)).setTypeface(menu);
+    }
+
     public static void executeFromRemote(String command) {
-
-
         switch(command) {
             //Multiplayer Test
             case "DRAW":
