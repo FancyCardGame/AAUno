@@ -69,7 +69,11 @@ public class Usermanager extends Activity implements View.OnClickListener {
                 @Override
                 public void onAnimationEnd(Animation animation) {
                     //access change password
-                    //startActivity(new Intent(Usermanager.this, ChangePwActivity.class));
+                    if(User.isLoggedIn()) {
+                        startActivity(new Intent(Usermanager.this, ChangePwActivity.class));
+                    }else{
+                        Tools.showToast("You have to login to change a password", Toast.LENGTH_SHORT);
+                    }
                 }
             });
             clickedView.startAnimation(a);
