@@ -1,10 +1,6 @@
 package at.fancycardgame.aauno.listeners;
 
-import android.content.Context;
-import android.hardware.Sensor;
-import android.hardware.SensorManager;
 import android.os.Handler;
-import android.os.Vibrator;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -16,7 +12,6 @@ import android.widget.Toast;
 import at.fancycardgame.aauno.R;
 import at.fancycardgame.aauno.User;
 import at.fancycardgame.aauno.toolbox.Constants;
-import at.fancycardgame.aauno.toolbox.GameState;
 import at.fancycardgame.aauno.toolbox.Tools;
 
 /**
@@ -86,7 +81,7 @@ public class GameOnClickListener implements View.OnClickListener {
 
             Tools.game.setContentView(Tools.game.game_activity_startedGameLobby);
 
-            GameState.gameCondition = GameState.LOBBY;
+
 
 
             Tools.game.findViewById(R.id.btnSendChatMsg).setOnClickListener(Tools.gameOnClickListner);
