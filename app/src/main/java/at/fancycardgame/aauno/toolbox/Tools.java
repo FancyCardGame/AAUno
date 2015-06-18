@@ -143,9 +143,8 @@ public class Tools {
                 Tools.joinedPlayers.add(s);
     }
 
-    public static void setStringTypeface(Activity act, int textview) {
-        Typeface menu = Typeface.createFromAsset(act.getAssets(), Constants.menu_font);
-        ((TextView)act.findViewById(textview)).setTypeface(menu);
+    public static void setStringTypeface(Activity act, int view) {
+        ((TextView)act.findViewById(view)).setTypeface(Typeface.createFromAsset(act.getAssets(), Constants.app_font));
     }
 
     public static void executeFromRemote(String command) {

@@ -24,7 +24,6 @@ import at.fancycardgame.aauno.toolbox.Tools;
 public class Usermanager extends Activity implements View.OnClickListener {
 
     private View.OnClickListener mainOnClickListener = this;
-    private static final String menu_font = "Comic Book Bold.ttf";
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

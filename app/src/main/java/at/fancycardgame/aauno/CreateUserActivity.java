@@ -26,46 +26,36 @@ public class CreateUserActivity extends Activity implements View.OnClickListener
         setContentView(R.layout.menu_createuser_page);
         findViewById(R.id.btnCreateUser).setOnClickListener(mainOnClickListener);
 
- }
+        Tools.setStringTypeface(this, R.id.createUserHeadline);
+        Tools.setStringTypeface(this, R.id.createUserUsernameStr);
+        Tools.setStringTypeface(this, R.id.createUserMailStr);
+        Tools.setStringTypeface(this, R.id.createUserPasswordStr);
+        Tools.setStringTypeface(this, R.id.btnCreateUser);
+    }
 
     public void onClick(View clickedView){
         int clickedID = clickedView.getId();
 
         if(clickedID == R.id.btnCreateUser) {
-
                 String username = ((TextView) findViewById(R.id.txtBoxUsername)).getText().toString();
                 String password = ((TextView) findViewById(R.id.txtBoxPwd)).getText().toString();
                 String email = ((TextView) findViewById(R.id.txtBoxMail)).getText().toString();
                 this.createUser(username, password, email);
                 startActivity(new Intent(getApplicationContext(), MainActivity.class));
-
-
-
         }
-
     }
 
     private void createUser(String username, String password, String email) {
-
         UserService userService = App42API.buildUserService();
         userService.createUser(username, password, email, new App42CallBack() {
             @Override
             public void onSuccess(Object response) {
-
                 Tools.showToast("User successfully created.", Toast.LENGTH_SHORT);
-                //User user = (User)response;
-                //Toast.makeText(getApplicationContext(),"Successfully created User.", Toast.LENGTH_SHORT);
-
-                //
             }
             @Override
             public void onException(Exception ex) {
                 Tools.showToast("Error creating user. ERROR: " + ex.getMessage(), Toast.LENGTH_SHORT);
             }
-
         });
-
-}
-
-
+    }
 }

@@ -34,7 +34,7 @@
                         android:layout_height="wrap_content"
                         android:textAppearance="?android:attr/textAppearanceMedium"
                         android:text="@string/gameLobby"
-                        android:id="@+id/textView3"
+                        android:id="@+id/textViewGameLobby"
                         android:layout_gravity="left"
                         android:layout_weight="2"
                         android:textColor="#ffffffff" />
@@ -71,8 +71,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_gravity="center_horizontal"
-                android:background="#ffffc666"
-                android:alpha="1"
+                android:background="#ffffe725"
+                android:alpha="0.9"
                 android:layout_margin="10dp"
                 android:baselineAligned="false">
 

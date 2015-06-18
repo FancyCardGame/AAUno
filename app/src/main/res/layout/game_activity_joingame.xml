@@ -31,12 +31,16 @@
                 android:shadowRadius="20"
                 android:shadowDx="10"
                 android:shadowDy="-10"
-                />
+                android:id="@+id/textViewSelectGame" />
 
             <ListView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/listViewAvailGame" />
+                android:id="@+id/listViewAvailGame"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:background="#ff75bcff"
+                android:alpha="0.9" />
 
         </LinearLayout>
 

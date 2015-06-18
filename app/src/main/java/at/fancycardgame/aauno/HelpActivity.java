@@ -20,8 +20,6 @@ public class HelpActivity extends Activity {
     TextView infoText;
     TextView url;
 
-    private static final String menu_font = "Comic Book Bold.ttf";
-
     public void onCreate(Bundle savedInstanceState){
        super.onCreate(savedInstanceState);
        setContentView(R.layout.help_activity_rules);
