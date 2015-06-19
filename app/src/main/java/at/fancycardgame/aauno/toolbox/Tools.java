@@ -6,7 +6,6 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
-import android.media.MediaPlayer;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.CountDownTimer;
@@ -23,7 +22,6 @@ import com.shephertz.app42.gaming.multiplayer.client.WarpClient;
 import com.shephertz.app42.paas.sdk.android.App42API;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 import at.fancycardgame.aauno.GameActivity;
 import at.fancycardgame.aauno.MainActivity;
@@ -34,7 +32,6 @@ import at.fancycardgame.aauno.listeners.GameOnClickListener;
 import at.fancycardgame.aauno.listeners.NotifyListener;
 import at.fancycardgame.aauno.listeners.RoomRequestListener;
 import at.fancycardgame.aauno.listeners.ShakeEventListener;
-import at.fancycardgame.aauno.listeners.WarpListener;
 import at.fancycardgame.aauno.listeners.ZoneRequestListener;
 
 /**

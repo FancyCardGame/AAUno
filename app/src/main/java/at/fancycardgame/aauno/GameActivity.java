@@ -169,6 +169,7 @@ public class GameActivity extends Activity {
                //mediaPlayer.start();
             }
         });
+        testBtn.setVisibility(View.INVISIBLE);
 
         // TextViews for chosen color and current player
         colorTxt = (TextView) findViewById(R.id.colorTxt);
@@ -533,7 +534,7 @@ public class GameActivity extends Activity {
     }
 
     public void dealCards(){
-        for (int i = 0; i < 3; i++) {
+        for (int i = 0; i < 7; i++) {
             // Give cards to the player, remove given cards from draw stack
             // TODO: Distribution of cards (i.e. cards are limited, e.g. there are no more than 4 color choosers)
             playerCards.add(i, cardDeck.getCard());
